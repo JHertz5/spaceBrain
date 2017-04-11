@@ -40,13 +40,15 @@ ALL TIMES.
 #include <iostream>
 #include <stdint.h>
 
-#include "sds_lib.h"
+//#include "sds_lib.h"
 #include "maths_functions/mmultadd.hpp"
 #include "maths_functions/mmultaddTest.hpp"
+#include "layers/relu_layer.hpp"
 
 int main(int argc, char* argv[]){
 
-	int test_passed = 0;
+	/*
+ 	int test_passed = 0;
 	float *A, *B, *C, *D, *D_sw;
 
 	A = (float *)sds_alloc(N * N * sizeof(float));
@@ -73,12 +75,13 @@ int main(int argc, char* argv[]){
 	sds_free(C);
 	sds_free(D);
 	free(D_sw);
-
+	 */
 	//return (test_passed ? -1 : 0);
 
 	bool keepRunning = true;
 	std::string inMessage;
 	const std::string notYetImplementedString =  "\t-not yet implemented";
+
 	while(keepRunning)
 	{
 		std::cin >> inMessage;
@@ -95,6 +98,7 @@ int main(int argc, char* argv[]){
 			std::cout << "'fc'   \t - Fully Connected Layer" << std::endl;
 			std::cout << "'drop' \t - Dropout Layer" << std::endl;
 			std::cout << "'prob' \t - SoftMax Layer" << std::endl;
+			std::cout << "'quit' \t - End Program" << std::endl;
 
 		}
 		else if(inMessage == "input")
@@ -104,12 +108,14 @@ int main(int argc, char* argv[]){
 		}
 		else if(inMessage == "conv")
 		{
-			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
+			std::cout << "Convolution Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
 		}
 		else if(inMessage == "relu")
 		{
 			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
+			spaceBrain::ReluLayer relu1("relu1", "data", "conv1");
+			std::cout << relu1.type() << " " << relu1.name << std::endl;
 			std::cout << notYetImplementedString << std::endl;
 		}
 		else if(inMessage == "norm")
@@ -143,4 +149,3 @@ int main(int argc, char* argv[]){
 		}
 	}
 }
-
