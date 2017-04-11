@@ -39,7 +39,7 @@ ALL TIMES.
 
 #include <stdlib.h>
 #include "mmultadd.hpp"
-
+/*
 void madd(float A[N*N], float B[N*N], float C[N*N])
 {
   int i, j;
@@ -50,7 +50,7 @@ void madd(float A[N*N], float B[N*N], float C[N*N])
       C[i*N+j] = A[i*N+j] + B[i*N+j];
 
 }
-
+*/
 
 void madd_golden(float *A, float *B, float *C)
 {

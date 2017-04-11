@@ -50,6 +50,7 @@ ALL TIMES.
  * 4. Separate multiply-accumulate in inner loop to force two FP operators
  *
  */
+/*
 void mmult (float A[N*N], float B[N*N], float C[N*N]) 
 {
      float Abuf[N][N], Bbuf[N][N];
@@ -76,7 +77,7 @@ void mmult (float A[N*N], float B[N*N], float C[N*N])
           }
      }
 }
-
+*/
 
 void mmult_golden(float *A,  float *B, float *C)
 {

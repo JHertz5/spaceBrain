@@ -49,11 +49,11 @@ ALL TIMES.
  *    interface.  Otherwise, the default RAM interface requires all data to arrive
  *    before starting HLS accelerator
  */
-#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
-void mmult (float A[N*N], float B[N*N], float C[N*N]);
+//#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
+//void mmult (float A[N*N], float B[N*N], float C[N*N]);
 
-#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
-void madd(float A[N*N], float B[N*N], float C[N*N]);
+//#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
+//void madd(float A[N*N], float B[N*N], float C[N*N]);
 
 void mmult_golden(float *A,  float *B, float *C);
 
