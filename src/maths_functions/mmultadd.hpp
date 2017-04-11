@@ -45,7 +45,7 @@ ALL TIMES.
 /**
  * Design principles to achieve best performance
  *
- * 1. Declare secquential access to stream data into accelerators via a hardware FIFO
+ * 1. Declare sequential access to stream data into accelerators via a hardware FIFO
  *    interface.  Otherwise, the default RAM interface requires all data to arrive
  *    before starting HLS accelerator
  */

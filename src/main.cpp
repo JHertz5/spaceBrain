@@ -78,13 +78,68 @@ int main(int argc, char* argv[]){
 
 	bool keepRunning = true;
 	std::string inMessage;
+	const std::string notYetImplementedString =  "\t-not yet implemented";
 	while(keepRunning)
 	{
 		std::cin >> inMessage;
 
-		if(inMessage == "-h")
+		// respond to command
+		if(inMessage == "-h") // HELP message
 		{
 			std::cout << "Neural Net Help" << std::endl;
+			std::cout << "'input'\t - Input Layer" << std::endl;
+			std::cout << "'conv' \t - Convolution Layer" << std::endl;
+			std::cout << "'relu' \t - ReLU Layer" << std::endl;
+			std::cout << "'norm' \t - LRN Layer" << std::endl;
+			std::cout << "'pool' \t - Pooling Layer" << std::endl;
+			std::cout << "'fc'   \t - Fully Connected Layer" << std::endl;
+			std::cout << "'drop' \t - Dropout Layer" << std::endl;
+			std::cout << "'prob' \t - SoftMax Layer" << std::endl;
+
+		}
+		else if(inMessage == "input")
+		{
+			std::cout << "Input Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "conv")
+		{
+			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "relu")
+		{
+			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "norm")
+		{
+			std::cout << "LRN (Local Response Normalisation) Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "pool")
+		{
+			std::cout << "MAX Pooling Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "fc")
+		{
+			std::cout << "Fully Connected/Inner Product Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "drop")
+		{
+			std::cout << "Dropout Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else if(inMessage == "prob")
+		{
+			std::cout << "SoftMax Layer" << std::endl;
+			std::cout << notYetImplementedString << std::endl;
+		}
+		else
+		{
+			std::cout << "COMMAND NOT RECOGNISED" << std::endl;
 		}
 	}
 }

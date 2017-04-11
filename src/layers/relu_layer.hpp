@@ -16,6 +16,9 @@ class ReluLayer
 	{
 		return "ReLU";
 	}
+
+	//ReluLayer(std::string name, more params);
+
 };
 
 
