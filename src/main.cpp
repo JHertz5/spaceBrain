@@ -44,43 +44,18 @@ ALL TIMES.
 #include "maths_functions/mmultadd.hpp"
 #include "maths_functions/mmultaddTest.hpp"
 #include "layers/relu_layer.hpp"
+#include "blob.hpp"
 
 int main(int argc, char* argv[]){
-
-	/*
- 	int test_passed = 0;
-	float *A, *B, *C, *D, *D_sw;
-
-	A = (float *)sds_alloc(N * N * sizeof(float));
-	B = (float *)sds_alloc(N * N * sizeof(float));
-	C = (float *)sds_alloc(N * N * sizeof(float));
-	D = (float *)sds_alloc(N * N * sizeof(float));
-	D_sw = (float *)malloc(N * N * sizeof(float));
-
-	if (!A || !B || !C || !D || !D_sw) {
-		if (A) sds_free(A);
-		if (B) sds_free(B);
-		if (C) sds_free(C);
-		if (D) sds_free(D);
-		if (D_sw) free(D_sw);
-		return 2;
-	}
-
-	test_passed = mmult_test(A, B, C, D, D_sw);
-
-	std::cout << "TEST " << (test_passed ? "FAILED" : "PASSED") << std::endl;
-
-	sds_free(A);
-	sds_free(B);
-	sds_free(C);
-	sds_free(D);
-	free(D_sw);
-	 */
-	//return (test_passed ? -1 : 0);
 
 	bool keepRunning = true;
 	std::string inMessage;
 	const std::string notYetImplementedString =  "\t-not yet implemented";
+
+	spaceBrain::Blob blob1(1,3,96,96);
+	const uint *shape = blob1.shape();
+	std::cout << "Blob dimensions are (" << shape[NUM] << "*" << shape[CHANNELS] << "*" << shape[HEIGHT] << "*" << shape[WIDTH] << ")" << std::endl;
+	std::cout << "Blob count = " << blob1.count() << std::endl;
 
 	while(keepRunning)
 	{
@@ -143,9 +118,46 @@ int main(int argc, char* argv[]){
 			std::cout << "SoftMax Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
 		}
+		else if(inMessage == "quit")
+		{
+			break;
+		}
 		else
 		{
 			std::cout << "COMMAND NOT RECOGNISED" << std::endl;
 		}
 	}
 }
+
+
+/*
+	int test_passed = 0;
+float *A, *B, *C, *D, *D_sw;
+
+A = (float *)sds_alloc(N * N * sizeof(float));
+B = (float *)sds_alloc(N * N * sizeof(float));
+C = (float *)sds_alloc(N * N * sizeof(float));
+D = (float *)sds_alloc(N * N * sizeof(float));
+D_sw = (float *)malloc(N * N * sizeof(float));
+
+if (!A || !B || !C || !D || !D_sw) {
+	if (A) sds_free(A);
+	if (B) sds_free(B);
+	if (C) sds_free(C);
+	if (D) sds_free(D);
+	if (D_sw) free(D_sw);
+	return 2;
+}
+
+test_passed = mmult_test(A, B, C, D, D_sw);
+
+std::cout << "TEST " << (test_passed ? "FAILED" : "PASSED") << std::endl;
+
+sds_free(A);
+sds_free(B);
+sds_free(C);
+sds_free(D);
+free(D_sw);
+ */
+//return (test_passed ? -1 : 0);
+

@@ -9,21 +9,20 @@
 #define SRC_LAYERS_LAYER_HPP_
 
 #include <string>
-
+#include "blob.hpp"
 
 namespace spaceBrain
 {
 
-
+// Class from which to derive other layer classes
 class Layer
 {
 public:
 	std::string name; // the layer name
-	//std::string type; // the layer type
 	std::string bottom; // the name of each bottom blob
 	std::string top; // the name of each top blob
 
-//	void Forward()
+	virtual void Forward(const Blob &bottom, const Blob &top) = 0;
 
 	virtual inline const char* type() const
 	{
