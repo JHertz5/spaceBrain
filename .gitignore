@@ -3,3 +3,4 @@ Release
 project.sdx
 .project
 .cproject
+*.log

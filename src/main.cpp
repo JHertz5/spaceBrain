@@ -45,17 +45,18 @@ ALL TIMES.
 #include "maths_functions/mmultaddTest.hpp"
 #include "layers/relu_layer.hpp"
 #include "blob.hpp"
+#include "logger.hpp"
 
 int main(int argc, char* argv[]){
+
+	spaceBrain::Blob blob1(1,2,2,2);
+	const uint *shape = blob1.shape();
+	std::cout << "Blob dimensions are (" << shape[NUM] << "*" << shape[CHANNELS] << "*" << shape[HEIGHT] << "*" << shape[WIDTH] << ")" << std::endl;
+	std::cout << "Blob count = " << blob1.count() << std::endl;
 
 	bool keepRunning = true;
 	std::string inMessage;
 	const std::string notYetImplementedString =  "\t-not yet implemented";
-
-	spaceBrain::Blob blob1(1,3,96,96);
-	const uint *shape = blob1.shape();
-	std::cout << "Blob dimensions are (" << shape[NUM] << "*" << shape[CHANNELS] << "*" << shape[HEIGHT] << "*" << shape[WIDTH] << ")" << std::endl;
-	std::cout << "Blob count = " << blob1.count() << std::endl;
 
 	while(keepRunning)
 	{
@@ -73,6 +74,7 @@ int main(int argc, char* argv[]){
 			std::cout << "'fc'   \t - Fully Connected Layer" << std::endl;
 			std::cout << "'drop' \t - Dropout Layer" << std::endl;
 			std::cout << "'prob' \t - SoftMax Layer" << std::endl;
+			std::cout << "'log'  \t - Logging functionality" << std::endl;
 			std::cout << "'quit' \t - End Program" << std::endl;
 
 		}
@@ -118,6 +120,15 @@ int main(int argc, char* argv[]){
 			std::cout << "SoftMax Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
 		}
+		else if(inMessage == "log")
+		{
+			std::string message;
+			std::cout << "Logger" << std::endl;
+			std::cout << "\tinput log message:" << std::endl;
+
+			std::cin >> message;
+			spaceBrain::Logger::GetLogger()->LogMessage(message);
+		}
 		else if(inMessage == "quit")
 		{
 			break;
@@ -126,7 +137,10 @@ int main(int argc, char* argv[]){
 		{
 			std::cout << "COMMAND NOT RECOGNISED" << std::endl;
 		}
-	}
+	} // end of while
+
+	spaceBrain::Logger::CloseLogger();
+
 }
 
 
