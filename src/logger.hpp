@@ -13,7 +13,7 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define MAX_LOG_MESSAGE_LENGTH 64
+#define MAX_LOG_MESSAGE_LENGTH 124
 
 namespace spaceBrain
 {
@@ -22,8 +22,10 @@ class Logger
 {
 public:
 
-	void LogMessage(const std::string &message); // log string
+	void LogError(const char* Function, const char* format, ...);
+
 	void LogMessage(const char* format, ...); //log variable message
+	void LogMessage(const std::string &message); // log string
 
 	static Logger* GetLogger();
 	static void CloseLogger();
