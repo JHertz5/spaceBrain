@@ -39,6 +39,11 @@ public:
 
 	void SetData(const float* dataIn, const uint countIn);
 
+	inline uint GetPositionIndex(const uint num, const uint channels, const uint height, const uint width)
+	{
+		return (((num * shape_[CHANNELS] + channels) * shape_[HEIGHT] + height) * shape_[WIDTH] + width);
+	}
+
 	inline uint count() const
 	{
 		return count_;

@@ -6,6 +6,7 @@
  */
 
 #include "blob.hpp"
+#include "logger.hpp"
 #include <iostream>
 
 namespace spaceBrain
@@ -16,6 +17,8 @@ Blob::Blob(const uint num, const uint channels, const uint height, const uint wi
 	count_ = num * channels * height * width;
 	data = (float *)malloc(count_ * sizeof(float)); // TODO change to hardware sds_alloc
 	Blob::Reshape(num, channels, height, width);
+
+	Logger::GetLogger()->LogMessage("\tBlob constructed with data shape = (%i*%i*%i*%i)", num, channels, height, width);
 }
 
 Blob::~Blob()
