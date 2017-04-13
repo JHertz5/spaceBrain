@@ -91,9 +91,8 @@ int main(int argc, char* argv[]){
 		else if(inMessage == "relu")
 		{
 			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
-			spaceBrain::ReluLayer relu1("relu1", "data", "conv1");
-			std::cout << relu1.type() << " " << relu1.name << std::endl;
-			std::cout << notYetImplementedString << std::endl;
+			spaceBrain::ReluTest();
+
 		}
 		else if(inMessage == "norm")
 		{

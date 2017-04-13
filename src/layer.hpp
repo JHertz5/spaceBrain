@@ -18,9 +18,6 @@ namespace spaceBrain
 class Layer
 {
 public:
-	std::string name; // the layer name
-	std::string bottom; // the name of each bottom blob
-	std::string top; // the name of each top blob
 
 	virtual void Forward(const Blob &bottom, const Blob &top) = 0;
 
@@ -28,6 +25,28 @@ public:
 	{
 		return "";
 	}
+
+	virtual inline const std::string name() const
+	{
+		return name_;
+	}
+
+	virtual inline const std::string bottom() const
+	{
+		return bottom_;
+	}
+
+	virtual inline const std::string top() const
+	{
+		return top_;
+	}
+
+
+protected:
+	std::string name_; // the layer name
+	std::string bottom_; // the name of each bottom blob
+	std::string top_; // the name of each top blob
+
 };
 
 }

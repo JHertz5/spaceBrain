@@ -28,6 +28,8 @@ public:
 	}
 };
 
+bool ReluTest();
+
 }
 
 #endif /* SRC_LAYERS_RELU_LAYER_HPP_ */

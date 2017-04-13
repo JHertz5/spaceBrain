@@ -29,13 +29,15 @@ class Blob
 {
 public:
 
-	float *data;
+	float *data;  // XXX may not end up being float
 
 	Blob(const uint num, const uint channels, const uint height, const uint width); // constructor
 	~Blob(); // destructor
 
 	void Reshape(const uint num, const uint channels, const uint height, const uint width);
 	void Reshape(const uint shape[BLOB_SHAPE_DIMENSIONS]);
+
+	void SetData(const float* dataIn, const uint countIn);
 
 	inline uint count() const
 	{
@@ -48,7 +50,8 @@ public:
 	}
 
 protected:
-	uint shape_[BLOB_SHAPE_DIMENSIONS], count_;
+	uint shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
+	uint count_; // stores max index of data
 };
 
 }

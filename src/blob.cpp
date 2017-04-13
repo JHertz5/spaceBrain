@@ -33,16 +33,31 @@ void Blob::Reshape(const uint num, const uint channels, const uint height, const
 	Reshape(shape);
 }
 
-void Blob::Reshape(const uint shape[BLOB_SHAPE_DIMENSIONS])
+void Blob::Reshape(const uint shapeIn[BLOB_SHAPE_DIMENSIONS])
 {
 	uint count = 1;
 	for (int dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++) {
-		count *= shape[dimensionIndex];
-		Blob::shape_[dimensionIndex] = shape[dimensionIndex];
+		count *= shapeIn[dimensionIndex];
+		Blob::shape_[dimensionIndex] = shapeIn[dimensionIndex];
 	}
 	if (count != Blob::count_)
 	{
 		std::cout << "Warning: Reshape change is changing size of blob: " << count << "->" << count << std::endl;
+	}
+}
+
+void Blob::SetData(const float* dataIn, const uint countIn)
+{
+	for(uint dataIndex = 0; dataIndex < count_; dataIndex++)
+	{
+		if(dataIndex < countIn)
+		{
+			data[dataIndex] = dataIn[dataIndex];
+		}
+		else
+		{
+			data[dataIndex] = (float)0;
+		}
 	}
 }
 
