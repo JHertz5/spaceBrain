@@ -47,19 +47,15 @@ ALL TIMES.
 #include "blob.hpp"
 #include "logger.hpp"
 
-int main(int argc, char* argv[]){
-
-	spaceBrain::Blob blob1(1,2,2,2);
-	const uint *shape = blob1.shape();
-	std::cout << "Blob dimensions are (" << shape[NUM] << "*" << shape[CHANNELS] << "*" << shape[HEIGHT] << "*" << shape[WIDTH] << ")" << std::endl;
-	std::cout << "Blob count = " << blob1.count() << std::endl;
-
+int main(int argc, char* argv[])
+{
 	bool keepRunning = true;
 	std::string inMessage;
 	const std::string notYetImplementedString =  "\t-not yet implemented";
 
 	while(keepRunning)
 	{
+		std::cout << "Ready for input:" << std::endl;
 		std::cin >> inMessage;
 
 		// respond to command
@@ -76,48 +72,56 @@ int main(int argc, char* argv[]){
 			std::cout << "'prob' \t - SoftMax Layer" << std::endl;
 			std::cout << "'log'  \t - Logging functionality" << std::endl;
 			std::cout << "'quit' \t - End Program" << std::endl;
+			std::cout << std::endl;
 
 		}
 		else if(inMessage == "input")
 		{
 			std::cout << "Input Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "conv")
 		{
 			std::cout << "Convolution Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "relu")
 		{
 			std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
 			spaceBrain::ReluTest();
-
+			std::cout << std::endl;
 		}
 		else if(inMessage == "norm")
 		{
 			std::cout << "LRN (Local Response Normalisation) Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "pool")
 		{
 			std::cout << "MAX Pooling Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "fc")
 		{
 			std::cout << "Fully Connected/Inner Product Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "drop")
 		{
 			std::cout << "Dropout Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "prob")
 		{
 			std::cout << "SoftMax Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
 		}
 		else if(inMessage == "log")
 		{
@@ -127,6 +131,7 @@ int main(int argc, char* argv[]){
 
 			std::cin >> message;
 			spaceBrain::Logger::GetLogger()->LogMessage(message);
+			std::cout << std::endl;
 		}
 		else if(inMessage == "quit")
 		{
@@ -135,6 +140,7 @@ int main(int argc, char* argv[]){
 		else
 		{
 			std::cout << "COMMAND NOT RECOGNISED" << std::endl;
+			std::cout << std::endl;
 		}
 	} // end of while
 

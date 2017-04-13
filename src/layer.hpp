@@ -19,7 +19,7 @@ class Layer
 {
 public:
 
-	virtual void Forward(const Blob &bottom, const Blob &top) = 0;
+	virtual void Forward(const Blob *bottom, const Blob *top) = 0;
 
 	virtual inline const char* type() const
 	{

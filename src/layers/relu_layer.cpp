@@ -6,6 +6,7 @@
  */
 
 #include "relu_layer.hpp"
+#include "../logger.hpp"
 #include "stdlib.h"
 #include <cmath>
 #include <iostream>
@@ -18,19 +19,29 @@ ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 	ReluLayer::name_ = name;
 	ReluLayer::bottom_ = bottom;
 	ReluLayer::top_ = top;
+	Logger::GetLogger()->LogMessage("\tReLU layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
-void ReluLayer::Forward(const Blob &bottom, const Blob &top)
+void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 {
-	if(*bottom.shape() != *top.shape())
+	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
+
+	bool sizeCheckPassed = true;
+	for(uint dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++)
 	{
-		std::cout << "not same shape" << std::endl; // TODO do some logging
-		return; // TODO maybe return error?
+		sizeCheckPassed &= bottom->shape()[dimensionIndex] == top->shape()[dimensionIndex];
+	}
+	if(!sizeCheckPassed)
+	{
+
+		Logger::GetLogger()->LogError("ReluLayer::Forward()", "Top and bottom blob shapes do not match");
+		std::cerr << "ReluLayer::Forward() - Top and bottom blob shapes do not match";
+		return; // TODO return error?
 	}
 
-	const float* bottomData = bottom.data;
-	float* topData = top.data;
-	const uint count = bottom.count();
+	const float* bottomData = bottom->data;
+	float* topData = top->data;
+	const uint count = bottom->count();
 	for (uint dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
 		topData[dataIndex] = std::max(bottomData[dataIndex], (float)0);
@@ -39,39 +50,47 @@ void ReluLayer::Forward(const Blob &bottom, const Blob &top)
 
 bool ReluTest()
 {
-	spaceBrain::Blob bottomBlob(1,2,2,2);
-	spaceBrain::Blob topBlob(1,2,2,2);
+	Logger::GetLogger()->LogMessage("ReLU Layer Test:");
+
+	uint num = 1, channels = 1, height = 2, width = 4;
+	uint count = num * channels * height * width;
+
+	Blob bottomBlob(num, channels, height, width);
+	Blob topBlob(num, channels, height, width);
 
 	// set input data
-	const float dataIn[2*2*2] = {1,-1,2,-2,3,-3,4,-4};
-	bottomBlob.SetData(dataIn,2*2*2);
+	const float dataIn[count] = {1,-1,2,-2,3,-3,4,-4};
+	bottomBlob.SetData(dataIn,count);
 
 	// initialise relu layer
-	ReluLayer relu1("relu1", "data", "conv1");
-	std::cout << "\tReLU layer initialised" << std::endl;
-	std::cout << "\t\ttype: " << relu1.type() << ", name: " << relu1.name() << std::endl;
+	ReluLayer relu1("relu_test", "test_in", "test_out");
 
-	relu1.Forward(bottomBlob, topBlob);
+	relu1.Forward(&bottomBlob, &topBlob);
 
+	// check result
 	bool testPassed = true;
-
-	// print bottom blob data
-	std::cout << "\ttop data = \t{ ";
-	for(uint dataIndex = 0; dataIndex < 8; dataIndex++)
+	for(uint dataIndex = 0; dataIndex < count; dataIndex++)
 	{
-		std::cout << topBlob.data[dataIndex] << " ";
+		bool testPassed_temp;
 		if(bottomBlob.data[dataIndex] > 0)
 		{
-			testPassed &= topBlob.data[dataIndex] == bottomBlob.data[dataIndex];
+			testPassed_temp = topBlob.data[dataIndex] == bottomBlob.data[dataIndex];
 		}
 		else
 		{
-			testPassed &= topBlob.data[dataIndex] == 0;
+			testPassed_temp = topBlob.data[dataIndex] == 0;
 		}
+		if(!testPassed_temp)
+		{
+			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomBlob.data[dataIndex], topBlob.data[dataIndex]);
+		}
+		testPassed &= testPassed_temp; // include test in overall test result
 	}
-	std::cout << "}" << std::endl;
 
-	std::cout << "\tReLU Layer Test " << (testPassed ? "PASSED" : "FAILED") << std::endl << std::endl;
+	std::string resultString = "\tReLU Layer Test ";
+	resultString += (testPassed ? "PASSED" : "FAILED");
+	std::cout << resultString << std::endl;
+	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
 }
 

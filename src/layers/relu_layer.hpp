@@ -20,7 +20,7 @@ public:
 
 	ReluLayer(std::string name, std::string bottom, std::string top);
 
-	virtual void Forward(const Blob &bottom, const Blob &top);
+	virtual void Forward(const Blob *bottom, const Blob *top);
 
 	virtual inline const char* type() const
 	{
