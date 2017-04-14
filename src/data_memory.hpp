@@ -17,11 +17,11 @@ class DataMemory
 {
 public:
 
-	//DataMemory();
-	DataMemory(size_t size);
+	DataMemory();
+//	DataMemory(size_t size);
 	~DataMemory();
 
-	//void InitData(size_t size);
+	void InitData(const size_t size);
 	void SetData(void* dataPtr);
 
 	const void* getConstData()

@@ -39,8 +39,8 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 		return; // TODO return error?
 	}
 
-	const float* bottomData = bottom->data;
-	float* topData = top->data;
+	const float* bottomData = bottom->data_;
+	float* topData = top->data_;
 	const int count = bottom->count();
 	for (int dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
@@ -72,17 +72,17 @@ bool ReluTest()
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		bool testPassed_temp;
-		if(bottomBlob.data[dataIndex] > 0)
+		if(bottomBlob.data_[dataIndex] > 0)
 		{
-			testPassed_temp = topBlob.data[dataIndex] == bottomBlob.data[dataIndex];
+			testPassed_temp = topBlob.data_[dataIndex] == bottomBlob.data_[dataIndex];
 		}
 		else
 		{
-			testPassed_temp = topBlob.data[dataIndex] == 0;
+			testPassed_temp = topBlob.data_[dataIndex] == 0;
 		}
 		if(!testPassed_temp)
 		{
-			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomBlob.data[dataIndex], topBlob.data[dataIndex]);
+			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomBlob.data_[dataIndex], topBlob.data_[dataIndex]);
 		}
 		testPassed &= testPassed_temp; // include test in overall test result
 	}

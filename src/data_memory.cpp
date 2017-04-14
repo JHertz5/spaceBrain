@@ -11,70 +11,76 @@
 
 namespace spaceBrain
 {
-/*
+
 DataMemory::DataMemory()
 {
 	isPtrSet_ = false;
 	size_ = 0;
 	ptr_ = NULL;
 }
-*/
-DataMemory::DataMemory(size_t size)
-{
-	isPtrSet_ = false;
-	size_ = size;
-	ptr_ = NULL;
-}
+
+//DataMemory::DataMemory(size_t size)
+//{
+//	isPtrSet_ = false;
+//	size_ = size;
+//	ptr_ = NULL;
+//}
 
 DataMemory::~DataMemory()
 {
-	/*
-	if(ptr_ != NULL && isPtrSet_)
+	if(ptr_ && isPtrSet_)
 	{
 		free(ptr_); // XXX maybe this changes to sds_free
 	}
-	*/
 }
-/*
-void DataMemory::InitData(size_t size)
+
+void DataMemory::InitData(const size_t size)
 {
 	size_ = size;
 	if(ptr_ == NULL)
 	{
 		ptr_ = malloc(size_);
+		std::cout << "malloc'd" << std::endl;
 	}
 	std::memset(ptr_, 0, size_);
 	isPtrSet_ = true;
 }
- */
+
 void DataMemory::SetData(void* dataPtr)
 {
-	/*
 	if(isPtrSet_)
 	{
 		free(ptr_); // XXX maybe this changes to sds_free
 	}
-	*/
 	ptr_ = dataPtr;
 	isPtrSet_ = true;
 }
 
 void DataMemoryTest()
 {
-	spaceBrain::DataMemory data1(8);
-	int array[] = {1, 2, 3, 4, 5, 6, 7, 8};
+	DataMemory data1;
 
-	data1.SetData((void*) array);
+	int num = 8;
+	data1.InitData(num*sizeof(int));
+	int* mut_dataPtr = (int*) data1.getMutableData();
+
+	size_t dataLength = data1.size()/sizeof(int);
+	for(size_t dataIndex = 0; dataIndex < dataLength; dataIndex++)
+	{
+		mut_dataPtr[dataIndex] = dataIndex;//array[dataIndex];
+	}
+
+	std::cout << "data set" << std::endl;
+
 	const int* dataPtr = (const int*) data1.getConstData();
 
-	std::cout << "\tData size = " << data1.size() << std::endl;
+	std::cout << "\tData size = " << dataLength << std::endl;
 	std::cout << "\tData contents = { ";
-	for(size_t dataIndex = 0; dataIndex < data1.size(); dataIndex++)
+	for(size_t dataIndex = 0; dataIndex < dataLength; dataIndex++)
 	{
 		std::cout << dataPtr[dataIndex] << " ";
 	}
 	std::cout << "}" << std::endl;
-
 
 }
 

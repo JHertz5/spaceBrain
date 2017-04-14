@@ -10,6 +10,7 @@
 
 //#include "sds_lib.h"
 #include <stdlib.h>
+#include "data_memory.hpp"
 
 //#define BLOB_SHAPE_DIMENSIONS 4
 
@@ -28,7 +29,8 @@ namespace spaceBrain
 class Blob
 {
 public:
-	float *data; // pointer to data // XXX may not end up being float
+
+	float* data_; // pointer to data // XXX may not end up being float
 
 	Blob(const int num, const int channels, const int height, const int width); // constructor
 	~Blob(); // destructor
@@ -36,7 +38,7 @@ public:
 	void Reshape(const int num, const int channels, const int height, const int width);
 	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
 
-	void SetData(const float* dataIn, const int countIn);
+	void SetData(const float* dataIn, const int sizeIn);
 
 	inline int offset(const int n, const int c, const int h, const int w)
 	{
@@ -78,6 +80,7 @@ public:
 protected:
 	int shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
+	//DataMemory *data_; // pointer to data // XXX may not end up being float
 
 };
 
