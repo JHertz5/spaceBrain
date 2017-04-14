@@ -27,7 +27,7 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	bool sizeCheckPassed = true;
-	for(uint dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++)
+	for(int dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++)
 	{
 		sizeCheckPassed &= bottom->shape()[dimensionIndex] == top->shape()[dimensionIndex];
 	}
@@ -41,8 +41,8 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 
 	const float* bottomData = bottom->data;
 	float* topData = top->data;
-	const uint count = bottom->count();
-	for (uint dataIndex = 0; dataIndex < count; ++dataIndex)
+	const int count = bottom->count();
+	for (int dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
 		topData[dataIndex] = std::max(bottomData[dataIndex], (float)0);
 	}
@@ -52,8 +52,8 @@ bool ReluTest()
 {
 	Logger::GetLogger()->LogMessage("ReLU Layer Test:");
 
-	uint num = 1, channels = 1, height = 2, width = 4;
-	uint count = num * channels * height * width;
+	int num = 1, channels = 1, height = 2, width = 4;
+	int count = num * channels * height * width;
 
 	Blob bottomBlob(num, channels, height, width);
 	Blob topBlob(num, channels, height, width);
@@ -69,7 +69,7 @@ bool ReluTest()
 
 	// check result
 	bool testPassed = true;
-	for(uint dataIndex = 0; dataIndex < count; dataIndex++)
+	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		bool testPassed_temp;
 		if(bottomBlob.data[dataIndex] > 0)

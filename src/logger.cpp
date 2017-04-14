@@ -25,7 +25,7 @@ Logger::Logger()
 
 void Logger::LogError(const char* functionName, const char* format, ...)
 {
-	const uint errorMessageMaxLength = MAX_LOG_MESSAGE_LENGTH - 12; // Error message formatting adds 12 characters
+	const int errorMessageMaxLength = MAX_LOG_MESSAGE_LENGTH - 12; // Error message formatting adds 12 characters
 
 	va_list args;
 	va_start(args, format);

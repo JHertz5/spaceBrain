@@ -28,35 +28,57 @@ namespace spaceBrain
 class Blob
 {
 public:
+	float *data; // pointer to data // XXX may not end up being float
 
-	float *data;  // XXX may not end up being float
-
-	Blob(const uint num, const uint channels, const uint height, const uint width); // constructor
+	Blob(const int num, const int channels, const int height, const int width); // constructor
 	~Blob(); // destructor
 
-	void Reshape(const uint num, const uint channels, const uint height, const uint width);
-	void Reshape(const uint shape[BLOB_SHAPE_DIMENSIONS]);
+	void Reshape(const int num, const int channels, const int height, const int width);
+	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
 
-	void SetData(const float* dataIn, const uint countIn);
+	void SetData(const float* dataIn, const int countIn);
 
-	inline uint GetPositionIndex(const uint num, const uint channels, const uint height, const uint width)
+	inline int offset(const int n, const int c, const int h, const int w)
 	{
-		return (((num * shape_[CHANNELS] + channels) * shape_[HEIGHT] + height) * shape_[WIDTH] + width);
+		return ((n * channels() + c) * height() + h) * width() + w;
 	}
 
-	inline uint count() const
+
+
+	inline int count() const
 	{
 		return count_;
 	}
 
-	inline const uint* shape() const
+	inline const int* shape() const
 	{
 		return shape_;
 	}
 
+	inline int num() const
+	{
+		return shape_[NUM];
+	}
+
+	inline int channels() const
+	{
+		return shape_[CHANNELS];
+	}
+
+	inline int height() const
+	{
+		return shape_[HEIGHT];
+	}
+
+	inline int width() const
+	{
+		return shape_[WIDTH];
+	}
+
 protected:
-	uint shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
-	uint count_; // stores max index of data
+	int shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
+	int count_; // stores max index of data
+
 };
 
 }

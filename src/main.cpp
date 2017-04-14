@@ -44,8 +44,10 @@ ALL TIMES.
 #include "maths_functions/mmultadd.hpp"
 #include "maths_functions/mmultaddTest.hpp"
 #include "layers/relu_layer.hpp"
+#include "layers/pooling_layer.hpp"
 #include "blob.hpp"
 #include "logger.hpp"
+#include "data_memory.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -131,6 +133,12 @@ int main(int argc, char* argv[])
 
 			std::cin >> message;
 			spaceBrain::Logger::GetLogger()->LogMessage(message);
+			std::cout << std::endl;
+		}
+		else if(inMessage == "data")
+		{
+			std::cout << "DataMemory" << std::endl;
+			spaceBrain::DataMemoryTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "quit")
