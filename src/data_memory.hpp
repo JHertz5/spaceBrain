@@ -18,7 +18,6 @@ class DataMemory
 public:
 
 	DataMemory();
-//	DataMemory(size_t size);
 	~DataMemory();
 
 	void InitData(const size_t size);
@@ -44,6 +43,7 @@ private:
 	bool isPtrSet_;
 	size_t size_;
 	void* ptr_;
+
 };
 
 void DataMemoryTest();

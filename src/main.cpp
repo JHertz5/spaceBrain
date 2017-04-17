@@ -40,6 +40,7 @@ ALL TIMES.
 #include <iostream>
 #include <string>
 
+#include "blob.hpp"
 #include "data_memory.hpp"
 #include "layers/relu_layer.hpp"
 #include "logger.hpp"
@@ -151,6 +152,12 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "DataMemory" << std::endl;
 			spaceBrain::DataMemoryTest();
+			std::cout << std::endl;
+		}
+		else if(inMessage == "blob")
+		{
+			std::cout << "Blob" << std::endl;
+			spaceBrain::BlobTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "quit")

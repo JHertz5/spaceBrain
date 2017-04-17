@@ -41,8 +41,8 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 		return; // TODO return error?
 	}
 
-	const float* bottomData = bottom->data_;
-	float* topData = top->data_;
+	const float* bottomData = (const float*) bottom->data_->getConstData();
+	float* topData = (float*) top->data_->getMutableData();
 	const int count = bottom->count();
 	for (int dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
@@ -54,37 +54,43 @@ bool ReluTest()
 {
 	Logger::GetLogger()->LogMessage("ReLU Layer Test:");
 
-	int num = 1, channels = 1, height = 2, width = 4;
+	int num = 2, channels = 3, height = 2, width = 4;
 	int count = num * channels * height * width;
 
 	Blob bottomBlob(num, channels, height, width);
 	Blob topBlob(num, channels, height, width);
 
 	// set input data
-	const float dataIn[count] = {1,-1,2,-2,3,-3,4,-4};
+	float *dataIn = new float[count];
+	for(int dataIndex = 0; dataIndex < count; dataIndex++)
+	{
+		dataIn[dataIndex] = dataIndex * -1^dataIndex;
+	}
 	bottomBlob.SetData(dataIn,count);
 
-	// initialise relu layer
-	ReluLayer relu1("relu_test", "test_in", "test_out");
+	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
+	relu1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
-	relu1.Forward(&bottomBlob, &topBlob);
+	// get results
+	const float* bottomData = (float*) bottomBlob.data_->getConstData();
+	const float* topData = (float*) topBlob.data_->getConstData();
 
-	// check result
+	// check results
 	bool testPassed = true;
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		bool testPassed_temp;
-		if(bottomBlob.data_[dataIndex] > 0)
+		if(bottomData[dataIndex] > 0)
 		{
-			testPassed_temp = topBlob.data_[dataIndex] == bottomBlob.data_[dataIndex];
+			testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
 		}
 		else
 		{
-			testPassed_temp = topBlob.data_[dataIndex] == 0;
+			testPassed_temp = topData[dataIndex] == 0;
 		}
 		if(!testPassed_temp)
 		{
-			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomBlob.data_[dataIndex], topBlob.data_[dataIndex]);
+			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
 		}
 		testPassed &= testPassed_temp; // include test in overall test result
 	}

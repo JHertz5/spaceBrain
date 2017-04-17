@@ -11,6 +11,8 @@
 #include <cstring>
 #include <iostream>
 
+#include "logger.hpp"
+
 namespace spaceBrain
 {
 
@@ -20,13 +22,6 @@ DataMemory::DataMemory()
 	size_ = 0;
 	ptr_ = NULL;
 }
-
-//DataMemory::DataMemory(size_t size)
-//{
-//	isPtrSet_ = false;
-//	size_ = size;
-//	ptr_ = NULL;
-//}
 
 DataMemory::~DataMemory()
 {
@@ -38,14 +33,20 @@ DataMemory::~DataMemory()
 
 void DataMemory::InitData(const size_t size)
 {
-	size_ = size;
-	if(ptr_ == NULL)
+	if(size > 0) // check that isn't 0
 	{
-		ptr_ = malloc(size_);
-		std::cout << "malloc'd" << std::endl;
+		size_ = size;
+		if(ptr_ == NULL)
+		{
+			ptr_ = malloc(size_);
+		}
+		std::memset(ptr_, 0, size_);
+		isPtrSet_ = true;
 	}
-	std::memset(ptr_, 0, size_);
-	isPtrSet_ = true;
+	else
+	{
+		Logger::GetLogger()->LogError("ReluTest", "Attempt to InitData with size %i", size);
+	}
 }
 
 void DataMemory::SetData(void* dataPtr)

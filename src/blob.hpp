@@ -9,6 +9,7 @@
 #define SRC_BLOB_HPP_
 
 //#include "sds_lib.h"
+#include  "data_memory.hpp"
 
 //#define BLOB_SHAPE_DIMENSIONS 4
 
@@ -28,7 +29,7 @@ class Blob
 {
 public:
 
-	float* data_; // pointer to data // XXX may not end up being float
+	DataMemory* data_; // pointer to data // XXX may not end up being float
 
 	Blob(const int num, const int channels, const int height, const int width); // constructor
 	~Blob(); // destructor
@@ -42,8 +43,6 @@ public:
 	{
 		return ((n * channels() + c) * height() + h) * width() + w;
 	}
-
-
 
 	inline int count() const
 	{
@@ -78,10 +77,11 @@ public:
 protected:
 	int shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
-	//DataMemory *data_; // pointer to data // XXX may not end up being float
 
 };
 
-}
+void BlobTest();
+
+} // end of namespace spaceBrain
 
 #endif /* SRC_BLOB_HPP_ */
