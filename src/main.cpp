@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 		}
 		else if(inMessage == "quit")
 		{
-			break;
+			keepRunning = false;
 		}
 		else
 		{
