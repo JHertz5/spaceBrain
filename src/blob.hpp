@@ -38,8 +38,8 @@ public:
 	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
 
 	void SetData(const float* dataIn, const int sizeIn);
-	const float* getConstData();
-	float* getMutableData();
+	const float* getConstData() const;
+	float* getMutableData() const;
 
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{

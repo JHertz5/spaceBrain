@@ -60,12 +60,12 @@ void Blob::SetData(const float* dataIn, const int countIn)
 	data_->SetData((void*) dataIn);
 }
 
-const float* Blob::getConstData()
+const float* Blob::getConstData() const
 {
 	return (const float*) data_->getConstData();
 }
 
-float* Blob::getMutableData()
+float* Blob::getMutableData() const
 {
 	return (float*) data_->getMutableData();
 }
