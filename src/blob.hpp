@@ -36,6 +36,7 @@ public:
 
 	void Reshape(const int num, const int channels, const int height, const int width);
 	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
+	void ReshapeLike(const Blob* thisBlob);
 
 	void SetData(const float* dataIn, const int sizeIn);
 	const float* getConstData() const;

@@ -55,6 +55,11 @@ void Blob::Reshape(const int shapeIn[BLOB_SHAPE_DIMENSIONS])
 	}
 }
 
+void Blob::ReshapeLike(const Blob* thisBlob)
+{
+	Reshape(thisBlob->shape());
+}
+
 void Blob::SetData(const float* dataIn, const int countIn)
 {
 	data_->SetData((void*) dataIn);
