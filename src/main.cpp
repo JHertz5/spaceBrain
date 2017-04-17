@@ -43,6 +43,7 @@ ALL TIMES.
 #include "blob.hpp"
 #include "data_memory.hpp"
 #include "layers/relu_layer.hpp"
+#include "layers/pooling_layer.hpp"
 #include "logger.hpp"
 
 int main(int argc, char* argv[])
@@ -117,7 +118,7 @@ int main(int argc, char* argv[])
 		else if(inMessage == "pool")
 		{
 			std::cout << "MAX Pooling Layer" << std::endl;
-			std::cout << notYetImplementedString << std::endl;
+			spaceBrain::PoolingTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "fc")
