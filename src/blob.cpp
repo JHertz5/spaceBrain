@@ -6,8 +6,11 @@
  */
 
 #include "blob.hpp"
-#include "logger.hpp"
+
+#include <stdlib.h>
 #include <iostream>
+
+#include "logger.hpp"
 
 namespace spaceBrain
 {

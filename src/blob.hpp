@@ -9,8 +9,6 @@
 #define SRC_BLOB_HPP_
 
 //#include "sds_lib.h"
-#include <stdlib.h>
-#include "data_memory.hpp"
 
 //#define BLOB_SHAPE_DIMENSIONS 4
 

@@ -6,10 +6,8 @@
  */
 
 #include "pooling_layer.hpp"
+
 #include "../logger.hpp"
-#include "stdlib.h"
-#include <cmath>
-#include <iostream>
 
 namespace spaceBrain
 {

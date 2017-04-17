@@ -6,10 +6,12 @@
  */
 
 #include "relu_layer.hpp"
-#include "../logger.hpp"
-#include "stdlib.h"
-#include <cmath>
+
+#include <algorithm>
 #include <iostream>
+
+#include "../blob.hpp"
+#include "../logger.hpp"
 
 namespace spaceBrain
 {

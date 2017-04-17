@@ -6,8 +6,10 @@
  */
 
 #include "logger.hpp"
-#include <cstdarg>
+
 #include <stdio.h>
+#include <cstdarg>
+#include <fstream>
 
 namespace spaceBrain
 {

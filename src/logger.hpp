@@ -8,10 +8,8 @@
 #ifndef SRC_LOGGER_HPP_
 #define SRC_LOGGER_HPP_
 
-#include <string>
-#include <fstream>
 #include <iostream>
-#include <stdlib.h>
+#include <string>
 
 #define MAX_LOG_MESSAGE_LENGTH 124
 

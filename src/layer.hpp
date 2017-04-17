@@ -9,7 +9,10 @@
 #define SRC_LAYERS_LAYER_HPP_
 
 #include <string>
-#include "blob.hpp"
+
+namespace spaceBrain {
+class Blob;
+} /* namespace spaceBrain */
 
 namespace spaceBrain
 {
@@ -47,6 +50,7 @@ protected:
 	std::string bottom_; // the name of each bottom blob
 	std::string top_; // the name of each top blob
 
+	~Layer(){}
 };
 
 }

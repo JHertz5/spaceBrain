@@ -8,7 +8,7 @@
 #ifndef SRC_DATA_MEMORY_HPP_
 #define SRC_DATA_MEMORY_HPP_
 
-#include "stdlib.h"
+#include <stddef.h>
 
 namespace spaceBrain
 {

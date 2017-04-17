@@ -38,16 +38,11 @@ ALL TIMES.
  */
 
 #include <iostream>
-#include <stdint.h>
+#include <string>
 
-//#include "sds_lib.h"
-#include "maths_functions/mmultadd.hpp"
-#include "maths_functions/mmultaddTest.hpp"
-#include "layers/relu_layer.hpp"
-#include "layers/pooling_layer.hpp"
-#include "blob.hpp"
-#include "logger.hpp"
 #include "data_memory.hpp"
+#include "layers/relu_layer.hpp"
+#include "logger.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -63,17 +58,34 @@ int main(int argc, char* argv[])
 		// respond to command
 		if(inMessage == "-h") // HELP message
 		{
-			std::cout << "Neural Net Help" << std::endl;
-			std::cout << "'input'\t - Input Layer" << std::endl;
-			std::cout << "'conv' \t - Convolution Layer" << std::endl;
-			std::cout << "'relu' \t - ReLU Layer" << std::endl;
-			std::cout << "'norm' \t - LRN Layer" << std::endl;
-			std::cout << "'pool' \t - Pooling Layer" << std::endl;
-			std::cout << "'fc'   \t - Fully Connected Layer" << std::endl;
-			std::cout << "'drop' \t - Dropout Layer" << std::endl;
-			std::cout << "'prob' \t - SoftMax Layer" << std::endl;
-			std::cout << "'log'  \t - Logging functionality" << std::endl;
-			std::cout << "'quit' \t - End Program" << std::endl;
+			std::cout << "Test Commands" << std::endl;
+			/*
+			std::cout << "\t'input'\t - Input Layer" << std::endl;
+			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
+			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
+			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
+			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
+			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
+			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
+			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
+			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
+			std::cout << "\t'quit' \t - End Program" << std::endl;
+			*/
+			std::cout << "\nIMPLEMENTED:" << std::endl;
+			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
+			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
+			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
+			std::cout << "\t'quit' \t - End Program" << std::endl;
+
+			std::cout << "\nTODO:" << std::endl;
+			std::cout << "\t'input'\t - Input Layer" << std::endl;
+			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
+			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
+			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
+			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
+			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
+			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
+
 			std::cout << std::endl;
 
 		}
