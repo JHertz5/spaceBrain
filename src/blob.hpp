@@ -80,8 +80,6 @@ protected:
 
 };
 
-void BlobTest();
-
 } // end of namespace spaceBrain
 
 #endif /* SRC_BLOB_HPP_ */

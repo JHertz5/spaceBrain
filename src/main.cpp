@@ -154,12 +154,6 @@ int main(int argc, char* argv[])
 			spaceBrain::DataMemoryTest();
 			std::cout << std::endl;
 		}
-		else if(inMessage == "blob")
-		{
-			std::cout << "Blob" << std::endl;
-			spaceBrain::BlobTest();
-			std::cout << std::endl;
-		}
 		else if(inMessage == "quit")
 		{
 			keepRunning = false;

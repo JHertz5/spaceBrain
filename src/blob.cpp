@@ -60,33 +60,4 @@ void Blob::SetData(const float* dataIn, const int countIn)
 	data_->SetData((void*) dataIn);
 }
 
-void BlobTest()
-{
-	Blob blob1(1,1,2,4);
-
-	/*
-	int num = 8;
-	data1.InitData(num*sizeof(int));
-	int* mut_dataPtr = (int*) data1.getMutableData();
-
-	size_t dataLength = data1.size()/sizeof(int);
-	for(size_t dataIndex = 0; dataIndex < dataLength; dataIndex++)
-	{
-		mut_dataPtr[dataIndex] = dataIndex;//array[dataIndex];
-	}
-
-	std::cout << "data set" << std::endl;
-
-	const int* dataPtr = (const int*) data1.getConstData();
-
-	std::cout << "\tData size = " << dataLength << std::endl;
-	std::cout << "\tData contents = { ";
-	for(size_t dataIndex = 0; dataIndex < dataLength; dataIndex++)
-	{
-		std::cout << dataPtr[dataIndex] << " ";
-	}
-	std::cout << "}" << std::endl;
-	*/
-}
-
 } // end of namespace spaceBrain
