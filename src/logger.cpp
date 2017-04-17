@@ -77,6 +77,7 @@ void Logger::CloseLogger()
 {
 	if(pThis != NULL || logStream.is_open())
 	{
+		logStream << "END LOG" << std::endl;
 		pThis = NULL;
 		logStream.close();
 	}
