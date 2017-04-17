@@ -60,4 +60,14 @@ void Blob::SetData(const float* dataIn, const int countIn)
 	data_->SetData((void*) dataIn);
 }
 
+const float* Blob::getConstData()
+{
+	return (const float*) data_->getConstData();
+}
+
+float* Blob::getMutableData()
+{
+	return (float*) data_->getMutableData();
+}
+
 } // end of namespace spaceBrain

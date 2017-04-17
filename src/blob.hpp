@@ -38,10 +38,17 @@ public:
 	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
 
 	void SetData(const float* dataIn, const int sizeIn);
+	const float* getConstData();
+	float* getMutableData();
 
-	inline int offset(const int n, const int c, const int h, const int w)
+	inline int offset(const int n, const int c, const int h, const int w) const
 	{
 		return ((n * channels() + c) * height() + h) * width() + w;
+	}
+
+	inline float getDataAt(const int n, const int c, const int h, const int w)
+	{
+		return getConstData()[offset(n,c,h,w)];
 	}
 
 	inline int count() const
