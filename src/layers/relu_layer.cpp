@@ -41,8 +41,8 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 		return; // TODO return error?
 	}
 
-	const float* bottomData = (const float*) bottom->data_->getConstData();
-	float* topData = (float*) top->data_->getMutableData();
+	const float* bottomData = bottom->getConstData();
+	float* topData = top->getMutableData();
 	const int count = bottom->count();
 	for (int dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
@@ -57,6 +57,7 @@ bool ReluTest()
 	int num = 2, channels = 3, height = 2, width = 4;
 	int count = num * channels * height * width;
 
+	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
 	Blob bottomBlob(num, channels, height, width);
 	Blob topBlob(num, channels, height, width);
 
@@ -68,12 +69,11 @@ bool ReluTest()
 	}
 	bottomBlob.SetData(dataIn,count);
 
-	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
 	relu1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// get results
-	const float* bottomData = (float*) bottomBlob.data_->getConstData();
-	const float* topData = (float*) topBlob.data_->getConstData();
+	const float* bottomData = bottomBlob.getConstData();
+	const float* topData = topBlob.getConstData();
 
 	// check results
 	bool testPassed = true;
