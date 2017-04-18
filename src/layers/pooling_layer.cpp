@@ -168,33 +168,11 @@ bool PoolTest()
 
 	// check results
 	bool testPassed = true;
-	/*
-	for(int dataIndex = 0; dataIndex < count; dataIndex++)
-	{
-		bool testPassed_temp;
-		if(bottomData[dataIndex] > 0)
-		{
-			testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
-		}
-		else
-		{
-			testPassed_temp = topData[dataIndex] == 0;
-		}
-		if(!testPassed_temp)
-		{
-			Logger::GetLogger()->LogError("PoolTest", "Pool output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
-		}
-		testPassed &= testPassed_temp; // AND test into overall test result
-	}
-	 */
-
-	bool testPassed_temp;
-
 	for(int hIndex = 0; hIndex < topBlob.height(); hIndex++)
 	{
 		for(int wIndex = 0; wIndex < topBlob.width(); wIndex++)
 		{
-			testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, (stride*hIndex)+topBlob.height()-1, (stride*wIndex)+topBlob.width()-1);
+			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, (stride*hIndex)+topBlob.height()-1, (stride*wIndex)+topBlob.width()-1);
 
 			if(!testPassed_temp)
 			{

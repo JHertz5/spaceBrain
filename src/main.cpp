@@ -40,10 +40,10 @@ ALL TIMES.
 #include <iostream>
 #include <string>
 
-#include "blob.hpp"
 #include "data_memory.hpp"
-#include "layers/relu_layer.hpp"
+#include "layers/dropout_layer.hpp"
 #include "layers/pooling_layer.hpp"
+#include "layers/relu_layer.hpp"
 #include "logger.hpp"
 
 int main(int argc, char* argv[])
@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
 			*/
 			std::cout << "\nIMPLEMENTED:" << std::endl;
 			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
+			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
 			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
 			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
 			std::cout << "\t'quit' \t - End Program" << std::endl;
@@ -83,7 +84,6 @@ int main(int argc, char* argv[])
 			std::cout << "\t'input'\t - Input Layer" << std::endl;
 			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
 			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
-			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
 			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
 			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
 			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 		else if(inMessage == "drop")
 		{
 			std::cout << "Dropout Layer" << std::endl;
-			std::cout << notYetImplementedString << std::endl;
+			spaceBrain::DropoutTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "prob")
