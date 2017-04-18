@@ -135,9 +135,6 @@ void PoolingLayer::Forward(const Blob *bottom, const Blob *top)
 		} // end of channel loop
 	} // end of batch num loop
 
-
-
-
 }
 
 bool PoolTest()
@@ -147,12 +144,12 @@ bool PoolTest()
 	int num = 1, channels = 1, height = 7, width = 7;
 	int count = num * channels * height * width;
 	int stride = 2;
-	int pad = 0;
+	int pad = 1; //0;
 	int kernelSize = 3;
 
 	PoolingLayer pool1("pool_test", "test_in", "test_out", pad, kernelSize, stride); // initialise relu layer
 	Blob bottomBlob(num, channels, height, width);
-	Blob topBlob(num, channels, height, width);
+	Blob topBlob;
 
 	pool1.SetUp(&bottomBlob, &topBlob);
 
@@ -164,23 +161,49 @@ bool PoolTest()
 	}
 	bottomBlob.SetData(dataIn,count);
 
+	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
+	{
+		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
+		{
+			std::cout << bottomBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
 	pool1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// check results
 	bool testPassed = true;
-	for(int hIndex = 0; hIndex < topBlob.height(); hIndex++)
+	for(int hIndex = 0; hIndex< topBlob.height(); hIndex++)
 	{
 		for(int wIndex = 0; wIndex < topBlob.width(); wIndex++)
 		{
-			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, (stride*hIndex)+topBlob.height()-1, (stride*wIndex)+topBlob.width()-1);
+//			(height_ + 2 * pad_ - kernelSize_) / stride_) + 1;
+//			(stride*hIndex)+topBlob.height()-1
+			int bottomHIndex = (stride*hIndex)+topBlob.height()-2*pad-1;
+			int bottomWIndex = (stride*wIndex)+topBlob.width()-2*pad-1;
 
+			if(hIndex == topBlob.height()-1)
+			{
+				bottomHIndex--;
+			}
+			if(wIndex == topBlob.width()-1)
+			{
+				bottomWIndex--;
+			}
+
+			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex);
+			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "=" << bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex) <<"\t";
 			if(!testPassed_temp)
 			{
 				Logger::GetLogger()->LogError("PoolTest", "Pool output incorrect at index: %i,%i", hIndex, wIndex);
 			}
 			testPassed &= testPassed_temp; // AND test into overall test result
 		}
+		std::cout << std::endl;
 	}
+	std::cout << std::endl;
 
 	std::string resultString = "\tPooling Layer Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");

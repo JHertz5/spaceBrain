@@ -8,7 +8,6 @@
 #ifndef SRC_LAYERS_DROPOUT_LAYER_HPP_
 #define SRC_LAYERS_DROPOUT_LAYER_HPP_
 
-
 #include <string>
 
 #include "../layer.hpp"

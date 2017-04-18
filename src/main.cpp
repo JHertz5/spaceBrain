@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
 			std::cout << "\nIMPLEMENTED:" << std::endl;
 			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
 			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
+			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
 			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
 			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
 			std::cout << "\t'quit' \t - End Program" << std::endl;
@@ -85,7 +86,6 @@ int main(int argc, char* argv[])
 			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
 			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
 			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
-			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
 			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
 
 			std::cout << std::endl;
