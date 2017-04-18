@@ -15,6 +15,19 @@
 namespace spaceBrain
 {
 
+Blob::Blob()
+{
+	count_ = 0;
+	data_ = new DataMemory();
+	shape_[NUM] = 0;
+	shape_[CHANNELS] = 0;
+	shape_[HEIGHT] = 0;
+	shape_[WIDTH] = 0;
+	count_ = 0;
+
+	Logger::GetLogger()->LogMessage("\tBlob constructed with no data");
+}
+
 Blob::Blob(const int num, const int channels, const int height, const int width)
 {
 	count_ = 0;
@@ -26,7 +39,10 @@ Blob::Blob(const int num, const int channels, const int height, const int width)
 
 Blob::~Blob()
 {
-	delete data_; // XXX change to hardware sds_free
+	if(data_ != NULL)
+	{
+		delete data_; // XXX change to hardware sds_free
+	}
 }
 
 void Blob::Reshape(const int num, const int channels, const int height, const int width)
@@ -49,15 +65,15 @@ void Blob::Reshape(const int shapeIn[BLOB_SHAPE_DIMENSIONS])
 
 	if (count != Blob::count_)
 	{
-		std::cout << "Warning: Reshape is changing size of blob: " << count_ << "->" << count << std::endl;
+		Logger::GetLogger()->LogMessage("\tBlob::Reshape: count %i->%i", count_, count);
 		count_ = count;
 		data_->InitData(count_ * sizeof(float));
 	}
 }
 
-void Blob::ReshapeLike(const Blob* thisBlob)
+void Blob::ReshapeLike(const Blob &thatBlob)
 {
-	Reshape(thisBlob->shape());
+	Reshape(thatBlob.shape());
 }
 
 void Blob::SetData(const float* dataIn, const int countIn)

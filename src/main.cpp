@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		else if(inMessage == "pool")
 		{
 			std::cout << "MAX Pooling Layer" << std::endl;
-			spaceBrain::PoolingTest();
+			spaceBrain::PoolTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "fc")
@@ -157,6 +157,7 @@ int main(int argc, char* argv[])
 		}
 		else if(inMessage == "quit")
 		{
+			spaceBrain::Logger::CloseLogger();
 			keepRunning = false;
 		}
 		else

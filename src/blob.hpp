@@ -31,12 +31,13 @@ public:
 
 	DataMemory* data_; // pointer to data // XXX may not end up being float
 
+	Blob();
 	Blob(const int num, const int channels, const int height, const int width); // constructor
 	~Blob(); // destructor
 
 	void Reshape(const int num, const int channels, const int height, const int width);
 	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
-	void ReshapeLike(const Blob* thisBlob);
+	void ReshapeLike(const Blob &thatBlob);
 
 	void SetData(const float* dataIn, const int sizeIn);
 	const float* getConstData() const;

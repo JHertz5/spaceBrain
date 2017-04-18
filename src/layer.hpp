@@ -22,7 +22,17 @@ class Layer
 {
 public:
 
-	virtual void Forward(const Blob *bottom, const Blob *top) = 0;
+	void SetUp(const Blob* bottom, Blob* top)
+	{
+	    LayerSetUp(bottom, top);
+	    Reshape(bottom, top);
+	}
+
+	virtual void LayerSetUp(const Blob* bottom, const Blob* top){}
+
+	virtual void Reshape(const Blob* bottom, Blob* top) = 0;
+
+	virtual void Forward(const Blob* bottom, const Blob* top) = 0;
 
 	virtual inline const char* type() const
 	{

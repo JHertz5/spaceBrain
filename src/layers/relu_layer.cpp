@@ -24,6 +24,11 @@ ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 	Logger::GetLogger()->LogMessage("\tReLU layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
+void ReluLayer::Reshape(const Blob* bottom, Blob* top)
+{
+	top->ReshapeLike(*bottom);
+}
+
 void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
@@ -59,7 +64,10 @@ bool ReluTest()
 
 	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
 	Blob bottomBlob(num, channels, height, width);
-	Blob topBlob(num, channels, height, width);
+//	Blob topBlob(0, 0, 0, 0);
+	Blob topBlob;
+
+	relu1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
 	float *dataIn = new float[count];
@@ -92,12 +100,12 @@ bool ReluTest()
 		{
 			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
 		}
-		testPassed &= testPassed_temp; // include test in overall test result
+		testPassed &= testPassed_temp; // AND test into overall test result
 	}
 
 	std::string resultString = "\tReLU Layer Test ";
-	resultString += (testPassed ? "PASSED" : "FAILED");
-	std::cout << resultString << std::endl;
+	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
+	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
 }
