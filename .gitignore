@@ -4,3 +4,4 @@ project.sdx
 .project
 .cproject
 *.log
+*.m
