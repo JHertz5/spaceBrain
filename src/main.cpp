@@ -45,6 +45,7 @@ ALL TIMES.
 #include "layers/pooling_layer.hpp"
 #include "layers/relu_layer.hpp"
 #include "logger.hpp"
+#include "util/maths_functions_test.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -54,29 +55,18 @@ int main(int argc, char* argv[])
 
 	while(keepRunning)
 	{
-		std::cout << "Ready for input:" << std::endl;
+		std::cout << "Ready for input: (input 'help' for test commands)" << std::endl;
 		std::cin >> inMessage;
 
 		// respond to command
-		if(inMessage == "-h") // HELP message
+		if(inMessage == "help") // HELP message
 		{
 			std::cout << "Test Commands" << std::endl;
-			/*
-			std::cout << "\t'input'\t - Input Layer" << std::endl;
-			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
-			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
-			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
-			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
-			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
-			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
-			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
-			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
-			std::cout << "\t'quit' \t - End Program" << std::endl;
-			*/
 			std::cout << "\nIMPLEMENTED:" << std::endl;
 			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
 			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
 			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
+			std::cout << "\t'maths'\t - Maths Functions" << std::endl;
 			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
 			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
 			std::cout << "\t'quit' \t - End Program" << std::endl;
@@ -137,6 +127,12 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "SoftMax Layer" << std::endl;
 			std::cout << notYetImplementedString << std::endl;
+			std::cout << std::endl;
+		}
+		else if(inMessage == "maths")
+		{
+			std::cout << "Maths Func" << std::endl;
+			spaceBrain::gemmTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "log")
