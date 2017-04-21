@@ -1,11 +1,11 @@
 /*
-(c) Copyright 2013 - 2016 Xilinx, Inc. All rights reserved. 
+(c) Copyright 2013 - 2016 Xilinx, Inc. All rights reserved.
 
 This file contains confidential and proprietary information of Xilinx, Inc. and
 is protected under U.S. and international copyright and other intellectual
 property laws.
 
-DISCLAIMER 
+DISCLAIMER
 This disclaimer is not a license and does not grant any rights to the materials
 distributed herewith. Except as otherwise provided in a valid license issued to
 you by Xilinx, and to the maximum extent permitted by applicable law: (1) THESE
@@ -34,30 +34,37 @@ subject only to applicable laws and regulations governing limitations on product
 liability.
 
 THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS PART OF THIS FILE AT
-ALL TIMES. 
+ALL TIMES.
 */
 
-#include <stdlib.h>
-#include "mmultadd.hpp"
-/*
-void madd(float A[N*N], float B[N*N], float C[N*N])
+#ifndef SRC_UTIL_MATHS_FUNCTIONS_HPP_
+#define SRC_UTIL_MATHS_FUNCTIONS_HPP_
+
+#define N 32
+
+enum Transpose
 {
-  int i, j;
+	NOTRANSPOSE,
+	TRANSPOSE
+};
 
-  for (i = 0; i < N; i++)
-    for (j = 0; j < N; j++)
-#pragma HLS PIPELINE II=1
-      C[i*N+j] = A[i*N+j] + B[i*N+j];
+/**
+ * Design principles to achieve best performance
+ *
+ * 1. Declare sequential access to stream data into accelerators via a hardware FIFO
+ *    interface.  Otherwise, the default RAM interface requires all data to arrive
+ *    before starting HLS accelerator
+ */
+//#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
+//void mmult (float A[N*N], float B[N*N], float C[N*N]);
 
-}
-*/
+//#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
+//void madd(float A[N*N], float B[N*N], float C[N*N]);
 
-void madd_golden(float *A, float *B, float *C)
-{
-     for (int row = 0; row < N; row++) {
-          for (int col = 0; col < N; col++) {
-               C[row*N+col] = A[row*N+col] + B[row*N+col];
-          }
-     }
-}
+void mmult_cpu(float *A,  float *B, float *C);
 
+void madd_cpu(float *A, float *B, float *C);
+
+void gemm_cpu(const Transpose TransA, const Transpose TransB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C);
+
+#endif /* SRC_UTIL_MATHS_FUNCTIONS_HPP_ */

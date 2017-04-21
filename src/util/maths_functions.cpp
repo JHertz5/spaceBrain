@@ -35,11 +35,13 @@ liability.
 
 THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS PART OF THIS FILE AT
 ALL TIMES. 
-*/
+ */
+
+#include "../util/maths_functions.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "mmultadd.hpp"
+
 
 /**
  *
@@ -56,7 +58,7 @@ void mmult (float A[N*N], float B[N*N], float C[N*N])
      float Abuf[N][N], Bbuf[N][N];
 #pragma HLS array_partition variable=Abuf block factor=16 dim=2
 #pragma HLS array_partition variable=Bbuf block factor=16 dim=1
-     
+
      for(int i=0; i<N; i++) {
           for(int j=0; j<N; j++) {
 #pragma HLS PIPELINE
@@ -64,7 +66,7 @@ void mmult (float A[N*N], float B[N*N], float C[N*N])
                Bbuf[i][j] = B[i * N + j];
           }
      }
-     
+
      for (int i = 0; i < N; i++) {
           for (int j = 0; j < N; j++) {
 #pragma HLS PIPELINE
@@ -77,17 +79,59 @@ void mmult (float A[N*N], float B[N*N], float C[N*N])
           }
      }
 }
-*/
+ */
 
-void mmult_golden(float *A,  float *B, float *C)
+void mmult_cpu(float *A,  float *B, float *C)
 {
-     for (int row = 0; row < N; row++) {
-          for (int col = 0; col < N; col++) {
-               float result = 0.0;
-               for (int k = 0; k < N; k++) {
-                    result += A[row*N+k] * B[k*N+col];
-               }
-               C[row*N+col] = result;
-          }
-     }
+	for (int row = 0; row < N; row++) {
+		for (int col = 0; col < N; col++) {
+			float result = 0.0;
+			for (int k = 0; k < N; k++) {
+				result += A[row*N+k] * B[k*N+col];
+			}
+			C[row*N+col] = result;
+		}
+	}
 }
+
+/*
+void madd(float A[N*N], float B[N*N], float C[N*N])
+{
+  int i, j;
+
+  for (i = 0; i < N; i++)
+    for (j = 0; j < N; j++)
+#pragma HLS PIPELINE II=1
+      C[i*N+j] = A[i*N+j] + B[i*N+j];
+
+}
+ */
+
+void madd_cpu(float *A, float *B, float *C)
+{
+	for (int row = 0; row < N; row++) {
+		for (int col = 0; col < N; col++) {
+			C[row*N+col] = A[row*N+col] + B[row*N+col];
+		}
+	}
+}
+
+void gemm_cpu(const Transpose TransA, const Transpose TransB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
+{
+	// 		( CblasNoTrans, 				CblasNoTrans, 			channels,  inner_num_, 	    1, 				-1.,	 sum_multiplier_.cpu_data(), scale_data,    1., 	  top_data)
+
+	//	(alpha*op(A)*op(B) + beta*C)
+
+	for (int row = 0; row < m; row++) {
+		for (int col = 0; col <n; col++) {
+			float result = 0.0;
+			for (int kIndex = 0; kIndex < k; kIndex++) {
+				result += A[row*N+kIndex] * B[kIndex*N+col];
+			}
+			C[row*N+col] = result + beta * C[row*N+col];
+		}
+	}
+}
+
+
+
