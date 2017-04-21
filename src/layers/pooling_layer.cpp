@@ -31,6 +31,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	width_ = 0;
 
 	Logger::GetLogger()->LogMessage("\tPooling layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
+	Logger::GetLogger()->LogMessage("\t\tpad = %i, kernelSize = %i, stride = %i", pad_, kernelSize_, stride_);
 }
 
 void PoolingLayer::LayerSetUp(const Blob* bottom, const Blob* top)

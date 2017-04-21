@@ -64,7 +64,6 @@ bool ReluTest()
 
 	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
 	Blob bottomBlob(num, channels, height, width);
-//	Blob topBlob(0, 0, 0, 0);
 	Blob topBlob;
 
 	relu1.SetUp(&bottomBlob, &topBlob);
