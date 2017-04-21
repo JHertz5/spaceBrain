@@ -37,11 +37,9 @@ THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS PART OF THIS FILE AT
 ALL TIMES. 
  */
 
-#include "../util/maths_functions.hpp"
+#include "maths_functions.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <iostream>
 
 /**
  *
@@ -118,17 +116,15 @@ void madd_cpu(float *A, float *B, float *C)
 
 void gemm_cpu(const Transpose TransA, const Transpose TransB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
 {
-	// 		( CblasNoTrans, 				CblasNoTrans, 			channels,  inner_num_, 	    1, 				-1.,	 sum_multiplier_.cpu_data(), scale_data,    1., 	  top_data)
-
 	//	(alpha*op(A)*op(B) + beta*C)
 
-	for (int row = 0; row < m; row++) {
-		for (int col = 0; col <n; col++) {
+	for (int mIndex = 0; mIndex < m; mIndex++) {
+		for (int nIndex = 0; nIndex < n; nIndex++) {
 			float result = 0.0;
 			for (int kIndex = 0; kIndex < k; kIndex++) {
-				result += A[row*N+kIndex] * B[kIndex*N+col];
+				result += alpha * A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
 			}
-			C[row*N+col] = result + beta * C[row*N+col];
+			C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
 		}
 	}
 }

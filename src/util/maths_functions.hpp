@@ -44,7 +44,7 @@ ALL TIMES.
 
 enum Transpose
 {
-	NOTRANSPOSE,
+	NO_TRANSPOSE,
 	TRANSPOSE
 };
 
