@@ -114,9 +114,11 @@ void madd_cpu(float *A, float *B, float *C)
 	}
 }
 
-void gemm_cpu(const Transpose TransA, const Transpose TransB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
+void gemm_cpu(const Transpose transA, const Transpose transB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
 {
 	//	(alpha*op(A)*op(B) + beta*C)
+
+
 
 	for (int mIndex = 0; mIndex < m; mIndex++) {
 		for (int nIndex = 0; nIndex < n; nIndex++) {

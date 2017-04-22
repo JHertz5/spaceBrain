@@ -40,7 +40,7 @@ void SoftmaxLayer::Forward(const Blob *bottom, const Blob *top)
 
 	memcpy(bottom_data, top_data, sizeof(float) * bottom->count());
 
-	Logger::GetLogger()->LogMessage("\tSoftmax Layer is only needed for training, this is a dummy layer", name_.c_str());
+	Logger::GetLogger()->LogMessage("\tSoftmax Forward() is not yet implemented, this is a dummy layer", name_.c_str());
 }
 
 bool SoftmaxTest() // TODO test proper version
