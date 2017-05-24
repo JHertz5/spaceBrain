@@ -1,10 +1,3 @@
-/*
- * logger.hpp
- *
- *  Created on: 12 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_LOGGER_HPP_
 #define SRC_LOGGER_HPP_
 

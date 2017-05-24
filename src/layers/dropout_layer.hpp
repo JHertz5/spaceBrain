@@ -1,10 +1,3 @@
-/*
- * dropout_layer.hpp
- *
- *  Created on: 18 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_LAYERS_DROPOUT_LAYER_HPP_
 #define SRC_LAYERS_DROPOUT_LAYER_HPP_
 

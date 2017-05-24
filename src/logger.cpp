@@ -1,10 +1,3 @@
-/*
- * logger.cpp
- *
- *  Created on: 12 Apr 2017
- *      Author: jhertz5
- */
-
 #include "logger.hpp"
 
 #include <stdio.h>

@@ -1,10 +1,3 @@
-/*
- * mmultaddTest.hpp
- *
- *  Created on: 6 Apr 2017
- *      Author: jjh113
- */
-
 #ifndef SRC_MATHS_FUNCTIONS_MMULTADDTEST_HPP_
 #define SRC_MATHS_FUNCTIONS_MMULTADDTEST_HPP_
 

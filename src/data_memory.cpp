@@ -1,10 +1,3 @@
-/*
- * data_memory.cpp
- *
- *  Created on: 14 Apr 2017
- *      Author: jhertz5
- */
-
 #include "data_memory.hpp"
 
 #include <stdlib.h>

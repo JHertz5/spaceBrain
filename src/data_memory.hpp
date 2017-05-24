@@ -1,10 +1,3 @@
-/*
- * data_memory.hpp
- *
- *  Created on: 14 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_DATA_MEMORY_HPP_
 #define SRC_DATA_MEMORY_HPP_
 

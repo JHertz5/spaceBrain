@@ -1,10 +1,3 @@
-/*
- * pooling_layer.hpp
- *
- *  Created on: 13 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_LAYERS_POOLING_LAYER_HPP_
 #define SRC_LAYERS_POOLING_LAYER_HPP_
 

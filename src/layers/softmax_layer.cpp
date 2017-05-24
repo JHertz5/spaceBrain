@@ -1,10 +1,3 @@
-/*
- * softmax_layer.cpp
- *
- *  Created on: 18 Apr 2017
- *      Author: jhertz5
- */
-
 #include "softmax_layer.hpp"
 
 #include <cstring>

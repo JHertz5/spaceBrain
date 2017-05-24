@@ -1,10 +1,3 @@
-/*
- * blob.hpp
- *
- *  Created on: 12 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_BLOB_HPP_
 #define SRC_BLOB_HPP_
 

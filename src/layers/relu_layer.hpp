@@ -1,10 +1,3 @@
-/*
- * relu_layer.hpp
- *
- *  Created on: 11 Apr 2017
- *      Author: jjh113
- */
-
 #ifndef SRC_LAYERS_RELU_LAYER_HPP_
 #define SRC_LAYERS_RELU_LAYER_HPP_
 

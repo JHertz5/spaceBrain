@@ -1,10 +1,3 @@
-/*
- * pooling_layer.cpp
- *
- *  Created on: 13 Apr 2017
- *      Author: jhertz5
- */
-
 #include "pooling_layer.hpp"
 
 #include <cmath>
@@ -195,7 +188,7 @@ bool PoolTest()
 			}
 
 			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex);
-			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "=" << bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex) <<"\t";
+			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
 			if(!testPassed_temp)
 			{
 				Logger::GetLogger()->LogError("PoolTest", "Pool output incorrect at index: %i,%i", hIndex, wIndex);

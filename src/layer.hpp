@@ -1,10 +1,3 @@
-/*
- * layer.hpp
- *
- *  Created on: 12 Apr 2017
- *      Author: jhertz5
- */
-
 #ifndef SRC_LAYERS_LAYER_HPP_
 #define SRC_LAYERS_LAYER_HPP_
 

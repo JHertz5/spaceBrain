@@ -30,7 +30,7 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	for (int mIndex = 0; mIndex < m; mIndex++) {
 		for (int kIndex = 0; kIndex < k; kIndex++) {
 			A[mIndex*k+kIndex] = mIndex+1;
-			std::cout << A[mIndex*k+kIndex];
+			std::cout << A[mIndex*k+kIndex] << "\t";
 		}
 		std::cout << std::endl;
 	}
@@ -40,17 +40,7 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	for (int kIndex = 0; kIndex < k; kIndex++) {
 		for (int nIndex = 0; nIndex < n; nIndex++) {
 			B[kIndex*n+nIndex] = nIndex+1;
-			std::cout << B[kIndex*n+nIndex];
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-
-	std::cout << "C =" << std::endl;
-	for (int mIndex = 0; mIndex < m; mIndex++) {
-		for (int nIndex = 0; nIndex < n; nIndex++) {
-			C[mIndex*n+nIndex] = 1;
-			std::cout << C[mIndex*n+nIndex];
+			std::cout << B[kIndex*n+nIndex] << "\t";
 		}
 		std::cout << std::endl;
 	}
@@ -61,7 +51,7 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	std::cout << "C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
-			std::cout << C[row*n+col];
+			std::cout << C[row*n+col] << "\t";
 		}
 		std::cout << std::endl;
 	}

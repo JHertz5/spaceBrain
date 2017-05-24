@@ -1,10 +1,3 @@
-/*
- * dropout_layer.cpp
- *
- *  Created on: 18 Apr 2017
- *      Author: jhertz5
- */
-
 #include "dropout_layer.hpp"
 
 #include <cstring>
