@@ -12,7 +12,7 @@ Blob::Blob()
 {
 	count_ = 0;
 	data_ = new DataMemory();
-	shape_[NUM] = 0;
+	shape_[NUM_LAYERS] = 0;
 	shape_[CHANNELS] = 0;
 	shape_[HEIGHT] = 0;
 	shape_[WIDTH] = 0;
@@ -40,18 +40,18 @@ Blob::~Blob()
 
 void Blob::Reshape(const int num, const int channels, const int height, const int width)
 {
-	int shape[BLOB_SHAPE_DIMENSIONS];
-	shape[NUM] = num;
+	int shape[NUM_BLOB_DIMENSIONS];
+	shape[NUM_LAYERS] = num;
 	shape[CHANNELS] = channels;
 	shape[HEIGHT] = height;
 	shape[WIDTH] = width;
 	Reshape(shape);
 }
 
-void Blob::Reshape(const int shapeIn[BLOB_SHAPE_DIMENSIONS])
+void Blob::Reshape(const int shapeIn[NUM_BLOB_DIMENSIONS])
 {
 	int count = 1;
-	for (int dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++) {
+	for (int dimensionIndex = 0; dimensionIndex < NUM_BLOB_DIMENSIONS; dimensionIndex++) {
 		count *= shapeIn[dimensionIndex];
 		Blob::shape_[dimensionIndex] = shapeIn[dimensionIndex];
 	}

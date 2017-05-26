@@ -4,15 +4,13 @@
 //#include "sds_lib.h"
 #include  "data_memory.hpp"
 
-//#define BLOB_SHAPE_DIMENSIONS 4
-
 enum BlobShapeDimensions
 {
-	NUM = 0,
+	NUM_LAYERS = 0,
 	CHANNELS = 1,
 	HEIGHT = 2,
 	WIDTH = 3,
-	BLOB_SHAPE_DIMENSIONS = 4
+	NUM_BLOB_DIMENSIONS = 4
 };
 
 namespace spaceBrain
@@ -29,7 +27,7 @@ public:
 	~Blob(); // destructor
 
 	void Reshape(const int num, const int channels, const int height, const int width);
-	void Reshape(const int shape[BLOB_SHAPE_DIMENSIONS]);
+	void Reshape(const int shape[NUM_BLOB_DIMENSIONS]);
 	void ReshapeLike(const Blob &thatBlob);
 
 	void SetData(const float* dataIn, const int sizeIn);
@@ -58,7 +56,7 @@ public:
 
 	inline int num() const
 	{
-		return shape_[NUM];
+		return shape_[NUM_LAYERS];
 	}
 
 	inline int channels() const
@@ -77,7 +75,7 @@ public:
 	}
 
 protected:
-	int shape_[BLOB_SHAPE_DIMENSIONS]; // stores dimensions of blob shape
+	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
 
 };
