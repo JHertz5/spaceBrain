@@ -6,6 +6,7 @@
 #include "layers/pooling_layer.hpp"
 #include "layers/relu_layer.hpp"
 #include "logger.hpp"
+#include "util/filler.hpp"
 #include "util/maths_functions_test.hpp"
 
 int main(int argc, char* argv[])
@@ -30,6 +31,7 @@ int main(int argc, char* argv[])
 			std::cout << "\t'maths'\t - Maths Functions" << std::endl;
 			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
 			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
+			std::cout << "\t'fill'  \t - Blob Filling Functions" << std::endl;
 			std::cout << "\t'quit' \t - End Program" << std::endl;
 
 			std::cout << "\nTODO:" << std::endl;
@@ -110,6 +112,12 @@ int main(int argc, char* argv[])
 		{
 			std::cout << "DataMemory" << std::endl;
 			spaceBrain::DataMemoryTest();
+			std::cout << std::endl;
+		}
+		else if(inMessage == "fill")
+		{
+			std::cout << "Filler" << std::endl;
+			std::cout << spaceBrain::FillerTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "quit")
