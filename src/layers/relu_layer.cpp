@@ -27,7 +27,7 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	bool sizeCheckPassed = true;
-	for(int dimensionIndex = 0; dimensionIndex < BLOB_SHAPE_DIMENSIONS; dimensionIndex++)
+	for(int dimensionIndex = 0; dimensionIndex < NUM_BLOB_DIMENSIONS; dimensionIndex++)
 	{
 		sizeCheckPassed &= bottom->shape()[dimensionIndex] == top->shape()[dimensionIndex];
 	}
