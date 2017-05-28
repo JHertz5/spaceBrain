@@ -1,7 +1,8 @@
 #include "maths_functions.hpp"
 
-#include <iostream>
 
+namespace spaceBrain
+{
 /**
  *
  * Design principles to achieve II = 1
@@ -42,10 +43,13 @@ void mmult (float A[N*N], float B[N*N], float C[N*N])
 
 void mmult_cpu(float *A,  float *B, float *C)
 {
-	for (int row = 0; row < N; row++) {
-		for (int col = 0; col < N; col++) {
+	for (int row = 0; row < N; row++)
+	{
+		for (int col = 0; col < N; col++)
+		{
 			float result = 0.0;
-			for (int k = 0; k < N; k++) {
+			for (int k = 0; k < N; k++)
+			{
 				result += A[row*N+k] * B[k*N+col];
 			}
 			C[row*N+col] = result;
@@ -68,29 +72,82 @@ void madd(float A[N*N], float B[N*N], float C[N*N])
 
 void madd_cpu(float *A, float *B, float *C)
 {
-	for (int row = 0; row < N; row++) {
-		for (int col = 0; col < N; col++) {
+	for (int row = 0; row < N; row++)
+	{
+		for (int col = 0; col < N; col++)
+		{
 			C[row*N+col] = A[row*N+col] + B[row*N+col];
 		}
 	}
 }
 
-void gemm_cpu(const Transpose transA, const Transpose transB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
+void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
 {
+
+	// check dimensions are valid
+
 	//	(alpha*op(A)*op(B) + beta*C)
-
-
-
-	for (int mIndex = 0; mIndex < m; mIndex++) {
-		for (int nIndex = 0; nIndex < n; nIndex++) {
-			float result = 0.0;
-			for (int kIndex = 0; kIndex < k; kIndex++) {
-				result += alpha * A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
+	//no need for size check as k is both the width of op(A) and height of op(B)
+	if(!isTransposeA && !isTransposeB)
+	{
+		for (int mIndex = 0; mIndex < m; mIndex++)
+		{
+			for (int nIndex = 0; nIndex < n; nIndex++)
+			{
+				float result = 0.0;
+				for (int kIndex = 0; kIndex < k; kIndex++)
+				{
+					result += alpha * A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
+				}
+				C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
 			}
-			C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
+		}
+	}
+	else if(!isTransposeA && isTransposeB)
+	{
+		for (int mIndex = 0; mIndex < m; mIndex++)
+		{
+			for (int nIndex = 0; nIndex < n; nIndex++)
+			{
+				float result = 0.0;
+				for (int kIndex = 0; kIndex < k; kIndex++)
+				{
+					result += alpha * A[mIndex*k+kIndex] * B[nIndex*k+kIndex];
+				}
+				C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
+			}
+		}
+	}
+	else if(isTransposeA && !isTransposeB)
+	{
+		for (int mIndex = 0; mIndex < m; mIndex++)
+		{
+			for (int nIndex = 0; nIndex < n; nIndex++)
+			{
+				float result = 0.0;
+				for (int kIndex = 0; kIndex < k; kIndex++)
+				{
+					result += alpha * A[kIndex*m+mIndex] * B[kIndex*n+nIndex];
+				}
+				C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
+			}
+		}
+	}
+	else  // both transpose
+	{
+		for (int mIndex = 0; mIndex < m; mIndex++)
+		{
+			for (int nIndex = 0; nIndex < n; nIndex++)
+			{
+				float result = 0.0;
+				for (int kIndex = 0; kIndex < k; kIndex++)
+				{
+					result += alpha * A[kIndex*m+mIndex] * B[nIndex*k+kIndex];
+				}
+				C[mIndex*n+nIndex] = result + beta * C[mIndex*n+nIndex];
+			}
 		}
 	}
 }
 
-
-
+}

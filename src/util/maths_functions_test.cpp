@@ -13,9 +13,6 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 {
 	bool result = true;
 
-	float alpha = -1.;
-	float beta = 1.;
-
 	int m = 3;
 	int n = 3;
 	int k = 3;
@@ -46,9 +43,49 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	}
 	std::cout << std::endl;
 
-	gemm_cpu(NO_TRANSPOSE, NO_TRANSPOSE, m, n, k, alpha, A, B, beta, C);
 
-	std::cout << "C =" << std::endl;
+
+	float alpha = 1.;
+	float beta = 1.;
+
+	gemm_cpu(false, false, m, n, k, alpha, A, B, beta, C);
+
+	std::cout << "A * B = C =" << std::endl;
+	for (int row = 0; row < m; row++) {
+		for (int col = 0; col < n; col++) {
+			std::cout << C[row*n+col] << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
+
+	gemm_cpu(true, false, m, n, k, alpha, A, B, beta, C);
+
+	std::cout << "C + A'* B = C =" << std::endl;
+	for (int row = 0; row < m; row++) {
+		for (int col = 0; col < n; col++) {
+			std::cout << C[row*n+col] << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
+
+	gemm_cpu(false, true, m, n, k, alpha, A, B, beta, C);
+
+	std::cout << "C + A * B'= C =" << std::endl;
+	for (int row = 0; row < m; row++) {
+		for (int col = 0; col < n; col++) {
+			std::cout << C[row*n+col] << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
+	gemm_cpu(true, true, m, n, k, alpha, A, B, beta, C);
+
+	std::cout << "C + A'* B'= C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
 			std::cout << C[row*n+col] << "\t";
