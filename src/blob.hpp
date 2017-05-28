@@ -20,8 +20,6 @@ class Blob
 {
 public:
 
-	DataMemory* data_; // pointer to data // XXX may not end up being float
-
 	Blob();
 	Blob(const int num, const int channels, const int height, const int width); // constructor
 	~Blob(); // destructor
@@ -75,6 +73,7 @@ public:
 	}
 
 protected:
+	DataMemory* data_; // pointer to data // XXX may not end up being float
 	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
 
