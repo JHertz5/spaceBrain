@@ -76,4 +76,19 @@ void Logger::CloseLogger()
 	}
 }
 
+void LoggerTest()
+{
+	Logger::GetLogger()->LogMessage("LoggerTest");
+
+	std::cin.ignore();
+	std::cout << "\tinput log message (one line):" << std::endl;
+
+	char message[256];
+	std::cin.getline(message, sizeof(message));
+
+	spaceBrain::Logger::GetLogger()->LogMessage(message);
+
+	std::cout << std::endl;
+}
+
 }

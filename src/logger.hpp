@@ -30,6 +30,8 @@ private:
 
 };
 
+void LoggerTest();
+
 }
 
 #endif /* SRC_LOGGER_HPP_ */
