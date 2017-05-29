@@ -9,9 +9,64 @@
 #include "util/filler.hpp"
 #include "util/maths_functions_test.hpp"
 
+void printHelpMessage(bool commandLineVersion)
+{
+	if(commandLineVersion)
+	{
+		std::cout << "Usage: space_brain.exe [OPTIONS...]" << std::endl;
+		std::cout << std::endl;
+		std::cout << "\t -h \t Display this message" << std::endl;
+		std::cout << "\t -t \t Open Testing Interface" << std::endl;
+	}
+	else // test interface version
+	{
+		std::cout << "Test Commands" << std::endl;
+		std::cout << "\nIMPLEMENTED:" << std::endl;
+		std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
+		std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
+		std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
+		std::cout << "\t'maths'\t - Maths Functions" << std::endl;
+		std::cout << "\t'data' \t - Data Memory Class" << std::endl;
+		std::cout << "\t'log'  \t - Logging functionality" << std::endl;
+		std::cout << "\t'fill' \t - Blob Filling Functions" << std::endl;
+		std::cout << "\t'quit' \t - End Program" << std::endl;
+
+		std::cout << "\nTODO:" << std::endl;
+		std::cout << "\t'input'\t - Input Layer" << std::endl;
+		std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
+		std::cout << "\t'norm' \t - LRN Layer" << std::endl;
+		std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
+		std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
+	}
+
+	std::cout << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
-	bool keepRunning = true;
+	bool keepRunning = false;
+
+	for (int argIndex = 1; argIndex < argc; argIndex++)
+	{
+		if(argv[argIndex][0] == '-')
+		{
+			switch(argv[argIndex][1])
+			{
+			case 'h':
+				printHelpMessage(true);
+				return 0;
+
+			case 't':
+				keepRunning = true;
+				std::cout << "Testing Interface Open" << std::endl;
+				break;
+
+			default:
+				std::cout << "COMMAND NOT RECOGNISED" << std::endl;
+			}
+		}
+	}
+
 	std::string inMessage;
 	const std::string notYetImplementedString =  "\t-not yet implemented";
 
@@ -23,26 +78,7 @@ int main(int argc, char* argv[])
 		// respond to command
 		if(inMessage == "help") // HELP message
 		{
-			std::cout << "Test Commands" << std::endl;
-			std::cout << "\nIMPLEMENTED:" << std::endl;
-			std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
-			std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
-			std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
-			std::cout << "\t'maths'\t - Maths Functions" << std::endl;
-			std::cout << "\t'data' \t - Data Memory Class" << std::endl;
-			std::cout << "\t'log'  \t - Logging functionality" << std::endl;
-			std::cout << "\t'fill'  \t - Blob Filling Functions" << std::endl;
-			std::cout << "\t'quit' \t - End Program" << std::endl;
-
-			std::cout << "\nTODO:" << std::endl;
-			std::cout << "\t'input'\t - Input Layer" << std::endl;
-			std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
-			std::cout << "\t'norm' \t - LRN Layer" << std::endl;
-			std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
-			std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
-
-			std::cout << std::endl;
-
+			printHelpMessage(false);
 		}
 		else if(inMessage == "input")
 		{
@@ -100,12 +136,8 @@ int main(int argc, char* argv[])
 		}
 		else if(inMessage == "log")
 		{
-			std::string message;
 			std::cout << "Logger" << std::endl;
-			std::cout << "\tinput log message:" << std::endl;
-
-			std::cin >> message;
-			spaceBrain::Logger::GetLogger()->LogMessage(message);
+			spaceBrain::LoggerTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "data")
@@ -117,7 +149,7 @@ int main(int argc, char* argv[])
 		else if(inMessage == "fill")
 		{
 			std::cout << "Filler" << std::endl;
-			std::cout << spaceBrain::FillerTest();
+			spaceBrain::FillerTest();
 			std::cout << std::endl;
 		}
 		else if(inMessage == "quit")
