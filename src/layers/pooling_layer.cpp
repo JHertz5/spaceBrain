@@ -33,29 +33,44 @@ void PoolingLayer::LayerSetUp(const Blob* bottom, const Blob* top)
 	if(kernelSize_ < 2)
 	{
 		paramTestsPassed = true;
-		Logger::GetLogger()->LogError("PoolingLayer::Forward()", "Kernel size %i < 2", kernelSize_);
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Forward",
+				"Kernel size %i < 2",
+				kernelSize_
+		);
 	}
 	if(pad_ < 0)
 	{
 		paramTestsPassed = true;
-		Logger::GetLogger()->LogError("PoolingLayer::Forward()", "Padding size %i < 0", pad_);
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Forward",
+				"Padding size %i < 0",
+				pad_
+		);
 	}
 	if(stride_ < 1)
 	{
 		paramTestsPassed = true;
-		Logger::GetLogger()->LogError("PoolingLayer::Forward()", "stride %i < 1", stride_);
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Forward",
+				"stride %i < 1",
+				stride_
+		);
 	}
 
 	bool squareCheckPassed = bottom->height() == bottom->width();
 	if(!squareCheckPassed)
 	{
 
-		Logger::GetLogger()->LogError("PoolingLayer::Forward()", "Bottom blob shape is not square");
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Forward",
+				"Bottom blob shape is not square"
+		);
 	}
 
 	if(!squareCheckPassed || !paramTestsPassed)
 	{
-		std::cerr << "PoolingLayer::Forward() Error - check log";
+		std::cerr << "PoolingLayer::Forward Error - check log";
 	}
 }
 
@@ -68,12 +83,20 @@ void PoolingLayer::Reshape(const Blob* bottom, Blob* top)
 	float pooledSize = ((float)(height_ + 2 * pad_ - kernelSize_) / stride_) + 1;
 	if(pooledSize != ceil(pooledSize))
 	{
-		Logger::GetLogger()->LogError("PoolingLayer::Reshape()", "pooledSize %f is non-integer", pooledSize);
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Reshape",
+				"pooledSize %f is non-integer",
+				pooledSize
+		);
 		return;
 	}
 	if((pooledSize-1) * stride_ > height_ + pad_)
 	{
-		Logger::GetLogger()->LogError("PoolingLayer::Reshape()", "pool will not fit into output - (%i-1)*%i > %i+%i", pooledSize, stride_, height_, pad_);
+		Logger::GetLogger()->LogError(
+				"PoolingLayer::Reshape",
+				"pool will not fit into output - (%i-1)*%i > %i+%i",
+				pooledSize, stride_, height_, pad_
+		);
 		return;
 	}
 
@@ -191,7 +214,11 @@ bool PoolTest()
 			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
 			if(!testPassed_temp)
 			{
-				Logger::GetLogger()->LogError("PoolTest", "Pool output incorrect at index: %i,%i", hIndex, wIndex);
+				Logger::GetLogger()->LogError(
+						"PoolTest",
+						"Pool output incorrect at index: %i,%i",
+						hIndex, wIndex
+				);
 			}
 			testPassed &= testPassed_temp; // AND test into overall test result
 		}

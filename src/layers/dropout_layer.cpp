@@ -68,7 +68,11 @@ bool DropoutTest()
 		testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
 		if(!testPassed_temp)
 		{
-			Logger::GetLogger()->LogError("DropoutTest", "Dropout output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
+			Logger::GetLogger()->LogError(
+					"DropoutTest",
+					"Dropout output incorrect at index: %i - input: %d output: %d",
+					dataIndex, bottomData[dataIndex], topData[dataIndex]
+			);
 		}
 		testPassed &= testPassed_temp; // AND test into overall test result
 	}

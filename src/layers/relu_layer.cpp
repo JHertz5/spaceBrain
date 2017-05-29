@@ -34,7 +34,7 @@ void ReluLayer::Forward(const Blob *bottom, const Blob *top)
 	if(!sizeCheckPassed)
 	{
 
-		Logger::GetLogger()->LogError("ReluLayer::Forward()", "Top and bottom blob shapes do not match");
+		Logger::GetLogger()->LogError("ReluLayer::Forward", "Top and bottom blob shapes do not match");
 		std::cerr << "ReluLayer::Forward() - Top and bottom blob shapes do not match";
 		return; // TODO return error?
 	}
@@ -90,7 +90,11 @@ bool ReluTest()
 		}
 		if(!testPassed_temp)
 		{
-			Logger::GetLogger()->LogError("ReluTest", "ReLU output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
+			Logger::GetLogger()->LogError(
+					"ReluTest",
+					"ReLU output incorrect at index: %i - input: %d output: %d",
+					dataIndex, bottomData[dataIndex], topData[dataIndex]
+			);
 		}
 		testPassed &= testPassed_temp; // AND test into overall test result
 	}

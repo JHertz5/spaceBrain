@@ -26,7 +26,11 @@ void FillUniform(Blob* blob, int min, int max)
 {
 	if(min > max)
 	{
-		Logger::GetLogger()->LogError("FillUniform", "min > max, swapping values: old min = %i, old max =  %i", min, max);
+		Logger::GetLogger()->LogError(
+				"FillUniform",
+				"min > max, swapping values: old min = %i, old max =  %i",
+				min, max
+		);
 		int tmp = max;
 		max = min;
 		min = tmp;

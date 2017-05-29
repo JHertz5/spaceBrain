@@ -71,7 +71,11 @@ bool SoftmaxTest() // TODO test proper version
 		testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
 		if(!testPassed_temp)
 		{
-			Logger::GetLogger()->LogError("SoftmaxTest", "Softmax output incorrect at index: %i - input: %d output: %d", dataIndex, bottomData[dataIndex], topData[dataIndex]);
+			Logger::GetLogger()->LogError(
+					"SoftmaxTest",
+					"Softmax output incorrect at index: %i - input: %d output: %d",
+					dataIndex, bottomData[dataIndex], topData[dataIndex]
+			);
 		}
 		testPassed &= testPassed_temp; // AND test into overall test result
 	}

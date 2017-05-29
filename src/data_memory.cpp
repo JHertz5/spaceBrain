@@ -38,7 +38,11 @@ void DataMemory::InitData(const size_t size)
 	}
 	else
 	{
-		Logger::GetLogger()->LogError("ReluTest", "Attempt to InitData with size %i", size);
+		Logger::GetLogger()->LogError(
+				"ReluTest",
+				"Attempt to InitData with size %i",
+				size
+		);
 	}
 }
 
