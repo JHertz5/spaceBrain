@@ -5,24 +5,30 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <string>
+
+#include "../logger.hpp"
 
 namespace spaceBrain
 {
 
-bool gemmTest(/*float* A, float* B, float* C*/)
+bool gemmTest()
 {
-	bool result = true;
+	Logger::GetLogger()->LogMessage("gemm Test");
+
+	bool testPassed = true;
 
 	int m = 3;
 	int n = 3;
 	int k = 3;
 
+	// Allocating space for matrices
 	float *A, *B, *C;
-
 	A = (float*) malloc(m * k * sizeof(float));
 	B = (float*) malloc(k * n * sizeof(float));
 	C = (float*) malloc(m * n * sizeof(float));
 
+	// Initialise A
 	std::cout << "A =" << std::endl;
 	for (int mIndex = 0; mIndex < m; mIndex++) {
 		for (int kIndex = 0; kIndex < k; kIndex++) {
@@ -33,6 +39,7 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	}
 	std::cout << std::endl;
 
+	// Initialise B
 	std::cout << "B =" << std::endl;
 	for (int kIndex = 0; kIndex < k; kIndex++) {
 		for (int nIndex = 0; nIndex < n; nIndex++) {
@@ -43,52 +50,116 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	}
 	std::cout << std::endl;
 
+	// Initialise C
+	for (int mIndex = 0; mIndex < k; mIndex++) {
+		for (int nIndex = 0; nIndex < n; nIndex++) {
+			C[mIndex*n+nIndex] = 0;
+		}
+	}
 
+	// Initialise array of true results
+	float trueResults[4][9] =
+	{
+			{3, 6, 9, 6, 12, 18, 9, 18, 27},
+			{9, 18, 27, 12, 24, 36, 15, 30, 45},
+			{15, 24, 33, 24, 36, 48, 33, 48, 63},
+			{29, 38, 47, 38, 50, 62, 47, 62, 77}
+	};
 
 	float alpha = 1.;
 	float beta = 1.;
 
+	// Test 1
 	gemm_cpu(false, false, m, n, k, alpha, A, B, beta, C);
 
+	// print and check results
 	std::cout << "A * B = C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
-			std::cout << C[row*n+col] << "\t";
+			std::cout << C[row*n+col] << "\t"; // print result
+			// check result
+			bool testPassed_temp = (C[row*n+col] == trueResults[0][row*n+col]);
+			if(!testPassed_temp)
+			{
+				Logger::GetLogger()->LogError(
+						"gemmTest",
+						"Test 1 output %.1f incorrect at row = %i, col = %i",
+						C[row*n+col], row, col
+				);
+			}
+			testPassed &= testPassed_temp; // AND test into overall test result
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 
-
+	// Test 2
 	gemm_cpu(true, false, m, n, k, alpha, A, B, beta, C);
 
+	// print and check results
 	std::cout << "C + A'* B = C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
-			std::cout << C[row*n+col] << "\t";
+			std::cout << C[row*n+col] << "\t"; // print result
+			// check result
+			bool testPassed_temp = (C[row*n+col] == trueResults[1][row*n+col]);
+			if(!testPassed_temp)
+			{
+				Logger::GetLogger()->LogError(
+						"gemmTest",
+						"Test 2 output %.1f incorrect at row = %i, col = %i",
+						C[row*n+col], row, col
+				);
+			}
+			testPassed &= testPassed_temp; // AND test into overall test result
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 
-
+	// Test 3
 	gemm_cpu(false, true, m, n, k, alpha, A, B, beta, C);
 
+	// print and check results
 	std::cout << "C + A * B'= C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
-			std::cout << C[row*n+col] << "\t";
+			std::cout << C[row*n+col] << "\t"; // print result
+			// check result
+			bool testPassed_temp = (C[row*n+col] == trueResults[2][row*n+col]);
+			if(!testPassed_temp)
+			{
+				Logger::GetLogger()->LogError(
+						"gemmTest",
+						"Test 3 output %.1f incorrect at row = %i, col = %i",
+						C[row*n+col], row, col
+				);
+			}
+			testPassed &= testPassed_temp; // AND test into overall test result
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 
+	// Test 4
 	gemm_cpu(true, true, m, n, k, alpha, A, B, beta, C);
 
+	// print and check results
 	std::cout << "C + A'* B'= C =" << std::endl;
 	for (int row = 0; row < m; row++) {
 		for (int col = 0; col < n; col++) {
-			std::cout << C[row*n+col] << "\t";
+			std::cout << C[row*n+col] << "\t"; // print result
+			// check result
+			bool testPassed_temp = (C[row*n+col] == trueResults[3][row*n+col]);
+			if(!testPassed_temp)
+			{
+				Logger::GetLogger()->LogError(
+						"gemmTest",
+						"Test 4 output %.1f incorrect at row = %i, col = %i",
+						C[row*n+col], row, col
+				);
+			}
+			testPassed &= testPassed_temp; // AND test into overall test result
 		}
 		std::cout << std::endl;
 	}
@@ -98,7 +169,12 @@ bool gemmTest(/*float* A, float* B, float* C*/)
 	free(B);
 	free(C);
 
-	return result;
+	std::string resultString = "\gemm Test ";
+	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
+	std::cout << resultString;
+	Logger::GetLogger()->LogMessage(resultString);
+
+	return testPassed;
 }
 
 /*
