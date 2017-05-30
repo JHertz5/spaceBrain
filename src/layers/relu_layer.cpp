@@ -18,12 +18,12 @@ ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 	Logger::GetLogger()->LogMessage("\tReLU layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
-void ReluLayer::Reshape(const Blob* bottom, Blob* top)
+void ReluLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	top->ReshapeLike(*bottom);
 }
 
-void ReluLayer::Forward(const Blob *bottom, Blob *top)
+void ReluLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -57,8 +57,8 @@ bool ReluTest()
 	int count = num * channels * height * width;
 
 	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
-	Blob bottomBlob(num, channels, height, width);
-	Blob topBlob;
+	Blob<float> bottomBlob(num, channels, height, width);
+	Blob<float> topBlob;
 
 	relu1.SetUp(&bottomBlob, &topBlob);
 

@@ -7,7 +7,8 @@
 namespace spaceBrain
 {
 
-Blob::Blob()
+template <typename Dtype>
+Blob<Dtype>::Blob()
 {
 	count_ = 0;
 	data_ = new DataMemory();
@@ -20,16 +21,18 @@ Blob::Blob()
 	Logger::GetLogger()->LogMessage("\tBlob constructed with no data");
 }
 
-Blob::Blob(const int num, const int channels, const int height, const int width)
+template <typename Dtype>
+Blob<Dtype>::Blob(const int num, const int channels, const int height, const int width)
 {
 	count_ = 0;
 	data_ = new DataMemory();
-	Blob::Reshape(num, channels, height, width);
+	this->Reshape(num, channels, height, width);
 
 	Logger::GetLogger()->LogMessage("\tBlob constructed with data shape = (%i*%i*%i*%i)", num, channels, height, width);
 }
 
-Blob::~Blob()
+template <typename Dtype>
+Blob<Dtype>::~Blob()
 {
 	if(data_ != NULL)
 	{
@@ -37,7 +40,8 @@ Blob::~Blob()
 	}
 }
 
-void Blob::Reshape(const int num, const int channels, const int height, const int width)
+template <typename Dtype>
+void Blob<Dtype>::Reshape(const int num, const int channels, const int height, const int width)
 {
 	int shape[NUM_BLOB_DIMENSIONS];
 	shape[NUM_LAYERS] = num;
@@ -47,43 +51,49 @@ void Blob::Reshape(const int num, const int channels, const int height, const in
 	Reshape(shape);
 }
 
-void Blob::Reshape(const int shapeIn[NUM_BLOB_DIMENSIONS])
+template <typename Dtype>
+void Blob<Dtype>::Reshape(const int shapeIn[NUM_BLOB_DIMENSIONS])
 {
 	int count = 1;
 	for (int dimensionIndex = 0; dimensionIndex < NUM_BLOB_DIMENSIONS; dimensionIndex++) {
 		count *= shapeIn[dimensionIndex];
-		Blob::shape_[dimensionIndex] = shapeIn[dimensionIndex];
+		this->shape_[dimensionIndex] = shapeIn[dimensionIndex];
 	}
 
-	if (count != Blob::count_)
+	if (count != this->count_)
 	{
 		Logger::GetLogger()->LogMessage("\tBlob::Reshape: count %i->%i", count_, count);
 		count_ = count;
-		data_->InitData(count_ * sizeof(float));
+		data_->InitData(count_ * sizeof(Dtype));
 	}
 }
 
-void Blob::ReshapeLike(const Blob &thatBlob)
+template <typename Dtype>
+void Blob<Dtype>::ReshapeLike(const Blob<Dtype> &thatBlob)
 {
 	Reshape(thatBlob.shape());
 }
 
-void Blob::SetData(const float* dataIn, const int countIn)
+template <typename Dtype>
+void Blob<Dtype>::SetData(const Dtype* dataIn, const int countIn)
 {
 	data_->SetData((void*) dataIn);
 }
 
-const float* Blob::getConstData() const
+template <typename Dtype>
+const Dtype* Blob<Dtype>::getConstData() const
 {
-	return (const float*) data_->getConstData();
+	return (const Dtype*) data_->getConstData();
 }
 
-float* Blob::getMutableData() const
+template <typename Dtype>
+Dtype* Blob<Dtype>::getMutableData() const
 {
-	return (float*) data_->getMutableData();
+	return (Dtype*) data_->getMutableData();
 }
 
-void Blob::CopyFrom(const Blob* source, bool reshape)
+template <typename Dtype>
+void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 {
 	// check that sizes match, reshape if not
 	if (source->count() != count_ || source->shape() != shape_)
@@ -102,7 +112,10 @@ void Blob::CopyFrom(const Blob* source, bool reshape)
 		}
 	}
 
-	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(float) * count_); // copy data from source
+	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(Dtype) * count_); // copy data from source
 }
+
+template class Blob<float>;
+template class Blob<int>;
 
 } // end of namespace spaceBrain

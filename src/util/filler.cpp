@@ -8,7 +8,7 @@
 namespace spaceBrain
 {
 
-void FillConstant(Blob* blob, float value)
+void FillConstant(Blob<float>* blob, float value)
 {
 	Logger::GetLogger()->LogMessage("\tFilling blob with constant %.1f", value);
 	int count = blob->count();
@@ -23,7 +23,7 @@ void FillConstant(Blob* blob, float value)
 	blob->SetData(data, count); // set blob data to data array
 }
 
-void FillUniform(Blob* blob, int min, int max)
+void FillUniform(Blob<float>* blob, int min, int max)
 {
 	Logger::GetLogger()->LogMessage("\tFilling blob with uniformly distributed x, %i<=x<=%i", min, max);
 	if(min > max)
@@ -58,7 +58,7 @@ bool FillerTest()
 
 	//  set up blob
 	int num = 1, channels = 1, height = 10, width = 10;
-	Blob testBlob(num, channels, height, width);
+	Blob<float> testBlob(num, channels, height, width);
 
 	bool testPassed = true;
 

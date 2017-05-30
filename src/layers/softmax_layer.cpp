@@ -17,12 +17,12 @@ SoftmaxLayer::SoftmaxLayer(std::string name, std::string bottom, std::string top
 	Logger::GetLogger()->LogMessage("\tSoftmax layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
-void SoftmaxLayer::Reshape(const Blob* bottom, Blob* top)
+void SoftmaxLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	top->ReshapeLike(*bottom);
 }
 
-void SoftmaxLayer::Forward(const Blob *bottom, Blob *top)
+void SoftmaxLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -41,8 +41,8 @@ bool SoftmaxTest() // TODO test proper version
 	int count = num * channels * height * width;
 
 	SoftmaxLayer prob1("prob_test", "test_in", "test_out"); // initialise dropout layer
-	Blob bottomBlob(num, channels, height, width);
-	Blob topBlob;
+	Blob<float> bottomBlob(num, channels, height, width);
+	Blob<float> topBlob;
 
 	prob1.SetUp(&bottomBlob, &topBlob);
 

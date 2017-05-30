@@ -16,6 +16,7 @@ enum BlobShapeDimensions
 namespace spaceBrain
 {
 
+template <typename Dtype>
 class Blob
 {
 public:
@@ -26,19 +27,19 @@ public:
 
 	void Reshape(const int num, const int channels, const int height, const int width);
 	void Reshape(const int shape[NUM_BLOB_DIMENSIONS]);
-	void ReshapeLike(const Blob &thatBlob);
+	void ReshapeLike(const Blob<Dtype> &thatBlob);
 
-	void SetData(const float* dataIn, const int sizeIn);
-	const float* getConstData() const;
-	float* getMutableData() const;
-	void CopyFrom(const Blob* source, bool reshape);
+	void SetData(const Dtype* dataIn, const int sizeIn);
+	const Dtype* getConstData() const;
+	Dtype* getMutableData() const;
+	void CopyFrom(const Blob<Dtype>* source, bool reshape);
 
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{
 		return ((n * channels() + c) * height() + h) * width() + w;
 	}
 
-	inline float getDataAt(const int n, const int c, const int h, const int w)
+	inline Dtype getDataAt(const int n, const int c, const int h, const int w)
 	{
 		return getConstData()[offset(n,c,h,w)];
 	}

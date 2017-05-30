@@ -22,7 +22,7 @@ public:
 	}
 
 private:
-	Blob weights_;
+	Blob<float> weights_;
 
 	int kernel_size_;
 	int stride_;

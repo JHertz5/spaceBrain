@@ -3,10 +3,7 @@
 
 #include <string>
 
-namespace spaceBrain {
-class Blob;
-} /* namespace spaceBrain */
-
+#include "blob.hpp"
 namespace spaceBrain
 {
 
@@ -15,17 +12,17 @@ class Layer
 {
 public:
 
-	void SetUp(const Blob* bottom, Blob* top)
+	void SetUp(const Blob<float>* bottom, Blob<float>* top)
 	{
 	    LayerSetUp(bottom, top);
 	    Reshape(bottom, top);
 	}
 
-	virtual void LayerSetUp(const Blob* bottom, const Blob* top){}
+	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top){}
 
-	virtual void Reshape(const Blob* bottom, Blob* top) = 0;
+	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top) = 0;
 
-	virtual void Forward(const Blob* bottom, Blob* top) = 0;
+	virtual void Forward(const Blob<float>* bottom, Blob<float>* top) = 0;
 
 	virtual inline const char* type() const
 	{

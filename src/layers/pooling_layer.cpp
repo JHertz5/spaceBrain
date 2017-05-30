@@ -27,7 +27,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	Logger::GetLogger()->LogMessage("\t\tpad = %i, kernelSize = %i, stride = %i", pad_, kernelSize_, stride_);
 }
 
-void PoolingLayer::LayerSetUp(const Blob* bottom, const Blob* top)
+void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 {
 	bool paramTestsPassed = true;
 	if(kernelSize_ < 2)
@@ -74,7 +74,7 @@ void PoolingLayer::LayerSetUp(const Blob* bottom, const Blob* top)
 	}
 }
 
-void PoolingLayer::Reshape(const Blob* bottom, Blob* top)
+void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	channels_ = bottom->channels();
 	height_ = bottom->height();
@@ -108,7 +108,7 @@ void PoolingLayer::Reshape(const Blob* bottom, Blob* top)
 }
 
 
-void PoolingLayer::Forward(const Blob *bottom, Blob *top)
+void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -165,8 +165,8 @@ bool PoolTest()
 	int kernelSize = 3;
 
 	PoolingLayer pool1("pool_test", "test_in", "test_out", pad, kernelSize, stride); // initialise relu layer
-	Blob bottomBlob(num, channels, height, width);
-	Blob topBlob;
+	Blob<float> bottomBlob(num, channels, height, width);
+	Blob<float> topBlob;
 
 	pool1.SetUp(&bottomBlob, &topBlob);
 
