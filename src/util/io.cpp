@@ -5,6 +5,7 @@
 #include "../layers/dropout_layer.hpp"
 #include "../layers/pooling_layer.hpp"
 #include "../layers/relu_layer.hpp"
+#include "../layers/softmax_layer.hpp"
 #include "../logger.hpp"
 #include "filler.hpp"
 #include "maths_functions_test.hpp"
@@ -97,7 +98,8 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "prob")
 	{
 		std::cout << "SoftMax Layer" << std::endl;
-		std::cout << notYetImplementedString << std::endl;
+//		std::cout << notYetImplementedString << std::endl;
+		spaceBrain::SoftmaxTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "maths")
