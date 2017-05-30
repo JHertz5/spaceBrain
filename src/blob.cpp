@@ -1,7 +1,6 @@
 #include "blob.hpp"
 
-#include <stdlib.h>
-#include <iostream>
+#include <cstring>
 
 #include "logger.hpp"
 
@@ -82,6 +81,28 @@ const float* Blob::getConstData() const
 float* Blob::getMutableData() const
 {
 	return (float*) data_->getMutableData();
+}
+
+void Blob::CopyFrom(const Blob* source, bool reshape)
+{
+	// check that sizes match, reshape if not
+	if (source->count() != count_ || source->shape() != shape_)
+	{
+		if (reshape)
+		{
+			ReshapeLike(*source);
+		}
+		else
+		{
+			Logger::GetLogger()->LogError(
+					"Blob::CopyFrom",
+					"Source shape does not match current chape but reshape == false"
+			);
+			return;
+		}
+	}
+
+	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(float) * count_); // copy data from source
 }
 
 } // end of namespace spaceBrain

@@ -31,6 +31,7 @@ public:
 	void SetData(const float* dataIn, const int sizeIn);
 	const float* getConstData() const;
 	float* getMutableData() const;
+	void CopyFrom(const Blob* source, bool reshape);
 
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{
