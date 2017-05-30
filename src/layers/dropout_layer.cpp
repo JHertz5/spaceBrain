@@ -21,14 +21,11 @@ void DropoutLayer::Reshape(const Blob* bottom, Blob* top)
 	top->ReshapeLike(*bottom);
 }
 
-void DropoutLayer::Forward(const Blob *bottom, const Blob *top)
+void DropoutLayer::Forward(const Blob *bottom, Blob *top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
-	float* bottom_data = bottom->getMutableData();
-	float* top_data = top->getMutableData();
-
-	memcpy(bottom_data, top_data, sizeof(float) * bottom->count());
+	top->CopyFrom(bottom, true);
 
 	Logger::GetLogger()->LogMessage("\tDropout Layer is only needed for training, this is a dummy layer", name_.c_str());
 }

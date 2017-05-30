@@ -22,14 +22,11 @@ void SoftmaxLayer::Reshape(const Blob* bottom, Blob* top)
 	top->ReshapeLike(*bottom);
 }
 
-void SoftmaxLayer::Forward(const Blob *bottom, const Blob *top)
+void SoftmaxLayer::Forward(const Blob *bottom, Blob *top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
-	float* bottom_data = bottom->getMutableData();
-	float* top_data = top->getMutableData();
-
-	memcpy(bottom_data, top_data, sizeof(float) * bottom->count());
+	top->CopyFrom(bottom, true);
 
 	std::string softmaxDummyLayerMessage = "\tSOFTMAX FORWARD() IS NOT YET IMPLEMENTED, THIS IS A DUMMY LAYER";
 	Logger::GetLogger()->LogMessage(softmaxDummyLayerMessage);
@@ -60,30 +57,30 @@ bool SoftmaxTest() // TODO test proper version
 	prob1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// get results
-//	const float* bottomData = bottomBlob.getConstData();
-//	const float* topData = topBlob.getConstData();
+	const float* bottomData = bottomBlob.getConstData();
+	const float* topData = topBlob.getConstData();
 
 	// check results
 	bool testPassed = true;
-//	for(int dataIndex = 0; dataIndex < count; dataIndex++)
-//	{
-//		bool testPassed_temp;
-//		testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
-//		if(!testPassed_temp)
-//		{
-//			Logger::GetLogger()->LogError(
-//					"SoftmaxTest",
-//					"Softmax output incorrect at index: %i - input: %d output: %d",
-//					dataIndex, bottomData[dataIndex], topData[dataIndex]
-//			);
-//		}
-//		testPassed &= testPassed_temp; // AND test into overall test result
-//	}
+	for(int dataIndex = 0; dataIndex < count; dataIndex++)
+	{
+		bool testPassed_temp;
+		testPassed_temp = topData[dataIndex] == bottomData[dataIndex];
+		if(!testPassed_temp)
+		{
+			Logger::GetLogger()->LogError(
+					"SoftmaxTest",
+					"Softmax output incorrect at index: %i - input: %d output: %d",
+					dataIndex, bottomData[dataIndex], topData[dataIndex]
+			);
+		}
+		testPassed &= testPassed_temp; // AND test into overall test result
+	}
 
-//	std::string resultString = "\tSoftmax Layer Test ";
-//	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
-//	std::cout << resultString;
-//	Logger::GetLogger()->LogMessage(resultString);
+	std::string resultString = "\tSoftmax Layer Test ";
+	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
+	std::cout << resultString;
+	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
 }
 

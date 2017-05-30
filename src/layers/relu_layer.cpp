@@ -1,6 +1,7 @@
 #include "relu_layer.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #include "../blob.hpp"
@@ -22,7 +23,7 @@ void ReluLayer::Reshape(const Blob* bottom, Blob* top)
 	top->ReshapeLike(*bottom);
 }
 
-void ReluLayer::Forward(const Blob *bottom, const Blob *top)
+void ReluLayer::Forward(const Blob *bottom, Blob *top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -52,7 +53,7 @@ bool ReluTest()
 {
 	Logger::GetLogger()->LogMessage("ReLU Layer Test:");
 
-	int num = 2, channels = 3, height = 2, width = 4;
+	int num = 1, channels = 1, height = 5, width = 5;
 	int count = num * channels * height * width;
 
 	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
@@ -65,11 +66,33 @@ bool ReluTest()
 	float *dataIn = new float[count];
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
-		dataIn[dataIndex] = dataIndex * -1^dataIndex;
+		dataIn[dataIndex] = dataIndex * pow(-1, dataIndex);
 	}
 	bottomBlob.SetData(dataIn,count);
 
+	std::cout << "Bottom Data" << std::endl;
+	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
+	{
+		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
+		{
+			std::cout << bottomBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
 	relu1.Forward(&bottomBlob, &topBlob); // perform forward computation
+
+	std::cout << "Top Data" << std::endl;
+	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
+	{
+		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
+		{
+			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
 
 	// get results
 	const float* bottomData = bottomBlob.getConstData();

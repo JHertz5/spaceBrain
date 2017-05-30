@@ -25,7 +25,7 @@ public:
 
 	virtual void Reshape(const Blob* bottom, Blob* top) = 0;
 
-	virtual void Forward(const Blob* bottom, const Blob* top) = 0;
+	virtual void Forward(const Blob* bottom, Blob* top) = 0;
 
 	virtual inline const char* type() const
 	{

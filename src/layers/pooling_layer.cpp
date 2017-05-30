@@ -108,7 +108,7 @@ void PoolingLayer::Reshape(const Blob* bottom, Blob* top)
 }
 
 
-void PoolingLayer::Forward(const Blob *bottom, const Blob *top)
+void PoolingLayer::Forward(const Blob *bottom, Blob *top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -178,6 +178,7 @@ bool PoolTest()
 	}
 	bottomBlob.SetData(dataIn,count);
 
+	std::cout << "Bottom Data" << std::endl;
 	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
 	{
 		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
@@ -190,14 +191,13 @@ bool PoolTest()
 
 	pool1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
-	// check results
+	// check/print results
+	std::cout << "Top Data" << std::endl;
 	bool testPassed = true;
 	for(int hIndex = 0; hIndex< topBlob.height(); hIndex++)
 	{
 		for(int wIndex = 0; wIndex < topBlob.width(); wIndex++)
 		{
-//			(height_ + 2 * pad_ - kernelSize_) / stride_) + 1;
-//			(stride*hIndex)+topBlob.height()-1
 			int bottomHIndex = (stride*hIndex)+topBlob.height()-2*pad-1;
 			int bottomWIndex = (stride*wIndex)+topBlob.width()-2*pad-1;
 
