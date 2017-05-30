@@ -57,7 +57,7 @@ bool FillerTest()
 	Logger::GetLogger()->LogMessage("Filler Test:");
 
 	//  set up blob
-	int num = 1, channels = 1, height = 50, width = 50;
+	int num = 1, channels = 1, height = 10, width = 10;
 	Blob testBlob(num, channels, height, width);
 
 	bool testPassed = true;
