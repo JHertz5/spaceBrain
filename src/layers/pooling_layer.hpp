@@ -28,11 +28,11 @@ public:
 	}
 
 protected:
-	 // pad, kernelSize, and pooledSize are both height and width as only square blobs are supported
+	 // pad_, kernel_size_, and pooled_size_ are both height and width as only square blobs are supported
 	int pad_;
-	int kernelSize_;
+	int kernel_size_;
 	int stride_;
-	int pooledSize_;
+	int pooled_size_;
 	int channels_, height_, width_;
 
 };

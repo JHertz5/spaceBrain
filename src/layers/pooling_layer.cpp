@@ -16,10 +16,10 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	top_ = top;
 
 	pad_ = pad;
-	kernelSize_ = kernelSize;
+	kernel_size_ = kernelSize;
 	stride_ = stride;
 
-	pooledSize_ = 0;
+	pooled_size_ = 0;
 	channels_ = 0;
 	height_ = 0;
 	width_ = 0;
@@ -30,20 +30,20 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	);
 	Logger::GetLogger()->LogMessage(
 			"\t\tpad = %i, kernelSize = %i, stride = %i",
-			pad_, kernelSize_, stride_
+			pad_, kernel_size_, stride_
 	);
 }
 
 void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 {
 	bool paramTestsPassed = true;
-	if(kernelSize_ < 2)
+	if(kernel_size_ < 2)
 	{
 		paramTestsPassed = true;
 		Logger::GetLogger()->LogError(
 				"PoolingLayer::LayerSetUp",
 				"Kernel size %i < 2",
-				kernelSize_
+				kernel_size_
 		);
 	}
 	if(pad_ < 0)
@@ -87,7 +87,7 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	height_ = bottom->height();
 	width_ = bottom->width();
 
-	float pooledSize = ((float)(height_ + 2 * pad_ - kernelSize_) / stride_) + 1;
+	float pooledSize = ((float)(height_ + 2 * pad_ - kernel_size_) / stride_) + 1;
 	if(pooledSize != ceil(pooledSize))
 	{
 		Logger::GetLogger()->LogError(
@@ -107,7 +107,7 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 		return;
 	}
 
-	pooledSize_ = pooledSize;
+	pooled_size_ = pooledSize;
 	Logger::GetLogger()->LogMessage("\tPooled size = %f", pooledSize);
 
 	top->Reshape(bottom->num(), channels_, pooledSize, pooledSize);
@@ -125,19 +125,19 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	{
 		for (int c = 0; c < channels_; ++c) // channel loop
 		{
-			for (int ph = 0; ph < pooledSize_; ++ph) // pool height loop
+			for (int ph = 0; ph < pooled_size_; ++ph) // pool height loop
 			{
-				for (int pw = 0; pw < pooledSize_; ++pw) // pool width loop
+				for (int pw = 0; pw < pooled_size_; ++pw) // pool width loop
 				{
 					// find start and end of kernel
 					int hstart = ph * stride_ - pad_;
 					int wstart = pw * stride_ - pad_;
-					int hend = std::min(hstart + kernelSize_, height_);
-					int wend = std::min(wstart + kernelSize_, width_);
+					int hend = std::min(hstart + kernel_size_, height_);
+					int wend = std::min(wstart + kernel_size_, width_);
 					hstart = std::max(hstart, 0);
 					wstart = std::max(wstart, 0);
 
-					const int pool_index = ph * pooledSize_ + pw;
+					const int pool_index = ph * pooled_size_ + pw;
 					for (int h = hstart; h < hend; ++h) // kernel height loop
 					{
 						for (int w = wstart; w < wend; ++w) // kernel width loop
