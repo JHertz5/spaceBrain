@@ -16,6 +16,10 @@ public:
 	ConvolutionLayer(std::string name, std::string bottom, std::string top, int kernelSize,  int stride, int pad, int num_outputChannels);
 	virtual ~ConvolutionLayer(){}
 
+	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top);
+
+	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
+
 	virtual inline const char* type() const
 	{
 		return "Convolution";
