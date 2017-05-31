@@ -25,8 +25,18 @@ public:
 		return "Convolution";
 	}
 
+	void im2col(const float* data_im, const int channels,
+			const int height, const int width,
+			const int kernel_h, const int kernel_w,
+		    const int pad_h, const int pad_w,
+		    const int stride_h, const int stride_w,
+		    const int dilation_h, const int dilation_w,
+		    float* data_col);
+
+
 private:
 	Blob<float> weights_;
+	Blob<float> col_buffer_;
 
 	int kernel_size_;
 	int stride_;
@@ -36,8 +46,9 @@ private:
 
 	bool is_1x1_;
 
-
-
+	int conved_size_;
+	int channels_;
+	int input_size_;
 };
 
 }

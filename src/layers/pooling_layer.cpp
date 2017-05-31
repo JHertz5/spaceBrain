@@ -21,8 +21,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 
 	pooled_size_ = 0;
 	channels_ = 0;
-	height_ = 0;
-	width_ = 0;
+	input_size_ = 0;
 
 	Logger::GetLogger()->LogMessage(
 			"\tPooling layer '%s' constructed with bottom = '%s' and top = '%s'",
@@ -84,10 +83,9 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	channels_ = bottom->channels();
-	height_ = bottom->height();
-	width_ = bottom->width();
+	input_size_ = bottom->height(); // only supports square inputs, so width is not needed
 
-	float pooledSize = ((float)(height_ + 2 * pad_ - kernel_size_) / stride_) + 1;
+	float pooledSize = ((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
 	if(pooledSize != ceil(pooledSize))
 	{
 		Logger::GetLogger()->LogError(
@@ -97,12 +95,12 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 		);
 		return;
 	}
-	if((pooledSize-1) * stride_ > height_ + pad_)
+	if((pooledSize-1) * stride_ > input_size_ + pad_)
 	{
 		Logger::GetLogger()->LogError(
 				"PoolingLayer::Reshape",
 				"pool will not fit into output - (%i-1)*%i > %i+%i",
-				pooledSize, stride_, height_, pad_
+				pooledSize, stride_, input_size_, pad_
 		);
 		return;
 	}
@@ -111,7 +109,6 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	Logger::GetLogger()->LogMessage("\tPooled size = %f", pooledSize);
 
 	top->Reshape(bottom->num(), channels_, pooledSize, pooledSize);
-
 }
 
 void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
@@ -132,8 +129,8 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 					// find start and end of kernel
 					int hstart = ph * stride_ - pad_;
 					int wstart = pw * stride_ - pad_;
-					int hend = std::min(hstart + kernel_size_, height_);
-					int wend = std::min(wstart + kernel_size_, width_);
+					int hend = std::min(hstart + kernel_size_, input_size_);
+					int wend = std::min(wstart + kernel_size_, input_size_);
 					hstart = std::max(hstart, 0);
 					wstart = std::max(wstart, 0);
 
@@ -142,7 +139,7 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 					{
 						for (int w = wstart; w < wend; ++w) // kernel width loop
 						{
-							const int index = h * width_ + w;
+							const int index = h * input_size_ + w;
 							if (bottomData[index] > topData[pool_index])
 							{
 								topData[pool_index] = bottomData[index];

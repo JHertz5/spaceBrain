@@ -1,5 +1,8 @@
 #include "conv_layer.hpp"
 
+#include <cmath>
+#include <iostream>
+
 #include "../logger.hpp"
 #include "../util/filler.hpp"
 
@@ -18,6 +21,10 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	num_output_channels_ = numOutputs; // number of filters
 	num_input_channels_ = 1;
 
+	conved_size_ = 0;
+	channels_ = 0;
+	input_size_ = 0;
+
 	is_1x1_ = false;
 
 	Logger::GetLogger()->LogMessage(
@@ -32,6 +39,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 
 void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 {
+	// check that each parameter is valid
 	bool paramTestsPassed = true;
 	if(kernel_size_ < 2)
 	{
@@ -61,10 +69,10 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 		);
 	}
 
+	// check that bottom blob is square
 	bool squareCheckPassed = bottom->height() == bottom->width();
 	if(!squareCheckPassed)
 	{
-
 		Logger::GetLogger()->LogError(
 				"ConvolutionLayer::LayerSetUp",
 				"Bottom blob shape is not square"
@@ -74,7 +82,6 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 	if(!squareCheckPassed || !paramTestsPassed)
 	{
 		std::cerr << "ConvolutionLayer::LayerSetUp Error - check log";
-		return;
 	}
 
 	// 1x1 is a special case where im2col is not needed
@@ -87,7 +94,36 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 
 void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
+	channels_ = bottom->channels();
+	input_size_ = bottom->height();
+	input_size_ = bottom->width();
 
+	int inputSize = input_size_;
+
+	float convedSize = ((float)(inputSize + 2 * pad_ - kernel_size_) / stride_) + 1;
+	if(convedSize != ceil(convedSize))
+	{
+		Logger::GetLogger()->LogError(
+				"ConvolutionLayer::Reshape",
+				"convedSize %f is non-integer",
+				convedSize
+		);
+		return;
+	}
+	if((convedSize-1) * stride_ > inputSize + pad_)
+	{
+		Logger::GetLogger()->LogError(
+				"ConvolutionLayer::Reshape",
+				"conv will not fit into output - (%i-1)*%i > %i+%i",
+				convedSize, stride_, inputSize, pad_
+		);
+		return;
+	}
+
+	conved_size_ = convedSize;
+	Logger::GetLogger()->LogMessage("\tConvolved size = %f", convedSize);
+
+	top->Reshape(bottom->num(), channels_, convedSize, convedSize);
 }
 
 }
