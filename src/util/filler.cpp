@@ -25,7 +25,7 @@ void FillConstant(Blob<float>* blob, float value)
 
 void FillUniform(Blob<float>* blob, int min, int max)
 {
-	Logger::GetLogger()->LogMessage("\tFilling blob with uniformly distributed x, %i<=x<=%i", min, max);
+	Logger::GetLogger()->LogMessage("\tFilling blob with uniformly distributed x, %i <= x <= %i", min, max);
 	if(min > max)
 	{
 		Logger::GetLogger()->LogError(

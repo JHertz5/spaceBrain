@@ -31,7 +31,4 @@ bool SoftmaxTest();
 
 }
 
-
-
-
 #endif /* SRC_LAYERS_SOFTMAX_LAYER_HPP_ */

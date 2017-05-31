@@ -115,6 +115,7 @@ void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(Dtype) * count_); // copy data from source
 }
 
+//explicit instantiation
 template class Blob<float>;
 template class Blob<int>;
 
