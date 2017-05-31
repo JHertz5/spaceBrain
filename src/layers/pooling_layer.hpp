@@ -32,7 +32,7 @@ protected:
 	int pad_;
 	int kernel_size_;
 	int stride_;
-	int pooled_size_;
+	int output_size_;
 	int channels_;
 	int input_size_;
 };

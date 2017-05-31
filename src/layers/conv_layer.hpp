@@ -34,12 +34,12 @@ private:
 	int kernel_size_;
 	int stride_;
 	int pad_;
-	int num_output_channels_;
-	int num_input_channels_;
+	int num_output_channels_; // TODO necessary?
+	int num_input_channels_;  // TODO necessary?
 
 	bool is_1x1_;
 
-	int conved_size_;
+	int output_size_;
 	int channels_;
 	int input_size_;
 };

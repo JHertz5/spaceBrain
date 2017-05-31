@@ -21,7 +21,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	num_output_channels_ = numOutputs; // number of filters
 	num_input_channels_ = 1;
 
-	conved_size_ = 0;
+	output_size_ = 0;
 	channels_ = 0;
 	input_size_ = 0;
 
@@ -100,64 +100,79 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 
 	int inputSize = input_size_;
 
-	float convedSize = ((float)(inputSize + 2 * pad_ - kernel_size_) / stride_) + 1;
-	if(convedSize != ceil(convedSize))
+	float convolvedSize = ((float)(inputSize + 2 * pad_ - kernel_size_) / stride_) + 1;
+	if(convolvedSize != ceil(convolvedSize))
 	{
 		Logger::GetLogger()->LogError(
 				"ConvolutionLayer::Reshape",
 				"convedSize %f is non-integer",
-				convedSize
+				convolvedSize
 		);
 		return;
 	}
-	if((convedSize-1) * stride_ > inputSize + pad_)
+	if((convolvedSize-1) * stride_ > inputSize + pad_)
 	{
 		Logger::GetLogger()->LogError(
 				"ConvolutionLayer::Reshape",
 				"conv will not fit into output - (%i-1)*%i > %i+%i",
-				convedSize, stride_, inputSize, pad_
+				convolvedSize, stride_, inputSize, pad_
 		);
 		return;
 	}
 
-	conved_size_ = convedSize;
-	Logger::GetLogger()->LogMessage("\tConvolved size = %f", convedSize);
+	output_size_ = convolvedSize;
+	Logger::GetLogger()->LogMessage("\tConvolved size = %f", output_size_);
 
-	top->Reshape(bottom->num(), channels_, convedSize, convedSize);
+	top->Reshape(bottom->num(), channels_, output_size_, output_size_);
+
+	// TODO rename to column buffer
+	int num_columns = channels_ * kernel_size_ * kernel_size_;
+	col_buffer_.Reshape(1, num_columns, output_size_, output_size_);
 }
 
 void ConvolutionLayer::im2col(const float* data_im)
 {
 	float* data_col = col_buffer_.getMutableData();
-	const int outputSize = (input_size_ + 2 * pad_ - (kernel_size_ - 1) + 1) / stride_ + 1;
 	const int channel_size = input_size_ * input_size_;
 
-
-	for (int channel = channels_; channel--; data_im += channel_size) {
-		for (int kernel_row = 0; kernel_row < kernel_size_; kernel_row++) {
-			for (int kernel_col = 0; kernel_col < kernel_size_; kernel_col++) {
+	for (int channel = channels_; channel--; data_im += channel_size)
+	{
+		for (int kernel_row = 0; kernel_row < kernel_size_; kernel_row++)
+		{
+			for (int kernel_col = 0; kernel_col < kernel_size_; kernel_col++)
+			{
 				int input_row = -pad_ + kernel_row;
-				for (int output_rows = outputSize; output_rows; output_rows--) {
-					if (!(input_row >= 0 && input_row < input_size_)) {
-						for (int output_cols = outputSize; output_cols; output_cols--) {
+				for (int output_rows = output_size_; output_rows; output_rows--)
+				{
+					if (!(input_row >= 0 && input_row < input_size_))
+					{
+						// region is in padding
+						for (int output_cols = output_size_; output_cols; output_cols--)
+						{
 							*(data_col++) = 0;
 						}
-					} else {
+					}
+					else
+					{
 						int input_col = -pad_ + kernel_col;
-						for (int output_col = outputSize; output_col; output_col--) {
-							if (!(input_col >= 0 && input_col < input_size_)) {
-								*(data_col++) = data_im[input_row * input_size_ + input_col];
-							} else {
-								*(data_col++) = 0;
+						for (int output_col = output_size_; output_col; output_col--)
+						{
+							if (input_col >= 0 && input_col < input_size_)
+							{
+								*(data_col++) = data_im[input_row * input_size_ + input_col]; // assign data to *data_col
+							}
+							else
+							{
+								*(data_col++) = 0; // data point is in padding
 							}
 							input_col += stride_;
 						}
 					}
 					input_row += stride_;
-				}
-			}
-		}
-	}
+				} /* output rows */
+			} /* kernel column */
+		} /* kernel row */
+	} /* channels */
 }
 
 
