@@ -126,4 +126,39 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	top->Reshape(bottom->num(), channels_, convedSize, convedSize);
 }
 
+void ConvolutionLayer::im2col(const float* data_im)
+{
+	float* data_col = col_buffer_.getMutableData();
+	const int outputSize = (input_size_ + 2 * pad_ - (kernel_size_ - 1) + 1) / stride_ + 1;
+	const int channel_size = input_size_ * input_size_;
+
+
+	for (int channel = channels_; channel--; data_im += channel_size) {
+		for (int kernel_row = 0; kernel_row < kernel_size_; kernel_row++) {
+			for (int kernel_col = 0; kernel_col < kernel_size_; kernel_col++) {
+				int input_row = -pad_ + kernel_row;
+				for (int output_rows = outputSize; output_rows; output_rows--) {
+					if (!(input_row >= 0 && input_row < input_size_)) {
+						for (int output_cols = outputSize; output_cols; output_cols--) {
+							*(data_col++) = 0;
+						}
+					} else {
+						int input_col = -pad_ + kernel_col;
+						for (int output_col = outputSize; output_col; output_col--) {
+							if (!(input_col >= 0 && input_col < input_size_)) {
+								*(data_col++) = data_im[input_row * input_size_ + input_col];
+							} else {
+								*(data_col++) = 0;
+							}
+							input_col += stride_;
+						}
+					}
+					input_row += stride_;
+				}
+			}
+		}
+	}
+}
+
+
 }
