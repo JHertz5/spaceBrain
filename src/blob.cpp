@@ -115,6 +115,34 @@ void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(Dtype) * count_); // copy data from source
 }
 
+template <typename Dtype>
+void Blob<Dtype>::PrintSlice(const int num, const int channel)
+{
+	if(num > this->num())
+	{
+		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice num %i > max blob num %i", num, this->num());
+		return;
+	}
+	if(channel > this->channels())
+	{
+		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice channel %i > max blob channel %i", channel, this->channels());
+		return;
+	}
+
+	const Dtype* data = this->getConstData();
+
+	for(int hIndex = 0; hIndex < this->height(); hIndex++)
+	{
+		for(int wIndex = 0; wIndex < this->width(); wIndex++)
+		{
+			std::cout << data[offset(num, channel, hIndex, wIndex)] << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+
+}
+
 //explicit instantiation
 template class Blob<float>;
 template class Blob<int>;

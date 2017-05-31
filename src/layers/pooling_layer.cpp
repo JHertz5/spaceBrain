@@ -166,6 +166,9 @@ bool PoolTest()
 	int pad = 1; //0;
 	int kernelSize = 3;
 
+	std::cout << "pad = " << pad << ", stride =" << stride << ", kernel size = " << kernelSize << std::endl;
+	std::cout << std::endl;
+
 	PoolingLayer pool1("pool_test", "test_in", "test_out", pad, kernelSize, stride); // initialise relu layer
 	Blob<float> bottomBlob(num, channels, height, width);
 	Blob<float> topBlob;
@@ -181,27 +184,22 @@ bool PoolTest()
 	bottomBlob.SetData(dataIn,count);
 
 	std::cout << "Bottom Data" << std::endl;
-	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
-	{
-		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
-		{
-			std::cout << bottomBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+	bottomBlob.PrintSlice();
 
 	pool1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
-	// check/print results
+	// print results
 	std::cout << "Top Data" << std::endl;
+	topBlob.PrintSlice();
+
+	// check results
 	bool testPassed = true;
 	for(int hIndex = 0; hIndex< topBlob.height(); hIndex++)
 	{
 		for(int wIndex = 0; wIndex < topBlob.width(); wIndex++)
 		{
-			int bottomHIndex = (stride*hIndex)+topBlob.height()-2*pad-1;
-			int bottomWIndex = (stride*wIndex)+topBlob.width()-2*pad-1;
+			int bottomHIndex = (stride * hIndex) + topBlob.height() - 2 * pad - 1;
+			int bottomWIndex = (stride * wIndex) + topBlob.width() - 2 * pad - 1;
 
 			if(hIndex == topBlob.height()-1)
 			{
@@ -213,7 +211,6 @@ bool PoolTest()
 			}
 
 			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex);
-			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
 			if(!testPassed_temp)
 			{
 				Logger::GetLogger()->LogError(
@@ -224,9 +221,7 @@ bool PoolTest()
 			}
 			testPassed &= testPassed_temp; // AND test into overall test result
 		}
-		std::cout << std::endl;
 	}
-	std::cout << std::endl;
 
 	std::string resultString = "\tPooling Layer Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");

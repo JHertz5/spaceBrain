@@ -34,6 +34,8 @@ public:
 	Dtype* getMutableData() const;
 	void CopyFrom(const Blob<Dtype>* source, bool reshape);
 
+	void PrintSlice(const int num = 0, const int channel = 0);
+
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{
 		return ((n * channels() + c) * height() + h) * width() + w;

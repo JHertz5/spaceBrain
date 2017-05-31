@@ -71,28 +71,12 @@ bool ReluTest()
 	bottomBlob.SetData(dataIn,count);
 
 	std::cout << "Bottom Data" << std::endl;
-	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
-	{
-		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
-		{
-			std::cout << bottomBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+	bottomBlob.PrintSlice();
 
 	relu1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	std::cout << "Top Data" << std::endl;
-	for(int hIndex = 0; hIndex< bottomBlob.height(); hIndex++)
-	{
-		for(int wIndex = 0; wIndex < bottomBlob.width(); wIndex++)
-		{
-			std::cout << topBlob.getDataAt(0, 0, hIndex, wIndex) << "\t";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+	topBlob.PrintSlice();
 
 	// get results
 	const float* bottomData = bottomBlob.getConstData();
