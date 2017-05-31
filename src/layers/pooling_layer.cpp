@@ -15,22 +15,6 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	bottom_ = bottom;
 	top_ = top;
 
-	if(kernelSize <= 0)
-	{
-		Logger::GetLogger()->LogError("PoolingLayer::PoolingLayer", "kernel size %i <= 0", kernelSize);
-		return;
-	}
-	if(stride <= 0)
-	{
-		Logger::GetLogger()->LogError("PoolingLayer::PoolingLayer", "stride %i <= 0", stride);
-		return;
-	}
-	if(pad < 0)
-	{
-		Logger::GetLogger()->LogError("PoolingLayer::PoolingLayer", "pad %i < 0", pad);
-		return;
-	}
-
 	pad_ = pad;
 	kernelSize_ = kernelSize;
 	stride_ = stride;
@@ -57,7 +41,7 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 	{
 		paramTestsPassed = true;
 		Logger::GetLogger()->LogError(
-				"PoolingLayer::Forward",
+				"PoolingLayer::LayerSetUp",
 				"Kernel size %i < 2",
 				kernelSize_
 		);
@@ -66,7 +50,7 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 	{
 		paramTestsPassed = true;
 		Logger::GetLogger()->LogError(
-				"PoolingLayer::Forward",
+				"PoolingLayer::LayerSetUp",
 				"Padding size %i < 0",
 				pad_
 		);
@@ -75,7 +59,7 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 	{
 		paramTestsPassed = true;
 		Logger::GetLogger()->LogError(
-				"PoolingLayer::Forward",
+				"PoolingLayer::LayerSetUp",
 				"stride %i < 1",
 				stride_
 		);
@@ -86,14 +70,14 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 	{
 
 		Logger::GetLogger()->LogError(
-				"PoolingLayer::Forward",
+				"PoolingLayer::LayerSetUp",
 				"Bottom blob shape is not square"
 		);
 	}
 
 	if(!squareCheckPassed || !paramTestsPassed)
 	{
-		std::cerr << "PoolingLayer::Forward Error - check log";
+		std::cerr << "PoolingLayer::LayerSetUp Error - check log";
 	}
 }
 
@@ -130,11 +114,9 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 
 }
 
-
 void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
-
 
 	const float* bottomData = bottom->getConstData();
 	float* topData = top->getMutableData();
