@@ -25,7 +25,7 @@ void Logger::LogError(const char* functionName, const char* format, ...)
 	va_list args;
 	va_start(args, format);
 
-	char* messageChars = new char[errorMessageMaxLength]; // allocate Cstring space
+	char messageChars[errorMessageMaxLength];
 	vsnprintf(messageChars, errorMessageMaxLength, format, args); // write message to Cstring
 
 	va_end(args);
@@ -35,18 +35,15 @@ void Logger::LogError(const char* functionName, const char* format, ...)
 
 void Logger::LogMessage(const char* format, ...)
 {
-    char* messageChars = NULL;
-
     va_list args;
     va_start(args, format);
 
-    messageChars = new char[MAX_LOG_MESSAGE_LENGTH]; // allocate Cstring space
+    char messageChars[MAX_LOG_MESSAGE_LENGTH];
     vsnprintf(messageChars, MAX_LOG_MESSAGE_LENGTH, format, args); // write message to Cstring
 
     va_end(args);
 
     std::string messageString(messageChars); // initialise string with Cstring
-    delete [] messageChars;
 
     LogMessage(messageString); // log string
 }
