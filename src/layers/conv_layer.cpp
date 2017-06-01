@@ -19,12 +19,13 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	kernel_size_ = kernelSize;
 	stride_ = stride;
 	pad_ = pad;
-	num_output_channels_ = num_output; // number of filters
-	num_input_channels_ = 1; // TODO check what's going on here
+	number_of_kernels = num_output; // number of filters
 
 	output_size_ = 0;
 	channels_ = 0;
 	input_size_ = 0;
+	output_spatial_volume_ = 0;
+	kernel_volume_ = 0;
 
 	is_1x1_ = false;
 
@@ -33,8 +34,8 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 			name.c_str(), bottom.c_str(), top.c_str()
 	);
 	Logger::GetLogger()->LogMessage(
-			"\t\tpad = %i, kernelSize = %i, stride = %i, num outputs = %i, num inputs = %i",
-			pad_, kernel_size_, stride_, num_output_channels_, num_input_channels_
+			"\t\tpad = %i, kernelSize = %i, stride = %i, num kernels = %i",
+			pad_, kernel_size_, stride_, number_of_kernels
 	);
 }
 
@@ -89,8 +90,10 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 	is_1x1_ = (kernel_size_ == 1 && stride_ == 1 && pad_ == 0);
 
 	// initialise and zero fill weights
-	weights_.Reshape(num_output_channels_, num_input_channels_, kernel_size_, kernel_size_);
-	FillConstant(&weights_, 0);
+	weights_.Reshape(number_of_kernels, bottom->channels(), kernel_size_, kernel_size_);
+	FillConstant(&weights_, 1); // TODO change to 0?
+
+	kernel_volume_ = weights_.count(1);
 }
 
 void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
@@ -125,18 +128,16 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	Logger::GetLogger()->LogMessage("\tConvolutionLayer::Reshape: Convolved size = %i", output_size_);
 
 	top->Reshape(bottom->num(), channels_, output_size_, output_size_);
+	output_spatial_volume_ = top->count(2);
 
-	// TODO rename to column buffer
-	int num_columns = channels_ * kernel_size_ * kernel_size_;
-	col_buffer_.Reshape(1, num_columns, output_size_, output_size_);
+	col_buffer_.Reshape(1, kernel_volume_, output_size_, output_size_);
 }
 
 void ConvolutionLayer::im2col(const float* data_im, float* data_col)
 {
-//	float* data_col = col_buffer_.getMutableData();
-	const int channel_size = input_size_ * input_size_;
+	const int channelVolume = input_size_ * input_size_;
 
-	for (int channel = channels_; channel--; data_im += channel_size)
+	for (int channel = channels_; channel--; data_im += channelVolume)
 	{
 		for (int kernel_row = 0; kernel_row < kernel_size_; kernel_row++)
 		{
@@ -184,17 +185,14 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	const float* bottomData = bottom->getConstData();
 	float* topData = top->getMutableData();
 
-	// TODO check bottom->num()
+	int channelAxis = CHANNELS;
+	int bottomVolume = bottom->count(channelAxis);
+	int topVolume = top->count(channelAxis);
+
 	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
 	{
-//		Forward_gemm_cpu()
+		forward_cpu_gemm(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
 	}
-
-
-
-	FillConstant(top, 0);
-
-	Logger::GetLogger()->LogMessage("ConvolutionLayer::Forward() NOT YET IMPLEMENTED");
 }
 
 void ConvolutionLayer::forward_cpu_gemm(const float* input, const float* weights, float* output, bool skip_im2col)
@@ -211,11 +209,15 @@ void ConvolutionLayer::forward_cpu_gemm(const float* input, const float* weights
 		col_buff = col_buffer_.getConstData();
 	}
 	// perform gemm
-//	gemm_cpu(
-//			CblasNoTrans, CblasNoTrans,
-//			conv_out_channels_ / group_, conv_out_spatial_dim_, kernel_dim_,
-//	        1., weights + weight_offset_ * g, col_buff + col_offset_ * g,
-//	        0., output + output_offset_ * g);
+	std::cout << "m=" << number_of_kernels  << ", " << "n=" << output_spatial_volume_ << ", " << "k=" << kernel_volume_ << std::endl;
+	gemm_cpu(
+			false, false, 	// transposes
+			number_of_kernels , output_spatial_volume_, kernel_volume_, // m, n, k
+//	        1., weights + weight_offset_, col_buff + col_offset_, // alpha, A, B
+			1., weights, col_buff, // alpha, A, B
+//	        0., output + output_offset_ // beta, C
+			0., output // beta, C
+	);
 }
 
 bool ConvTest()
@@ -239,22 +241,20 @@ bool ConvTest()
 	conv1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = new float[count];
+	float *dataIn = bottomBlob.getMutableData(); // TODO do using mutable data
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex;
 	}
-	bottomBlob.SetData(dataIn,count);
 
 	std::cout << "Bottom Data" << std::endl;
 	bottomBlob.PrintSlice();
 
-	conv1.im2col(bottomBlob.getConstData(), conv1.col_buffer_.getMutableData());
-	//conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
+	conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// print results
-//	std::cout << "Top Data" << std::endl;
-//	topBlob.PrintSlice();
+	std::cout << "Top Data" << std::endl;
+	topBlob.PrintSlice(0, 0);
 	std::cout << "Column Buffer" << std::endl;
 
 	// check results

@@ -103,7 +103,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 			}
 		}
 	}
-	else if(!isTransposeA && isTransposeB)
+	else if(!isTransposeA && isTransposeB)// B only is tranpose
 	{
 		for (int mIndex = 0; mIndex < m; mIndex++)
 		{
@@ -118,7 +118,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 			}
 		}
 	}
-	else if(isTransposeA && !isTransposeB)
+	else if(isTransposeA && !isTransposeB) // A only is tranpose
 	{
 		for (int mIndex = 0; mIndex < m; mIndex++)
 		{

@@ -29,7 +29,7 @@ public:
 
 	void im2col(const float* data_im, float* data_col); // TODO give better name
 
-	void forward_cpu_gemm(const float* input, const float* weights, float* output, bool skip_im2col); // TODO rename to fit convention
+	void forward_cpu_gemm(const float* input, const float* weights, float* output, bool skip_im2col = false); // TODO rename to fit convention
 
 	Blob<float> col_buffer_; // TODO set back to private
 
@@ -39,14 +39,14 @@ private:
 	int kernel_size_;
 	int stride_;
 	int pad_;
-	int num_output_channels_; // TODO necessary?
-	int num_input_channels_;  // TODO necessary?
-
-	bool is_1x1_;
-
+	int number_of_kernels;
+	int kernel_volume_;
+	int output_spatial_volume_;
 	int output_size_;
 	int channels_;
 	int input_size_;
+
+	bool is_1x1_;
 };
 
 bool ConvTest();
