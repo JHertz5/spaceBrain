@@ -84,7 +84,7 @@ void madd_cpu(float *A, float *B, float *C)
 
 void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
 {
-	Logger::GetLogger()->LogMessage("\tgemm computation, transposeA, transposeB = %i, %i", isTransposeA, isTransposeB);
+	Logger::GetLogger()->LogMessage("\tgemm computation, transposeA = %i, transposeB = %i, alpha = %.1f, beta = %.1f", isTransposeA, isTransposeB, alpha, beta);
 
 	//	(alpha*op(A)*op(B) + beta*C)
 	//no need for size check as k is both the width of op(A) and height of op(B)

@@ -51,11 +51,11 @@ bool gemmTest()
 	std::cout << std::endl;
 
 	// Initialise C
-	for (int mIndex = 0; mIndex < k; mIndex++) {
-		for (int nIndex = 0; nIndex < n; nIndex++) {
-			C[mIndex*n+nIndex] = 0;
-		}
-	}
+//	for (int mIndex = 0; mIndex < k; mIndex++) {
+//		for (int nIndex = 0; nIndex < n; nIndex++) {
+//			C[mIndex*n+nIndex] = 0;
+//		}
+//	}
 
 	// Initialise array of true results
 	float trueResults[4][9] =
@@ -68,9 +68,10 @@ bool gemmTest()
 
 	float alpha = 1.;
 	float beta = 1.;
+	float beta_test1 = .0;
 
 	// Test 1
-	gemm_cpu(false, false, m, n, k, alpha, A, B, beta, C);
+	gemm_cpu(false, false, m, n, k, alpha, A, B, beta_test1, C);
 
 	// print and check results
 	std::cout << "A * B = C =" << std::endl;
@@ -169,7 +170,7 @@ bool gemmTest()
 	free(B);
 	free(C);
 
-	std::string resultString = "\gemm Test ";
+	std::string resultString = "\tgemm Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
