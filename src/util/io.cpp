@@ -2,6 +2,7 @@
 #include <string>
 
 #include "../data_memory.hpp"
+#include "../layers/conv_layer.hpp"
 #include "../layers/dropout_layer.hpp"
 #include "../layers/pooling_layer.hpp"
 #include "../layers/relu_layer.hpp"
@@ -35,9 +36,11 @@ void printHelpMessage(bool commandLineVersion)
 	std::cout << "\t'fill' \t - Blob Filling Functions" << std::endl;
 	std::cout << "\t'quit' \t - End Program" << std::endl;
 
+	std::cout << "\nIn Testing:" << std::endl;
+	std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
+
 	std::cout << "\nTODO:" << std::endl;
 	std::cout << "\t'input'\t - Input Layer" << std::endl;
-	std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
 	std::cout << "\t'norm' \t - LRN Layer" << std::endl;
 	std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
 	std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
@@ -62,7 +65,7 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "conv")
 	{
 		std::cout << "Convolution Layer" << std::endl;
-		std::cout << notYetImplementedString << std::endl;
+		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "relu")
