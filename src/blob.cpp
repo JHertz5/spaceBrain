@@ -118,14 +118,14 @@ void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 template <typename Dtype>
 void Blob<Dtype>::PrintSlice(const int num, const int channel)
 {
-	if(num > this->num())
+	if(num >= this->num())
 	{
-		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice num %i > max blob num %i", num, this->num());
+		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice num %i >= blob layers %i", num, this->num());
 		return;
 	}
-	if(channel > this->channels())
+	if(channel >= this->channels())
 	{
-		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice channel %i > max blob channel %i", channel, this->channels());
+		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice channel %i >= blob channels %i", channel, this->channels());
 		return;
 	}
 
