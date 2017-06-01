@@ -180,12 +180,11 @@ bool PoolTest()
 	pool1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = new float[count];
+	float *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex;
 	}
-	bottomBlob.SetData(dataIn,count);
 
 	std::cout << "Bottom Data" << std::endl;
 	bottomBlob.PrintSlice();
