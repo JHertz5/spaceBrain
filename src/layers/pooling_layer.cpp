@@ -120,8 +120,6 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	const float* bottomData = bottom->getConstData();
 	float* topData = top->getMutableData();
 
-	// TODO checks to see whether num_, etc, are consistent with bottom?
-
 	for (int n = 0; n < num_; ++n) // batch num loop
 	{
 		for (int c = 0; c < channels_; ++c) // channel loop

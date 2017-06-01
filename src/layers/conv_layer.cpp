@@ -91,7 +91,7 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 
 	// initialise and zero fill weights
 	weights_.Reshape(number_of_kernels, bottom->channels(), kernel_size_, kernel_size_);
-	FillConstant(&weights_, 1); // TODO change to 0?
+	FillConstant(&weights_, 0);
 
 	kernel_volume_ = weights_.count(1);
 }
@@ -133,7 +133,7 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	col_buffer_.Reshape(1, kernel_volume_, output_size_, output_size_);
 }
 
-void ConvolutionLayer::im2col(const float* data_im, float* data_col)
+void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* data_col)
 {
 	const int channelVolume = input_size_ * input_size_;
 
@@ -191,11 +191,11 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
 	{
-		forward_cpu_gemm(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
+		conv_gemm_cpu(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
 	}
 }
 
-void ConvolutionLayer::forward_cpu_gemm(const float* input, const float* weights, float* output, bool skip_im2col)
+void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
 {
 	const float* col_buff = input;
 	// perform im2col or skip
@@ -203,19 +203,16 @@ void ConvolutionLayer::forward_cpu_gemm(const float* input, const float* weights
 	{
 		if (!skip_im2col)
 		{
-			im2col(input, col_buffer_.getMutableData());
+			ConvertBlobToInputColumns(input, col_buffer_.getMutableData());
 
 		}
 		col_buff = col_buffer_.getConstData();
 	}
 	// perform gemm
-	std::cout << "m=" << number_of_kernels  << ", " << "n=" << output_spatial_volume_ << ", " << "k=" << kernel_volume_ << std::endl;
 	gemm_cpu(
 			false, false, 	// transposes
 			number_of_kernels , output_spatial_volume_, kernel_volume_, // m, n, k
-//	        1., weights + weight_offset_, col_buff + col_offset_, // alpha, A, B
 			1., weights, col_buff, // alpha, A, B
-//	        0., output + output_offset_ // beta, C
 			0., output // beta, C
 	);
 }
@@ -241,55 +238,48 @@ bool ConvTest()
 	conv1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData(); // TODO do using mutable data
+	float *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
-		dataIn[dataIndex] = dataIndex;
+		dataIn[dataIndex] = dataIndex/height + 1; // dataIndex/height will nautrally be the floor of this as these are both ints
 	}
+
+	// set weights
+	FillConstant(&conv1.weights_, 1);
 
 	std::cout << "Bottom Data" << std::endl;
 	bottomBlob.PrintSlice();
 
+	std::cout << "Weights Slice" << std::endl;
+	conv1.weights_.PrintSlice(0, 0);
+
 	conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// print results
-	std::cout << "Top Data" << std::endl;
+	std::cout << "Top Data Slice" << std::endl;
 	topBlob.PrintSlice(0, 0);
-	std::cout << "Column Buffer" << std::endl;
 
 	// check results
 	bool testPassed = true;
-/*	for(int hIndex = 0; hIndex< topBlob.height(); hIndex++)
+	const float* topData = topBlob.getConstData();
+	float trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
+
+	for(int topIndex = 0; topIndex < topBlob.count(); topIndex++)
 	{
-		for(int wIndex = 0; wIndex < topBlob.width(); wIndex++)
+		bool testPassed_temp = (topData[topIndex] == trueResults[topIndex]);
+		if(!testPassed_temp)
 		{
-			int bottomHIndex = (stride * hIndex) + topBlob.height() - 2 * pad - 1;
-			int bottomWIndex = (stride * wIndex) + topBlob.width() - 2 * pad - 1;
-
-			if(hIndex == topBlob.height()-1)
-			{
-				bottomHIndex--;
-			}
-			if(wIndex == topBlob.width()-1)
-			{
-				bottomWIndex--;
-			}
-
-			bool testPassed_temp = topBlob.getDataAt(0, 0, hIndex, wIndex) == bottomBlob.getDataAt(0, 0, bottomHIndex, bottomWIndex);
-			if(!testPassed_temp)
-			{
-				Logger::GetLogger()->LogError(
-						"ConvTest",
-						"Conv output incorrect at index: %i,%i",
-						hIndex, wIndex
-				);
-			}
-			testPassed &= testPassed_temp; // AND test into overall test result
+			Logger::GetLogger()->LogError(
+					"ConvTest",
+					"Output %.1f incorrect at index = %i",
+					topData, topIndex
+			);
 		}
+		testPassed &= testPassed_temp; // AND test into overall test result
 	}
-*/
+
 	std::string resultString = "\tConvolution Layer Test ";
-	resultString += "NOT YET IMPLEMENTED\n";//(testPassed ? "PASSED\n" : "FAILED\n");
+	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 

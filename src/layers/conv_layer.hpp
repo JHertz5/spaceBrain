@@ -27,14 +27,14 @@ public:
 		return "Convolution";
 	}
 
-	void im2col(const float* data_im, float* data_col); // TODO give better name
+	void ConvertBlobToInputColumns(const float* data_im, float* data_col);
 
-	void forward_cpu_gemm(const float* input, const float* weights, float* output, bool skip_im2col = false); // TODO rename to fit convention
+	void conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col = false);
 
-	Blob<float> col_buffer_; // TODO set back to private
+	Blob<float> weights_;
 
 private:
-	Blob<float> weights_;
+	Blob<float> col_buffer_;
 
 	int kernel_size_;
 	int stride_;
