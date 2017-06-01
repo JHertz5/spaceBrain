@@ -12,15 +12,13 @@ void FillConstant(Blob<float>* blob, float value)
 {
 	Logger::GetLogger()->LogMessage("\tFillConstant: Filling blob with constant %.1f", value);
 	int count = blob->count();
-	float *data = new float[count]; // create data array to fill with data
+	float* data = blob->getMutableData();
 
 	// iterate through array, setting each location to value
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		data[dataIndex] = value;
 	}
-
-	blob->SetData(data, count); // set blob data to data array
 }
 
 void FillUniform(Blob<float>* blob, int min, int max)
@@ -39,7 +37,7 @@ void FillUniform(Blob<float>* blob, int min, int max)
 	}
 
 	int count = blob->count();
-	float *data = new float[count]; // create data array to fill with data
+	float* data = blob->getMutableData();
 
 	int rangeLength = max + 1 - min; // find range of uniform distribution
 
@@ -48,8 +46,6 @@ void FillUniform(Blob<float>* blob, int min, int max)
 	{
 		data[dataIndex] = (rand() % rangeLength) + min;
 	}
-
-	blob->SetData(data, count); // set blob data to data array
 }
 
 bool FillerTest()
