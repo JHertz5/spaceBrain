@@ -19,6 +19,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	kernel_size_ = kernelSize;
 	stride_ = stride;
 
+	num_ = 0;
 	output_size_ = 0;
 	channels_ = 0;
 	input_size_ = 0;
@@ -82,6 +83,7 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 
 void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
+	num_ = bottom->num();
 	channels_ = bottom->channels();
 	input_size_ = bottom->height(); // only supports square inputs, so width is not needed
 
@@ -106,9 +108,9 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	}
 
 	output_size_ = pooledSize;
-	Logger::GetLogger()->LogMessage("\tPooled size = %f", pooledSize);
+	Logger::GetLogger()->LogMessage("\tPooled size = %i", output_size_);
 
-	top->Reshape(bottom->num(), channels_, pooledSize, pooledSize);
+	top->Reshape(num_, channels_, output_size_, output_size_);
 }
 
 void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
@@ -118,7 +120,9 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	const float* bottomData = bottom->getConstData();
 	float* topData = top->getMutableData();
 
-	for (int n = 0; n < bottom->num(); ++n) // batch num loop
+	// TODO checks to see whether num_, etc, are consistent with bottom?
+
+	for (int n = 0; n < num_; ++n) // batch num loop
 	{
 		for (int c = 0; c < channels_; ++c) // channel loop
 		{

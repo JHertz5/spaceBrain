@@ -33,8 +33,10 @@ protected:
 	int kernel_size_;
 	int stride_;
 	int output_size_;
-	int channels_;
 	int input_size_;
+
+	int num_;
+	int channels_;
 };
 
 bool PoolTest();
