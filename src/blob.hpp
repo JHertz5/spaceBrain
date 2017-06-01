@@ -2,7 +2,8 @@
 #define SRC_BLOB_HPP_
 
 //#include "sds_lib.h"
-#include  "data_memory.hpp"
+#include "data_memory.hpp"
+#include "logger.hpp"
 
 enum BlobShapeDimensions
 {
@@ -50,6 +51,28 @@ public:
 	{
 		return count_;
 	}
+
+	inline int count(int startAxis, int endAxis = 4) const {
+	    if(startAxis > endAxis)
+	    {
+	    	Logger::GetLogger()->LogError("Blob::Count", "startAxis %i > endAxis %i", startAxis, endAxis);
+	    }
+	    if(startAxis < 0 || startAxis > NUM_BLOB_DIMENSIONS)
+	    {
+	    	Logger::GetLogger()->LogError("Blob::Count", "startAxis %i outside range [0,4]", startAxis);
+	    }
+	    if(endAxis < 0 || endAxis > NUM_BLOB_DIMENSIONS)
+		{
+	    	Logger::GetLogger()->LogError("Blob::Count", "endAxis %i outside range [0,4]", endAxis);
+		}
+
+	    int count = 1;
+	    for (int axisIndex = startAxis; axisIndex < endAxis; axisIndex++)
+	    {
+	      count *= shape_[axisIndex];
+	    }
+	    return count;
+	  }
 
 	inline const int* shape() const
 	{
