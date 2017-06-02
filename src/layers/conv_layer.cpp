@@ -263,15 +263,15 @@ bool ConvTest()
 	const float* topData = topBlob.getConstData();
 	float trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
 
-	for(int topIndex = 0; topIndex < topBlob.count(); topIndex++)
+	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
 	{
-		bool testPassed_temp = (topData[topIndex] == trueResults[topIndex]);
+		bool testPassed_temp = (topData[dataIndex] == trueResults[dataIndex]);
 		if(!testPassed_temp)
 		{
 			Logger::GetLogger()->LogError(
 					"ConvTest",
-					"Output %.1f incorrect at index = %i",
-					topData, topIndex
+					"Output %.1f incorrect at index = %i, expected %i",
+					topData[dataIndex], dataIndex, trueResults[dataIndex]
 			);
 		}
 		testPassed &= testPassed_temp; // AND test into overall test result
