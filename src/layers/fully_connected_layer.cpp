@@ -122,8 +122,6 @@ bool FullyConnectedTest()
 		testPassed &= testPassed_temp; // AND test into overall test result
 	}
 
-	std::cout << topBlob.count() << ", " << topData[topBlob.count()-2] << std::endl;
-
 	std::string resultString = "\tFully Connected Layer Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
 	std::cout << resultString;
