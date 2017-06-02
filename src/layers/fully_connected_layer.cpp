@@ -24,11 +24,18 @@ FullyConnectedLayer::FullyConnectedLayer(std::string name, std::string bottom, s
 
 void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 {
-	int channelAxis = CHANNELS;
-	input_volume_ = bottom->count(channelAxis);
+	input_volume_ = bottom->count(CHANNEL_AXIS);
 
 	weights_.Reshape(1, 1, num_output_, input_volume_);
 
+}
+
+void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+{
+	if(input_volume_ != bottom->count(CHANNEL_AXIS))
+	{
+
+	}
 }
 
 }

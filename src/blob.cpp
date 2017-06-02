@@ -12,10 +12,10 @@ Blob<Dtype>::Blob()
 {
 	count_ = 0;
 	data_ = new DataMemory();
-	shape_[NUM_LAYERS] = 0;
-	shape_[CHANNELS] = 0;
-	shape_[HEIGHT] = 0;
-	shape_[WIDTH] = 0;
+	shape_[NUM_AXIS] = 0;
+	shape_[CHANNEL_AXIS] = 0;
+	shape_[HEIGHT_AXIS] = 0;
+	shape_[WIDTH_AXIS] = 0;
 	count_ = 0;
 
 	Logger::GetLogger()->LogMessage("\tBlob constructed with no data");
@@ -44,10 +44,10 @@ template <typename Dtype>
 void Blob<Dtype>::Reshape(const int num, const int channels, const int height, const int width)
 {
 	int shape[NUM_BLOB_DIMENSIONS];
-	shape[NUM_LAYERS] = num;
-	shape[CHANNELS] = channels;
-	shape[HEIGHT] = height;
-	shape[WIDTH] = width;
+	shape[NUM_AXIS] = num;
+	shape[CHANNEL_AXIS] = channels;
+	shape[HEIGHT_AXIS] = height;
+	shape[WIDTH_AXIS] = width;
 	Reshape(shape);
 }
 

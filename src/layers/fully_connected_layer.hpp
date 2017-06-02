@@ -17,7 +17,7 @@ public:
 
 	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top);
 
-//	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
 
 //	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
 

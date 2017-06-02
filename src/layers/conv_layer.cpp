@@ -185,9 +185,8 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	const float* bottomData = bottom->getConstData();
 	float* topData = top->getMutableData();
 
-	int channelAxis = CHANNELS;
-	int bottomVolume = bottom->count(channelAxis);
-	int topVolume = top->count(channelAxis);
+	int bottomVolume = bottom->count(CHANNEL_AXIS);
+	int topVolume = top->count(CHANNEL_AXIS);
 
 	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
 	{

@@ -5,12 +5,12 @@
 #include "data_memory.hpp"
 #include "logger.hpp"
 
-enum BlobShapeDimensions
+enum BlobShapeAxes
 {
-	NUM_LAYERS = 0,
-	CHANNELS = 1,
-	HEIGHT = 2,
-	WIDTH = 3,
+	NUM_AXIS = 0,
+	CHANNEL_AXIS = 1,
+	HEIGHT_AXIS = 2,
+	WIDTH_AXIS = 3,
 	NUM_BLOB_DIMENSIONS = 4
 };
 
@@ -81,22 +81,22 @@ public:
 
 	inline int num() const
 	{
-		return shape_[NUM_LAYERS];
+		return shape_[NUM_AXIS];
 	}
 
 	inline int channels() const
 	{
-		return shape_[CHANNELS];
+		return shape_[CHANNEL_AXIS];
 	}
 
 	inline int height() const
 	{
-		return shape_[HEIGHT];
+		return shape_[HEIGHT_AXIS];
 	}
 
 	inline int width() const
 	{
-		return shape_[WIDTH];
+		return shape_[WIDTH_AXIS];
 	}
 
 protected:
