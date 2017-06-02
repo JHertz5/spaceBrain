@@ -4,6 +4,7 @@
 #include "../data_memory.hpp"
 #include "../layers/conv_layer.hpp"
 #include "../layers/dropout_layer.hpp"
+#include "../layers/fully_connected_layer.hpp"
 #include "../layers/pooling_layer.hpp"
 #include "../layers/relu_layer.hpp"
 #include "../layers/softmax_layer.hpp"
@@ -29,6 +30,8 @@ void printHelpMessage(bool commandLineVersion)
 	std::cout << "\nIMPLEMENTED:" << std::endl;
 	std::cout << "\t'relu' \t - ReLU Layer" << std::endl;
 	std::cout << "\t'pool' \t - Pooling Layer" << std::endl;
+	std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
+	std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
 	std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
 	std::cout << "\t'maths'\t - Maths Functions" << std::endl;
 	std::cout << "\t'data' \t - Data Memory Class" << std::endl;
@@ -37,12 +40,10 @@ void printHelpMessage(bool commandLineVersion)
 	std::cout << "\t'quit' \t - End Program" << std::endl;
 
 	std::cout << "\nIn Testing:" << std::endl;
-	std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
 
 	std::cout << "\nTODO:" << std::endl;
 	std::cout << "\t'input'\t - Input Layer" << std::endl;
 	std::cout << "\t'norm' \t - LRN Layer" << std::endl;
-	std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
 	std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
 
 	std::cout << std::endl;
@@ -52,7 +53,7 @@ void performCommand(std::string inMessage, bool* keepRunning)
 {
 	const std::string notYetImplementedString =  "\t-not yet implemented";
 
-	if(inMessage == "help") // HELP message
+	if(inMessage == "help")
 	{
 		printHelpMessage(false);
 	}
@@ -89,7 +90,7 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "fc")
 	{
 		std::cout << "Fully Connected/Inner Product Layer" << std::endl;
-		std::cout << notYetImplementedString << std::endl;
+		spaceBrain::FullyConnectedTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "drop")
@@ -101,7 +102,6 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "prob")
 	{
 		std::cout << "SoftMax Layer" << std::endl;
-//		std::cout << notYetImplementedString << std::endl;
 		spaceBrain::SoftmaxTest();
 		std::cout << std::endl;
 	}
