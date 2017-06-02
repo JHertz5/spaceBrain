@@ -19,7 +19,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	kernel_size_ = kernelSize;
 	stride_ = stride;
 	pad_ = pad;
-	number_of_kernels = num_output; // number of filters
+	num_output_ = num_output; // number of filters
 
 	output_size_ = 0;
 	channels_ = 0;
@@ -35,7 +35,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	);
 	Logger::GetLogger()->LogMessage(
 			"\t\tpad = %i, kernelSize = %i, stride = %i, num kernels = %i",
-			pad_, kernel_size_, stride_, number_of_kernels
+			pad_, kernel_size_, stride_, num_output_
 	);
 }
 
@@ -90,7 +90,7 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 	is_1x1_ = (kernel_size_ == 1 && stride_ == 1 && pad_ == 0);
 
 	// initialise and zero fill weights
-	weights_.Reshape(number_of_kernels, bottom->channels(), kernel_size_, kernel_size_);
+	weights_.Reshape(num_output_, bottom->channels(), kernel_size_, kernel_size_);
 	FillConstant(&weights_, 0);
 
 	kernel_volume_ = weights_.count(1);
@@ -211,7 +211,7 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 	// perform gemm
 	gemm_cpu(
 			false, false, 	// transposes
-			number_of_kernels , output_spatial_volume_, kernel_volume_, // m, n, k
+			num_output_ , output_spatial_volume_, kernel_volume_, // m, n, k
 			1., weights, col_buff, // alpha, A, B
 			0., output // beta, C
 	);

@@ -39,9 +39,9 @@ private:
 	int kernel_size_;
 	int stride_;
 	int pad_;
-	int number_of_kernels;
-	int kernel_volume_;
-	int output_spatial_volume_;
+	int num_output_;
+	int kernel_volume_; // volume of a single kernel, i.e. count on axes channel, height and width
+	int output_spatial_volume_; // volume of output space,  i.e. count on axes height and width
 	int output_size_;
 	int channels_;
 	int input_size_;
