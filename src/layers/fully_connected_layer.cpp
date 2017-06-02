@@ -69,6 +69,8 @@ void FullyConnectedLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 bool FullyConnectedTest()
 {
+	Logger::GetLogger()->LogMessage("Fully Connected Layer Test:");
+
 	int num = 2, channels = 1, height = 8, width = 8;
 
 	FullyConnectedLayer fc1("fc_test", "test_in", "test_out", num);
