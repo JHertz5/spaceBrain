@@ -19,7 +19,7 @@ public:
 
 	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
 
-//	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
 
 	virtual inline const char* type() const
 	{
@@ -29,9 +29,12 @@ public:
 	Blob<float> weights_;
 
 private:
-	int num_output_;
-	int input_volume_;
+	int M_;
+	int N_;
+	int K_;
 };
+
+bool FullyConnectedTest();
 
 }
 
