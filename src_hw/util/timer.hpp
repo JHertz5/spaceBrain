@@ -3,14 +3,14 @@
 
 #include "/opt/Xilinx/SDx/2016.4/aarch32-linux/include/sds_lib.h"
 
-namespace space_brain
+namespace spaceBrain
 {
 
-class timer
+class Timer
 {
 public:
 
-	timer() : total_cycles_(0), count_(0), num_calls_(0) {};
+	Timer() : total_cycles_(0), count_(0), num_calls_(0) {};
 
 	inline void reset()
 	{
