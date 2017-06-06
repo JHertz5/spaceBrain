@@ -1,0 +1,115 @@
+#ifndef SRC_BLOB_HPP_
+#define SRC_BLOB_HPP_
+
+//#include "sds_lib.h"
+
+#include "logger.hpp"
+
+namespace spaceBrain {
+class DataMemory;
+} /* namespace spaceBrain */
+
+enum BlobShapeAxes
+{
+	NUM_AXIS = 0,
+	CHANNEL_AXIS = 1,
+	HEIGHT_AXIS = 2,
+	WIDTH_AXIS = 3,
+	NUM_BLOB_DIMENSIONS = 4
+};
+
+namespace spaceBrain
+{
+
+template <typename Dtype>
+class Blob
+{
+public:
+
+	Blob();
+	Blob(const int num, const int channels, const int height, const int width); // constructor
+	~Blob(); // destructor
+
+	void Reshape(const int num, const int channels, const int height, const int width);
+	void Reshape(const int shape[NUM_BLOB_DIMENSIONS]);
+	void ReshapeLike(const Blob<Dtype> &thatBlob);
+
+	void SetData(const Dtype* dataIn, const int sizeIn);
+	const Dtype* getConstData() const;
+	Dtype* getMutableData() const;
+	void CopyFrom(const Blob<Dtype>* source, bool reshape);
+
+	void PrintSlice(const int num = 0, const int channel = 0);
+
+	inline int offset(const int n, const int c, const int h, const int w) const
+	{
+		return ((n * channels() + c) * height() + h) * width() + w;
+	}
+
+	inline Dtype getDataAt(const int n, const int c, const int h, const int w)
+	{
+		return getConstData()[offset(n,c,h,w)];
+	}
+
+	inline int count() const
+	{
+		return count_;
+	}
+
+	inline int count(int startAxis, int endAxis = 4) const {
+	    if(startAxis > endAxis)
+	    {
+	    	Logger::GetLogger()->LogError("Blob::Count", "startAxis %i > endAxis %i", startAxis, endAxis);
+	    }
+	    if(startAxis < 0 || startAxis > NUM_BLOB_DIMENSIONS)
+	    {
+	    	Logger::GetLogger()->LogError("Blob::Count", "startAxis %i outside range [0,4]", startAxis);
+	    }
+	    if(endAxis < 0 || endAxis > NUM_BLOB_DIMENSIONS)
+		{
+	    	Logger::GetLogger()->LogError("Blob::Count", "endAxis %i outside range [0,4]", endAxis);
+		}
+
+	    int count = 1;
+	    for (int axisIndex = startAxis; axisIndex < endAxis; axisIndex++)
+	    {
+	      count *= shape_[axisIndex];
+	    }
+	    return count;
+	  }
+
+	inline const int* shape() const
+	{
+		return shape_;
+	}
+
+	inline int num() const
+	{
+		return shape_[NUM_AXIS];
+	}
+
+	inline int channels() const
+	{
+		return shape_[CHANNEL_AXIS];
+	}
+
+	inline int height() const
+	{
+		return shape_[HEIGHT_AXIS];
+	}
+
+	inline int width() const
+	{
+		return shape_[WIDTH_AXIS];
+	}
+
+protected:
+	DataMemory* data_; // pointer to data
+	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
+	int count_; // stores max index of data
+
+};
+
+} // end of namespace spaceBrain
+
+#endif /* SRC_BLOB_HPP_ */
