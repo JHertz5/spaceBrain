@@ -2,9 +2,9 @@
 #include <logger.hpp>
 #include <util/filler.hpp>
 #include <util/maths_functions.hpp>
+#include <util/timer.hpp>
 #include <cmath>
 #include <iostream>
-#include <string>
 
 namespace spaceBrain
 {
@@ -195,6 +195,7 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
 {
+	//TODO check whether num needs to be included
 	const float* col_buff = input;
 	// perform im2col or skip
 	if (!is_1x1_)
@@ -218,11 +219,12 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 bool ConvTest()
 {
 	Logger::GetLogger()->LogMessage("Convolution Layer Test:");
+	spaceBrain::Timer timer;
 
 	int num = 1, channels = 1, height = 7, width = 7;
 	int count = num * channels * height * width;
 	int stride = 2;
-	int pad = 1; //0;
+	int pad = 1;
 	int kernelSize = 3;
 	int numOutputChannels = 1;
 
@@ -282,6 +284,42 @@ bool ConvTest()
 	Logger::GetLogger()->LogMessage(resultString);
 
 	return testPassed;
+}
+
+void ConvSpeed(int inputSize)
+{
+	Logger::GetLogger()->LogMessage("Convolution Layer Test:");
+	spaceBrain::Timer timer;
+
+	int num = 1, channels = 1;
+	int stride = 2;
+	int pad = 1;
+	int kernelSize = 3;
+	int numOutputChannels = 1;
+
+	int numTests = 128;
+
+	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	Blob<float> bottomBlob(num, channels, inputSize, inputSize);
+	Blob<float> topBlob;
+
+	conv1.SetUp(&bottomBlob, &topBlob);
+
+	// set input data
+	FillConstant(&bottomBlob, 1);
+
+	// set weights
+	FillConstant(&conv1.weights_, 1);
+
+	for(int testCounter = 0; testCounter < numTests; testCounter++)
+	{
+		timer.start();
+		conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
+		timer.stop();
+	}
+
+	std::cout << "CPU cycles = " << timer.getAverageCpuTime() << std::endl;
+
 }
 
 }

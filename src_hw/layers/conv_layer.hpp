@@ -49,6 +49,7 @@ private:
 };
 
 bool ConvTest();
+void ConvSpeed(int inputSize);
 
 }
 
