@@ -1,8 +1,10 @@
+#include <blob.hpp>
 #include <layers/relu_layer.hpp>
 #include <logger.hpp>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <string>
 
 namespace spaceBrain
 {

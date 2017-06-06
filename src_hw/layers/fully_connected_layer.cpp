@@ -3,6 +3,7 @@
 #include <util/filler.hpp>
 #include <util/maths_functions.hpp>
 #include <iostream>
+#include <string>
 
 namespace spaceBrain
 {

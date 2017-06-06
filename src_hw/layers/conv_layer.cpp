@@ -4,6 +4,7 @@
 #include <util/maths_functions.hpp>
 #include <cmath>
 #include <iostream>
+#include <string>
 
 namespace spaceBrain
 {

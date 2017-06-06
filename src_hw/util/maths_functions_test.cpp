@@ -1,9 +1,10 @@
 //#include "sds_lib.h"
 
+#include "maths_functions_test.hpp"
+
 #include <logger.hpp>
 #include <stdlib.h>
 #include <util/maths_functions.hpp>
-#include "maths_functions_test.hpp"
 #include <iostream>
 #include <string>
 
