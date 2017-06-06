@@ -4,6 +4,7 @@
 #include <string>
 
 #include "blob.hpp"
+
 namespace spaceBrain
 {
 
