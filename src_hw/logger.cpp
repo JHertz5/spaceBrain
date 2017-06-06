@@ -32,6 +32,7 @@ void Logger::LogError(const char* functionName, const char* format, ...)
 	va_end(args);
 
 	LogMessage("Error: %s() - %s", functionName, messageChars);
+	std::cout << "Error, check log" << std::endl;
 }
 
 void Logger::LogMessage(const char* format, ...)
