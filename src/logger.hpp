@@ -22,7 +22,7 @@ public:
 	static void CloseLogger();
 
 private:
-	Logger(); // constructor
+	Logger(){}; // constructor
 
 	static Logger* pThis; // pointer to logger class object
 	static const std::string filename; // filename for log file

@@ -12,12 +12,6 @@ const std::string Logger::filename = "space_brain.log";
 Logger* Logger::pThis = NULL;
 std::ofstream Logger::logStream;
 
-// constructor doesn't need to do anything
-Logger::Logger()
-{
-
-}
-
 void Logger::LogError(const char* functionName, const char* format, ...)
 {
 	const int errorMessageMaxLength = MAX_LOG_MESSAGE_LENGTH - 12; // Error message formatting adds 12 characters
