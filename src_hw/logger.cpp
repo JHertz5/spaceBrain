@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <cstdarg>
 #include <iostream>
+#include <fstream>
 
 namespace spaceBrain
 {
@@ -50,6 +51,7 @@ void Logger::LogMessage(const char* format, ...)
 void Logger::LogMessage(const std::string &message)
 {
 	logStream << message << std::endl;
+//	std::cout << message << std::endl;
 }
 
 Logger* Logger::GetLogger()
