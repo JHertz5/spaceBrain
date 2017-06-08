@@ -31,6 +31,8 @@ public:
 
 	void conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col = false);
 
+	void conv_cpu(const Blob<float>* inputBlob, Blob<float>* outputBlob);
+
 	Blob<float> weights_;
 
 private:
@@ -39,6 +41,7 @@ private:
 	int kernel_size_;
 	int stride_;
 	int pad_;
+	int num_input_;
 	int num_output_;
 	int kernel_volume_; // volume of a single kernel, i.e. count on axes channel, height and width
 	int output_spatial_volume_; // volume of output space,  i.e. count on axes height and width
@@ -50,6 +53,8 @@ private:
 };
 
 bool ConvTest();
+
+bool ConvCompare();
 
 }
 
