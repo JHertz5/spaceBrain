@@ -19,9 +19,7 @@ namespace spaceBrain
 //#pragma SDS data access_pattern(A:SEQUENTIAL, B:SEQUENTIAL, C:SEQUENTIAL)
 //void madd(float A[N*N], float B[N*N], float C[N*N]);
 
-void mmult_cpu(float *A,  float *B, float *C);
-
-void madd_cpu(float *A, float *B, float *C);
+void mmult_cpu(const int m, const int n, const int k, float *A,  float *B, float *C);
 
 void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C);
 

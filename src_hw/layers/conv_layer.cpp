@@ -2,9 +2,10 @@
 #include <logger.hpp>
 #include <util/filler.hpp>
 #include <util/maths_functions.hpp>
-#include <util/timer.hpp>
 #include <cmath>
 #include <iostream>
+
+#include "../util/timer.hpp"
 
 namespace spaceBrain
 {
@@ -99,7 +100,6 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	channels_ = bottom->channels();
 	input_size_ = bottom->height();
-	input_size_ = bottom->width();
 
 	int inputSize = input_size_;
 
@@ -214,6 +214,74 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 			1., weights, col_buff, // alpha, A, B
 			0., output // beta, C
 	);
+}
+
+void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outputBlob)
+{
+	const float* weights = weights_.getConstData();
+	const float* input = inputBlob->getConstData();
+	float* output = outputBlob->getMutableData();
+
+	int R = outputBlob->height();
+	int C = outputBlob->width();
+	int M = outputBlob->num();
+	int num_inputs = inputBlob->num();
+	int K = weights_.height();
+
+	int Tr = 1;
+	int Tc = 1;
+	int Tm = 1;
+	int Tn = 1;
+
+
+	for(int row = 0; row < R; row++)
+	{
+		for(int col = 0; col < C; col++)
+		{
+			for(int to = 0; to < M; to++)
+			{
+				for(int ti = 0; ti < N; ti++)
+				{
+					// load stuff
+					int trrLim = std::min(row + Tr, R);
+					int tccLim = std::min(col + Tc, C);
+					int tooLim = std::min(to + Tm, M);
+					int tiiLim = std::min(ti + Tn, N);
+
+					for(int trr = row; trr < trrLim; trr++)
+					{
+						for(int tcc = col; tcc < tccLim; tcc++)
+						{
+							for(int too = to; too < tooLim; too++)
+							{
+								for(int tii = ti; tii < tiiLim; tii++)
+								{
+									for(int i = 0; i < K; i++)
+									{
+										for(int j = 0; j < K; j++)
+										{
+//											((n * channels() + c) * height() + h) * width() + w;
+
+											int paddedRow = stride_ * trr + i - pad;
+											int paddedColumn = stride_ * tcc + j - pad;
+											// if !(0 <= [stride_ * trr + i] < input_size) => padded area
+											output[(too * trrLim + trr) * tccLim + tcc] +=
+//											output[too][trr][tcc] +=
+													weights[((too * tiiLim + tii) * K + i) * K + j] *
+//													weights[too][tii][i][j] *
+													input[tii][stride_ * trr + i][stride_ * tcc + j];
+//													input[tii][stride_ * trr + i][stride_ * tcc + j];
+//											output[too][trr][tcc] += weights[too][tii][i][j] *;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 bool ConvTest()
