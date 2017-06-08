@@ -46,10 +46,6 @@ void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	M_ = bottom->num();
 
 	int topShape[] = {bottom->num(), bottom->channels(), N_, 1};
-	// TODO clean up or test further
-//	std::cout << N_ << " = " << topShape[HEIGHT_AXIS] * topShape[WIDTH_AXIS] << std::endl;
-//	topShape[HEIGHT_AXIS] = N_;
-//	topShape[WIDTH_AXIS] = 1;
 	top->Reshape(topShape);
 }
 
@@ -128,5 +124,42 @@ bool FullyConnectedTest()
 
 	return testPassed;
 }
+// TODO Convert to fc layer shiz
+/*
+void ConvSpeed(int inputSize)
+{
+	Logger::GetLogger()->LogMessage("Convolution Speed Test:");
+	spaceBrain::Timer timer;
 
+	int num = 1, channels = 1;
+	int stride = 2;
+	int pad = 1;
+	int kernelSize = 3;
+	int numOutputChannels = 1;
+
+	int numTests = 128;
+
+	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	Blob<float> bottomBlob(num, channels, inputSize, inputSize);
+	Blob<float> topBlob;
+
+	conv1.SetUp(&bottomBlob, &topBlob);
+
+	// set input data
+	FillConstant(&bottomBlob, 1);
+
+	// set weights
+	FillConstant(&conv1.weights_, 1);
+
+	for(int testCounter = 0; testCounter < numTests; testCounter++)
+	{
+		timer.start();
+		conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
+		timer.stop();
+	}
+
+	std::cout << "CPU cycles = " << timer.getAverageCpuTime() << std::endl;
+
+}
+*/
 }

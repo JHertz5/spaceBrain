@@ -49,7 +49,7 @@ private:
 };
 
 bool ConvTest();
-void ConvSpeed(int inputSize);
+void ConvSpeed(int inputSize, int pad, int kernelSize, int stride);
 
 }
 

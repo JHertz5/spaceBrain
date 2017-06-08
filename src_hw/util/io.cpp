@@ -71,7 +71,7 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "conv_speed")
 	{
 		std::cout << "Convolution Layer" << std::endl;
-		spaceBrain::ConvSpeed(63);
+		spaceBrain::ConvSpeed(63, 1, 3, 2); // pad = 1, kernelSize = 3, stride = 2
 		std::cout << std::endl;
 	}
 	else if(inMessage == "relu")

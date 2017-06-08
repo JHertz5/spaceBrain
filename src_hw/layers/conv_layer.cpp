@@ -195,7 +195,7 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
 {
-	//TODO check whether num needs to be included
+	//TODO test with num
 	const float* col_buff = input;
 	// perform im2col or skip
 	if (!is_1x1_)
@@ -286,15 +286,12 @@ bool ConvTest()
 	return testPassed;
 }
 
-void ConvSpeed(int inputSize)
+void ConvSpeed(int inputSize, int pad, int kernelSize, int stride)
 {
-	Logger::GetLogger()->LogMessage("Convolution Layer Test:");
+	Logger::GetLogger()->LogMessage("Convolution Speed Test:");
 	spaceBrain::Timer timer;
 
 	int num = 1, channels = 1;
-	int stride = 2;
-	int pad = 1;
-	int kernelSize = 3;
 	int numOutputChannels = 1;
 
 	int numTests = 128;
