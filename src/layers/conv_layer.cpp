@@ -226,18 +226,19 @@ void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outpu
 
 	int num_input = num_input_;
 
-	int Tr = 1;
-	int Tc = 1;
-	int Tm = 1;
-	int Tn = 1;
+	// Tiling values
+	int Tr = 2;
+	int Tc = 2;
+	int Tm = 2;
+	int Tn = 2;
 
-	for(int row = 0; row < output_size_; row++)
+	for(int row = 0; row < output_size_; row += Tr)
 	{
-		for(int col = 0; col < output_size_; col++)
+		for(int col = 0; col < output_size_; col += Tc)
 		{
-			for(int to = 0; to < num_output_; to++)
+			for(int to = 0; to < num_output_; to += Tm)
 			{
-				for(int ti = 0; ti < num_input; ti++)
+				for(int ti = 0; ti < num_input; ti += Tn)
 				{
 					// load stuff
 					int trrLim = std::min(row + Tr, output_size_);
