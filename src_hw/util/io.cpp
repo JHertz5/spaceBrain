@@ -74,6 +74,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvSpeed(63, 1, 3, 2); // pad = 1, kernelSize = 3, stride = 2
 		std::cout << std::endl;
 	}
+	else if(inMessage == "conv_comp")
+	{
+		std::cout << "Convolution Layer" << std::endl;
+		spaceBrain::ConvCompare();
+		std::cout << std::endl;
+	}
 	else if(inMessage == "relu")
 	{
 		std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;

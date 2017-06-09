@@ -21,6 +21,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	pad_ = pad;
 	num_output_ = num_output; // number of filters
 
+	num_input_ = 0;
 	output_size_ = 0;
 	channels_ = 0;
 	input_size_ = 0;
@@ -98,6 +99,7 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 
 void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
+	num_input_ = bottom->num();
 	channels_ = bottom->channels();
 	input_size_ = bottom->height();
 
@@ -222,31 +224,28 @@ void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outpu
 	const float* input = inputBlob->getConstData();
 	float* output = outputBlob->getMutableData();
 
-	int R = outputBlob->height();
-	int C = outputBlob->width();
-	int M = outputBlob->num();
-	int num_inputs = inputBlob->num();
-	int K = weights_.height();
+	int paddedRow;
+	int paddedCol;
 
-	int Tr = 1;
-	int Tc = 1;
-	int Tm = 1;
-	int Tn = 1;
+	// Tiling values
+	int Tr = 2;
+	int Tc = 2;
+	int Tm = 2;
+	int Tn = 2;
 
-
-	for(int row = 0; row < R; row++)
+	for(int row = 0; row < output_size_; row += Tr)
 	{
-		for(int col = 0; col < C; col++)
+		for(int col = 0; col < output_size_; col += Tc)
 		{
-			for(int to = 0; to < M; to++)
+			for(int to = 0; to < num_output_; to += Tm)
 			{
-				for(int ti = 0; ti < N; ti++)
+				for(int ti = 0; ti < num_input_; ti += Tn)
 				{
 					// load stuff
-					int trrLim = std::min(row + Tr, R);
-					int tccLim = std::min(col + Tc, C);
-					int tooLim = std::min(to + Tm, M);
-					int tiiLim = std::min(ti + Tn, N);
+					int trrLim = std::min(row + Tr, output_size_);
+					int tccLim = std::min(col + Tc, output_size_);
+					int tooLim = std::min(to + Tm, num_output_);
+					int tiiLim = std::min(ti + Tn, num_input_);
 
 					for(int trr = row; trr < trrLim; trr++)
 					{
@@ -256,22 +255,30 @@ void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outpu
 							{
 								for(int tii = ti; tii < tiiLim; tii++)
 								{
-									for(int i = 0; i < K; i++)
+									for(int i = 0; i < kernel_size_; i++)
 									{
-										for(int j = 0; j < K; j++)
-										{
-//											((n * channels() + c) * height() + h) * width() + w;
+										paddedRow = stride_ * trr + i - pad_;
 
-											int paddedRow = stride_ * trr + i - pad;
-											int paddedColumn = stride_ * tcc + j - pad;
-											// if !(0 <= [stride_ * trr + i] < input_size) => padded area
-											output[(too * trrLim + trr) * tccLim + tcc] +=
-//											output[too][trr][tcc] +=
-													weights[((too * tiiLim + tii) * K + i) * K + j] *
+										for(int j = 0; j < kernel_size_; j++)
+										{
+											paddedCol = stride_ * tcc + j - pad_;
+
+											if(paddedCol < 0 || paddedCol >= input_size_ || paddedRow < 0 || paddedRow >= input_size_)
+											{
+												output[(too * trrLim + trr) * tccLim + tcc] += 0;
+											}
+											else
+											{
+												output[(too * output_size_ + trr) * output_size_ + tcc] +=
+//												output[too][trr][tcc] +=
+													weights[((too * output_size_ + tii) * kernel_size_ + i) * kernel_size_ + j] *
 //													weights[too][tii][i][j] *
-													input[tii][stride_ * trr + i][stride_ * tcc + j];
+													input[(tii * input_size_ + paddedRow) * input_size_ + paddedCol];
 //													input[tii][stride_ * trr + i][stride_ * tcc + j];
-//											output[too][trr][tcc] += weights[too][tii][i][j] *;
+
+//												std::cout << tii << " " << tiiLim << " " << num_input_ << " " << ti << " " << Tn
+//														<< "\t" << (tii * input_size_ + paddedRow) * input_size_ + paddedCol << std::endl;
+											}
 										}
 									}
 								}
@@ -283,6 +290,7 @@ void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outpu
 		}
 	}
 }
+
 
 bool ConvTest()
 {
@@ -385,6 +393,80 @@ void ConvSpeed(int inputSize, int pad, int kernelSize, int stride)
 
 	std::cout << "CPU cycles = " << timer.getAverageCpuTime() << std::endl;
 
+}
+
+bool ConvCompare()
+{
+	Logger::GetLogger()->LogMessage("Convolution Implementation Test:");
+
+	int num = 1, channels = 1, height = 7, width = 7;
+	int count = num * channels * height * width;
+	int stride = 2;
+	int pad = 1; //0;
+	int kernelSize = 3;
+	int numOutputChannels = 1;
+
+	std::cout << "pad = " << pad << ", stride =" << stride << ", kernel size = " << kernelSize << std::endl;
+	std::cout << std::endl;
+
+	ConvolutionLayer conv1("conv_test_im2col", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	ConvolutionLayer conv2("conv_test_conv", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	Blob<float> bottomBlob(num, channels, height, width);
+	Blob<float> colBlob, convBlob;
+
+	conv1.SetUp(&bottomBlob, &colBlob);
+	conv2.SetUp(&bottomBlob, &convBlob);
+
+	// set input data
+	float *dataIn = bottomBlob.getMutableData();
+	for(int dataIndex = 0; dataIndex < count; dataIndex++)
+	{
+		dataIn[dataIndex] = dataIndex/height + 1; // dataIndex/height will nautrally be the floor of this as these are both ints
+	}
+
+	// set weights
+	FillConstant(&conv1.weights_, 1);
+	FillConstant(&conv2.weights_, 1);
+
+	std::cout << "Bottom Data" << std::endl;
+	bottomBlob.PrintSlice();
+
+	std::cout << "Weights Slice" << std::endl;
+	conv1.weights_.PrintSlice(0, 0);
+
+	conv1.Forward(&bottomBlob, &colBlob); // perform forward computation
+	conv2.conv_cpu(&bottomBlob, &convBlob); // perform forward computation
+
+	// print results
+	std::cout << "Top Data Slice" << std::endl;
+	colBlob.PrintSlice(0, 0);
+	convBlob.PrintSlice(0, 0);
+
+	// check results
+	bool testPassed = true;
+	const float* colData = colBlob.getConstData();
+	const float* convData = convBlob.getConstData();
+
+	for(int dataIndex = 0; dataIndex < colBlob.count(); dataIndex++)
+	{
+		bool testPassed_temp = (colData[dataIndex] == convData[dataIndex]);
+		if(!testPassed_temp)
+		{
+			Logger::GetLogger()->LogError(
+					"ConvCompare",
+					"Conv output %.1f incorrect at index = %i, expected %.1f",
+					convData[dataIndex], dataIndex, colData[dataIndex]
+			);
+		}
+		testPassed &= testPassed_temp; // AND test into overall test result
+	}
+
+	std::string resultString = "\tConvolution Layer Test ";
+	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
+	std::cout << resultString;
+	Logger::GetLogger()->LogMessage(resultString);
+
+	return testPassed;
 }
 
 }
