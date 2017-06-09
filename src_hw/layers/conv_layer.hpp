@@ -20,6 +20,8 @@ public:
 	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
 
 	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
+	void Forward_im2col(const Blob<float>* bottom, Blob<float>* top);
+
 
 	virtual inline const char* type() const
 	{
@@ -29,7 +31,7 @@ public:
 	void ConvertBlobToInputColumns(const float* data_im, float* data_col);
 
 	void conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col = false);
-	void conv_cpu(const Blob<float>* inputBlob, Blob<float>* outputBlob);
+	void conv_cpu(const float* input, const float* weights, float* output);
 
 
 	Blob<float> weights_;

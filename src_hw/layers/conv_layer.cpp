@@ -178,7 +178,8 @@ void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* da
 	} /* channels */
 }
 
-void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+// Deprecated
+void ConvolutionLayer::Forward_im2col(const Blob<float>* bottom, Blob<float>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -218,62 +219,79 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 	);
 }
 
-void ConvolutionLayer::conv_cpu(const Blob<float>* inputBlob, Blob<float>* outputBlob)
+void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 {
-	const float* weights = weights_.getConstData();
-	const float* input = inputBlob->getConstData();
-	float* output = outputBlob->getMutableData();
+	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
+	FillConstant(top, 0);
+
+	const float* weight = weights_.getConstData();
+	const float* bottomData = bottom->getConstData();
+	float* topData = top->getMutableData();
+
+	int bottomVolume = bottom->count(CHANNEL_AXIS);
+	int topVolume = top->count(CHANNEL_AXIS);
+
+	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
+	{
+		conv_cpu(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
+//		conv_cpu(bottomData, weight, topData);
+	}
+}
+
+void ConvolutionLayer::conv_cpu(const float* input, const float* weights, float* output)
+{
 	int paddedRow;
 	int paddedCol;
 
 	// Tiling values
-	int Tr = 2;
-	int Tc = 2;
-	int Tm = 2;
-	int Tn = 2;
+	int tileRowSize = 100000;
+	int tileColSize = 100000;
+	int tileOutputNumSize = 100000;
+	int tileInputNumSize = 100000;
 
-	for(int row = 0; row < output_size_; row += Tr)
+	for(int outputRow = 0; outputRow < output_size_; outputRow += tileRowSize)
 	{
-		for(int col = 0; col < output_size_; col += Tc)
+		for(int outputCol = 0; outputCol < output_size_; outputCol += tileColSize)
 		{
-			for(int to = 0; to < num_output_; to += Tm)
+			for(int outputNum = 0; outputNum < num_output_; outputNum += tileOutputNumSize)
 			{
-				for(int ti = 0; ti < num_input_; ti += Tn)
+				for(int inputNum = 0; inputNum < num_input_; inputNum += tileInputNumSize)
 				{
 					// load stuff
-					int trrLim = std::min(row + Tr, output_size_);
-					int tccLim = std::min(col + Tc, output_size_);
-					int tooLim = std::min(to + Tm, num_output_);
-					int tiiLim = std::min(ti + Tn, num_input_);
+					int tileRowEnd = std::min(outputRow + tileRowSize, output_size_);
+					int tileColEnd = std::min(outputCol + tileColSize, output_size_);
+					int tileOutputNumEnd = std::min(outputNum + tileOutputNumSize, num_output_);
+					int tileInputNumEnd = std::min(inputNum + tileInputNumSize, num_input_);
 
-					for(int trr = row; trr < trrLim; trr++)
+					for(int tileRow = outputRow; tileRow < tileRowEnd; tileRow++)
 					{
-						for(int tcc = col; tcc < tccLim; tcc++)
+						for(int tileCol = outputCol; tileCol < tileColEnd; tileCol++)
 						{
-							for(int too = to; too < tooLim; too++)
+							for(int tileOutputNum = outputNum; tileOutputNum < tileOutputNumEnd; tileOutputNum++)
 							{
-								for(int tii = ti; tii < tiiLim; tii++)
+								for(int tileInputNum = inputNum; tileInputNum < tileInputNumEnd; tileInputNum++)
 								{
-									for(int i = 0; i < kernel_size_; i++)
+									for(int kernelRow = 0; kernelRow < kernel_size_; kernelRow++)
 									{
-										paddedRow = stride_ * trr + i - pad_;
+										paddedRow = stride_ * tileRow + kernelRow - pad_;
 
-										for(int j = 0; j < kernel_size_; j++)
+										for(int kernelCol = 0; kernelCol < kernel_size_; kernelCol++)
 										{
-											paddedCol = stride_ * tcc + j - pad_;
+											paddedCol = stride_ * tileCol + kernelCol - pad_;
 
 											if(paddedCol < 0 || paddedCol >= input_size_ || paddedRow < 0 || paddedRow >= input_size_)
 											{
-												output[(too * trrLim + trr) * tccLim + tcc] += 0;
+												// point is in padded area
+												output[(tileOutputNum * tileRowEnd + tileRow) * tileColEnd + tileCol] += 0;
 											}
 											else
 											{
-												output[(too * output_size_ + trr) * output_size_ + tcc] +=
+												output[(tileOutputNum * output_size_ + tileRow) * output_size_ + tileCol] +=
 //												output[too][trr][tcc] +=
-													weights[((too * output_size_ + tii) * kernel_size_ + i) * kernel_size_ + j] *
+													weights[((tileOutputNum * output_size_ + tileInputNum) * kernel_size_ + kernelRow) * kernel_size_ + kernelCol] *
 //													weights[too][tii][i][j] *
-													input[(tii * input_size_ + paddedRow) * input_size_ + paddedCol];
+													input[(tileInputNum * input_size_ + paddedRow) * input_size_ + paddedCol];
 //													input[tii][stride_ * trr + i][stride_ * tcc + j];
 
 //												std::cout << tii << " " << tiiLim << " " << num_input_ << " " << ti << " " << Tn
@@ -399,10 +417,10 @@ bool ConvCompare()
 {
 	Logger::GetLogger()->LogMessage("Convolution Implementation Test:");
 
-	int num = 1, channels = 1, height = 7, width = 7;
+	int num = 1, channels = 1, height = 112, width = 112;
 	int count = num * channels * height * width;
-	int stride = 2;
-	int pad = 1; //0;
+	int stride = 1;
+	int pad = 1;
 	int kernelSize = 3;
 	int numOutputChannels = 1;
 
@@ -412,9 +430,9 @@ bool ConvCompare()
 	ConvolutionLayer conv1("conv_test_im2col", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
 	ConvolutionLayer conv2("conv_test_conv", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
 	Blob<float> bottomBlob(num, channels, height, width);
-	Blob<float> colBlob, convBlob;
+	Blob<float> im2colBlob, convBlob;
 
-	conv1.SetUp(&bottomBlob, &colBlob);
+	conv1.SetUp(&bottomBlob, &im2colBlob);
 	conv2.SetUp(&bottomBlob, &convBlob);
 
 	// set input data
@@ -428,26 +446,45 @@ bool ConvCompare()
 	FillConstant(&conv1.weights_, 1);
 	FillConstant(&conv2.weights_, 1);
 
-	std::cout << "Bottom Data" << std::endl;
-	bottomBlob.PrintSlice();
+//	std::cout << "Bottom Data" << std::endl;
+//	bottomBlob.PrintSlice();
 
-	std::cout << "Weights Slice" << std::endl;
-	conv1.weights_.PrintSlice(0, 0);
+//	std::cout << "Weights Slice" << std::endl;
+//	conv1.weights_.PrintSlice(0, 0);
 
-	conv1.Forward(&bottomBlob, &colBlob); // perform forward computation
-	conv2.conv_cpu(&bottomBlob, &convBlob); // perform forward computation
+
+	spaceBrain::Timer im2colTimer, convTimer;
+	int numTests = 1;
+
+	std::cout << "Starting im2col gemm test" << std::endl;
+	im2colTimer.start();
+	for(int testIndex = 0; testIndex < numTests; testIndex++)
+	{
+		conv1.Forward_im2col(&bottomBlob, &im2colBlob); // perform forward computation
+	}
+	im2colTimer.stop();
+
+	std::cout << "Starting zhang conv test" << std::endl;
+	convTimer.start();
+	for(int testIndex = 0; testIndex < numTests; testIndex++)
+	{
+		conv2.Forward(&bottomBlob, &convBlob); // perform forward computation
+	}
+	convTimer.stop();
 
 	// print results
-	std::cout << "Top Data Slice" << std::endl;
-	colBlob.PrintSlice(0, 0);
-	convBlob.PrintSlice(0, 0);
+//	std::cout << "Top Data Slices" << std::endl;
+//	std::cout << "im2col gemm implementation" << std::endl;
+//	im2colBlob.PrintSlice(0, 0);
+//	std::cout << "FPGA friendy implementation" << std::endl;
+//	convBlob.PrintSlice(0, 0);
 
 	// check results
 	bool testPassed = true;
-	const float* colData = colBlob.getConstData();
+	const float* colData = im2colBlob.getConstData();
 	const float* convData = convBlob.getConstData();
 
-	for(int dataIndex = 0; dataIndex < colBlob.count(); dataIndex++)
+	for(int dataIndex = 0; dataIndex < im2colBlob.count(); dataIndex++)
 	{
 		bool testPassed_temp = (colData[dataIndex] == convData[dataIndex]);
 		if(!testPassed_temp)
@@ -457,6 +494,7 @@ bool ConvCompare()
 					"Conv output %.1f incorrect at index = %i, expected %.1f",
 					convData[dataIndex], dataIndex, colData[dataIndex]
 			);
+			std::cout << convData[dataIndex] << " "<< dataIndex << " " << colData[dataIndex] << std::endl;
 		}
 		testPassed &= testPassed_temp; // AND test into overall test result
 	}
@@ -465,6 +503,14 @@ bool ConvCompare()
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
+
+	int im2col_cycles = im2colTimer.getAverageCpuTime()/numTests;
+	int conv_cycles = convTimer.getAverageCpuTime()/numTests;
+	double speedup = (double) im2col_cycles / (double) conv_cycles;
+
+	std::cout << "Average number of CPU cycles running im2col,gemm conv in software: " 	<< im2col_cycles << std::endl;
+	std::cout << "Average number of CPU cycles running zhang conv in software: "		<< conv_cycles << std::endl;
+	std::cout << "Speed up: " << speedup << std::endl;
 
 	return testPassed;
 }
