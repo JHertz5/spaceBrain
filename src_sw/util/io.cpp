@@ -76,9 +76,9 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
-	else if(inMessage == "conv2")
+	else if(inMessage == "conv_comp")
 	{
-		std::cout << "Convolution Layer" << std::endl;
+		std::cout << "Convolution Layer Implementation Comparison" << std::endl;
 		spaceBrain::ConvCompare();
 		std::cout << std::endl;
 	}
@@ -104,6 +104,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	{
 		std::cout << "Fully Connected/Inner Product Layer" << std::endl;
 		spaceBrain::FullyConnectedTest();
+		std::cout << std::endl;
+	}
+	else if(inMessage == "fc_comp")
+	{
+		std::cout << "Fully Connected Layer Implementation Comparison" << std::endl;
+		spaceBrain::FullyConnectedCompare();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "drop")
