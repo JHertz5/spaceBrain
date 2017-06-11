@@ -106,13 +106,19 @@ void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 		{
 			Logger::GetLogger()->LogError(
 					"Blob::CopyFrom",
-					"Source shape does not match current chape but reshape == false"
+					"Source shape does not match current shape but reshape == false"
 			);
 			return;
 		}
 	}
 
-	memcpy(source->getMutableData(), data_->getMutableData(), sizeof(Dtype) * count_); // copy data from source
+	const float* sourceDataArray = (float*) source->getConstData();
+	float* thisDataArray = (float*) data_->getMutableData();
+
+	for(int index = 0; index < this->count(); index++)
+	{
+		thisDataArray[index] = sourceDataArray[index];
+	}
 }
 
 template <typename Dtype>
