@@ -41,10 +41,10 @@ void printHelpMessage(bool commandLineVersion)
 	std::cout << "\t'quit' \t - End Program" << std::endl;
 
 	std::cout << "\nIn Testing:" << std::endl;
+	std::cout << "\t'net' \t - Full Network Run" << std::endl;
 
 	std::cout << "\nTODO:" << std::endl;
 	std::cout << "\t'input'\t - Input Layer" << std::endl;
-	std::cout << "\t'norm' \t - LRN Layer" << std::endl;
 	std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
 
 	std::cout << std::endl;
@@ -76,22 +76,16 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
-	else if(inMessage == "conv_comp")
+	/*else if(inMessage == "conv_comp") // not used as im2col convolution now causes segfault
 	{
 		std::cout << "Convolution Layer Implementation Comparison" << std::endl;
 		spaceBrain::ConvCompare();
 		std::cout << std::endl;
-	}
+	}*/
 	else if(inMessage == "relu")
 	{
 		std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
 		spaceBrain::ReluTest();
-		std::cout << std::endl;
-	}
-	else if(inMessage == "norm")
-	{
-		std::cout << "LRN (Local Response Normalisation) Layer" << std::endl;
-		std::cout << notYetImplementedString << std::endl;
 		std::cout << std::endl;
 	}
 	else if(inMessage == "pool")
