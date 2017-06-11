@@ -16,6 +16,8 @@ void Net::Init(std::string name)
 	name_ = name;
 
 	SetLayers();
+
+
 }
 
 void Net::SetLayers()
@@ -206,21 +208,6 @@ void Net::SetLayers()
 	ConvolutionLayer* conv1_1 = new ConvolutionLayer("conv1_1", "data", "conv1_1", conv_pad, conv_kernelSize, conv_stride, num_output_1);
 	layer_names_.push_back(conv1_1->name());
 	layers_.push_back(conv1_1);
-
-	// input layer
-//	input: "data"
-//	input_dim: 1
-//	input_dim: 3
-//	input_dim: 224
-//	input_dim: 224
-
-	for(size_t index = 0; index < layers_.size(); index++)
-	{
-		std::cout << index << "\t" << layer_names_[index] << std::endl;
-	}
-
-	std::cout << fc8->name() << std::endl;
-
 }
 
 void NetTest()
