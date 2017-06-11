@@ -10,9 +10,9 @@ namespace spaceBrain
 
 DropoutLayer::DropoutLayer(std::string name, std::string bottom, std::string top)
 {
-	DropoutLayer::name_ = name;
-	DropoutLayer::bottom_ = bottom;
-	DropoutLayer::top_ = top;
+	name_ = name;
+	bottom_ = bottom;
+	top_ = top;
 	Logger::GetLogger()->LogMessage("\tDropout layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
