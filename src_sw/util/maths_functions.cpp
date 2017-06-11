@@ -93,9 +93,6 @@ void conv_cpu_transB(int stride, int pad,
 //									weights[inChannelIndex][kernelRow][kernelCol][outChannelIndex] *
 									input[(inChannelIndex * inputSize + paddedRow) * inputSize + paddedCol];
 //									input[inChannelIndex][paddedRow][paddedCol];
-
-								std::cout << ((inChannelIndex * kernelSize + kernelRow) * kernelSize + kernelCol) * outputDepth + outChannelIndex << "\t"
-										<< outChannelIndex << ", " << kernelRow << ", " << kernelCol << ", " << inChannelIndex << std::endl;
 							}
 						}
 					}
