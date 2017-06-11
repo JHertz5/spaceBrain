@@ -5,7 +5,16 @@ namespace spaceBrain
 {
 
 void conv_cpu(int stride, int pad,
-		int inputSize, int kernelSize, int outputSize,
+		int inputSize, int kernelSize, int outputSize, int inputDepth,
+		int outRowStart, int outRowEnd,
+		int outColStart, int outColEnd,
+		int outChannelStart, int outChannelEnd,
+		int inChannelStart, int inChannelEnd,
+		const float* input, const float* weights, float* output
+);
+
+void conv_cpu_transB(int stride, int pad,
+		int inputSize, int kernelSize, int outputSize, int outputDepth,
 		int outRowStart, int outRowEnd,
 		int outColStart, int outColEnd,
 		int outChannelStart, int outChannelEnd,
