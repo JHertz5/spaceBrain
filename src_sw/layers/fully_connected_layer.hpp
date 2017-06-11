@@ -29,9 +29,9 @@ public:
 	Blob<float> weights_;
 
 private:
-	int M_;
-	int N_;
-	int K_;
+	int input_num_;
+	int output_length_;
+	int input_volume_;
 };
 
 bool FullyConnectedTest();
