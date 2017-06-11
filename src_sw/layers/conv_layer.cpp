@@ -235,17 +235,13 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
 	{
-		conv_cpu(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
+		Convolution(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
 		std::cout << numIndex * bottomVolume << " " << numIndex * topVolume << std::endl;
 	}
-	std::cout << bottom->count() << " " << top->count() << std::endl;
 }
 
-void ConvolutionLayer::conv_cpu(const float* input, const float* weights, float* output)
+void ConvolutionLayer::Convolution(const float* input, const float* weights, float* output)
 {
-	int paddedRow;
-	int paddedCol;
-
 	// Tiling values
 	int rowTileSize = 4;
 	int colTileSize = 4;
@@ -261,47 +257,56 @@ void ConvolutionLayer::conv_cpu(const float* input, const float* weights, float*
 				for(int inChannel = 0; inChannel < input_channels_; inChannel += inChannelTileSize) //TODO change to channel
 				{
 					// load stuff
-					int rowTileEnd = std::min(outRow + rowTileSize, output_size_);
-					int colTileEnd = std::min(outCol + colTileSize, output_size_);
+					int outRowTileEnd = std::min(outRow + rowTileSize, output_size_);
+					int outColTileEnd = std::min(outCol + colTileSize, output_size_);
 					int outChannelTileEnd = std::min(outChannel + outChannelTileSize, num_kernels);
 					int inChannelTileEnd = std::min(inChannel + inChannelTileSize, input_channels_);
 
-					for(int rowTileIndex = outRow; rowTileIndex < rowTileEnd; rowTileIndex++)
-					{
-						for(int colTileIndex = outCol; colTileIndex < colTileEnd; colTileIndex++)
-						{
-							for(int outChannelTileIndex = outChannel; outChannelTileIndex < outChannelTileEnd; outChannelTileIndex++)
-							{
-								for(int inChannelTileIndex = inChannel; inChannelTileIndex < inChannelTileEnd; inChannelTileIndex++)
-								{
-									for(int kernelRow = 0; kernelRow < kernel_size_; kernelRow++)
-									{
-										paddedRow = stride_ * rowTileIndex + kernelRow - pad_;
+					conv_cpu(stride_, pad_,
+							input_size_, kernel_size_, output_size_,
+							outRow, outRowTileEnd,
+							outCol, outColTileEnd,
+							outChannel, outChannelTileEnd,
+							inChannel, inChannelTileEnd,
+							input, weights, output
+					);
 
-										for(int kernelCol = 0; kernelCol < kernel_size_; kernelCol++)
-										{
-											paddedCol = stride_ * colTileIndex + kernelCol - pad_;
-
-											if(paddedCol < 0 || paddedCol >= input_size_ || paddedRow < 0 || paddedRow >= input_size_)
-											{
-												// point is in padded area
-												output[(outChannelTileIndex * rowTileEnd + rowTileIndex) * colTileEnd + colTileIndex] += 0;
-											}
-											else
-											{
-												output[(outChannelTileIndex * output_size_ + rowTileIndex) * output_size_ + colTileIndex] +=
-//												output[too][trr][tcc] +=
-													weights[((outChannelTileIndex * output_size_ + inChannelTileIndex) * kernel_size_ + kernelRow) * kernel_size_ + kernelCol] *
-//													weights[too][tii][i][j] *
-													input[(inChannelTileIndex * input_size_ + paddedRow) * input_size_ + paddedCol];
-//													input[tii][stride_ * trr + i][stride_ * tcc + j];
-											}
-										}
-									}
-								}
-							}
-						}
-					}
+//					for(int rowTileIndex = outRow; rowTileIndex < rowTileEnd; rowTileIndex++)
+//					{
+//						for(int colTileIndex = outCol; colTileIndex < colTileEnd; colTileIndex++)
+//						{
+//							for(int outChannelTileIndex = outChannel; outChannelTileIndex < outChannelTileEnd; outChannelTileIndex++)
+//							{
+//								for(int inChannelTileIndex = inChannel; inChannelTileIndex < inChannelTileEnd; inChannelTileIndex++)
+//								{
+//									for(int kernelRow = 0; kernelRow < kernel_size_; kernelRow++)
+//									{
+//										paddedRow = stride_ * rowTileIndex + kernelRow - pad_;
+//
+//										for(int kernelCol = 0; kernelCol < kernel_size_; kernelCol++)
+//										{
+//											paddedCol = stride_ * colTileIndex + kernelCol - pad_;
+//
+//											if(paddedCol < 0 || paddedCol >= input_size_ || paddedRow < 0 || paddedRow >= input_size_)
+//											{
+//												// point is in padded area
+//												output[(outChannelTileIndex * rowTileEnd + rowTileIndex) * colTileEnd + colTileIndex] += 0;
+//											}
+//											else
+//											{
+//												output[(outChannelTileIndex * output_size_ + rowTileIndex) * output_size_ + colTileIndex] +=
+////												output[too][trr][tcc] +=
+//													weights[((outChannelTileIndex * output_size_ + inChannelTileIndex) * kernel_size_ + kernelRow) * kernel_size_ + kernelCol] *
+////													weights[too][tii][i][j] *
+//													input[(inChannelTileIndex * input_size_ + paddedRow) * input_size_ + paddedCol];
+////													input[tii][stride_ * trr + i][stride_ * tcc + j];
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
 				}
 			}
 		}

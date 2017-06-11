@@ -32,7 +32,7 @@ public:
 
 	void conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col = false);
 
-	void conv_cpu(const float* input, const float* weights, float* output);
+	void Convolution(const float* input, const float* weights, float* output);
 
 	Blob<float> weights_;
 
