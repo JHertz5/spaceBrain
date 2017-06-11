@@ -11,6 +11,10 @@ namespace spaceBrain
 
 FullyConnectedLayer::FullyConnectedLayer(std::string name, std::string bottom, std::string top, int num_output)
 {
+	name_ = name;
+	bottom_ = bottom;
+	top_ = top;
+
 	M_ = 0;
 	N_ = num_output;
 	K_ = 0;
