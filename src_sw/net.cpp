@@ -39,18 +39,20 @@ void Net::SetLayers()
 	const int num_output_2 = 128;
 	const int num_output_1 = 64;
 
+	const bool fc_transpose = false;
+
 	// fc8
-	FullyConnectedLayer* fc8 = new FullyConnectedLayer("fc8", "fc7", "fc8", 1000);
+	FullyConnectedLayer* fc8 = new FullyConnectedLayer("fc8", "fc7", "fc8", 1000, fc_transpose);
 	layer_names_.push_back(fc8->name());
 	layers_.push_back(fc8);
 
 	// fc7
-	FullyConnectedLayer* fc7 = new FullyConnectedLayer("fc7", "fc6", "fc7", 4096);
+	FullyConnectedLayer* fc7 = new FullyConnectedLayer("fc7", "fc6", "fc7", 4096, fc_transpose);
 	layer_names_.push_back(fc7->name());
 	layers_.push_back(fc7);
 
 	// fc6
-	FullyConnectedLayer* fc6 = new FullyConnectedLayer("fc6", "pool5", "fc6", 4096);
+	FullyConnectedLayer* fc6 = new FullyConnectedLayer("fc6", "pool5", "fc6", 4096, fc_transpose);
 	layer_names_.push_back(fc6->name());
 	layers_.push_back(fc6);
 
