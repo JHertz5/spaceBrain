@@ -12,7 +12,7 @@ namespace spaceBrain
 class FullyConnectedLayer : public Layer
 {
 public:
-	FullyConnectedLayer(std::string name, std::string bottom, std::string top, int num_output);
+	FullyConnectedLayer(std::string name, std::string bottom, std::string top, int num_output, bool transpose);
 	virtual ~FullyConnectedLayer(){}
 
 	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top);
@@ -45,6 +45,8 @@ private:
 };
 
 bool FullyConnectedTest();
+
+bool FullyConnectedCompare();
 
 }
 
