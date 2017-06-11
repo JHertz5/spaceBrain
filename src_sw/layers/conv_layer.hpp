@@ -47,7 +47,7 @@ private:
 	int kernel_volume_; // volume of a single kernel, i.e. count on axes channel, height and width
 	int output_spatial_volume_; // volume of output space,  i.e. count on axes height and width
 	int output_size_;
-	int input_channels_;
+	int input_depth_;
 	int input_size_;
 
 	bool is_1x1_;

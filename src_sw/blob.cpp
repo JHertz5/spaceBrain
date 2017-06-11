@@ -13,7 +13,7 @@ Blob<Dtype>::Blob()
 	count_ = 0;
 	data_ = new DataMemory();
 	shape_[NUM_AXIS] = 0;
-	shape_[CHANNEL_AXIS] = 0;
+	shape_[DEPTH_AXIS] = 0;
 	shape_[HEIGHT_AXIS] = 0;
 	shape_[WIDTH_AXIS] = 0;
 	count_ = 0;
@@ -45,7 +45,7 @@ void Blob<Dtype>::Reshape(const int num, const int channels, const int height, c
 {
 	int shape[NUM_BLOB_DIMENSIONS];
 	shape[NUM_AXIS] = num;
-	shape[CHANNEL_AXIS] = channels;
+	shape[DEPTH_AXIS] = channels;
 	shape[HEIGHT_AXIS] = height;
 	shape[WIDTH_AXIS] = width;
 	Reshape(shape);
@@ -129,9 +129,9 @@ void Blob<Dtype>::PrintSlice(const int num, const int channel)
 		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice num %i >= blob layers %i", num, this->num());
 		return;
 	}
-	if(channel >= this->channels())
+	if(channel >= this->depth())
 	{
-		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice channel %i >= blob channels %i", channel, this->channels());
+		Logger::GetLogger()->LogError("Blob::PrintSlice", "slice channel %i >= blob channels %i", channel, this->depth());
 		return;
 	}
 

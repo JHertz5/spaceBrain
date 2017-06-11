@@ -36,7 +36,7 @@ protected:
 	int input_size_;
 
 	int num_;
-	int channels_;
+	int depth_;
 };
 
 bool PoolTest();

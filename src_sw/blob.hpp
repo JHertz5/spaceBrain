@@ -8,7 +8,7 @@
 enum BlobShapeAxes
 {
 	NUM_AXIS = 0,
-	CHANNEL_AXIS = 1,
+	DEPTH_AXIS = 1,
 	HEIGHT_AXIS = 2,
 	WIDTH_AXIS = 3,
 	NUM_BLOB_DIMENSIONS = 4
@@ -39,7 +39,7 @@ public:
 
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{
-		return ((n * channels() + c) * height() + h) * width() + w;
+		return ((n * depth() + c) * height() + h) * width() + w;
 	}
 
 	inline Dtype getDataAt(const int n, const int c, const int h, const int w)
@@ -84,9 +84,9 @@ public:
 		return shape_[NUM_AXIS];
 	}
 
-	inline int channels() const
+	inline int depth() const
 	{
-		return shape_[CHANNEL_AXIS];
+		return shape_[DEPTH_AXIS];
 	}
 
 	inline int height() const

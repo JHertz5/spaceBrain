@@ -39,8 +39,8 @@ FullyConnectedLayer::FullyConnectedLayer(std::string name, std::string bottom, s
 
 void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 {
-	input_volume_ = bottom->count(CHANNEL_AXIS);
-	input_depth_ = bottom->channels();
+	input_volume_ = bottom->count(DEPTH_AXIS);
+	input_depth_ = bottom->depth();
 	input_size_ = bottom->height();
 
 	weights_.Reshape(output_depth_, input_depth_, input_size_, input_size_);
@@ -48,12 +48,12 @@ void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float
 
 void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
-	if(input_volume_ != bottom->count(CHANNEL_AXIS))
+	if(input_volume_ != bottom->count(DEPTH_AXIS))
 	{
 		Logger::GetLogger()->LogError(
 				"FullyConnectedLayer::Reshape",
 				"Input size %i incompatible. Expected %i",
-				bottom->count(CHANNEL_AXIS), input_volume_
+				bottom->count(DEPTH_AXIS), input_volume_
 		);
 	}
 
@@ -173,18 +173,18 @@ bool FullyConnectedTest()
 	// set weights
 //	FillConstant(&fc1.weights_, 1);
 	float* weightsData = fc1.weights_.getMutableData();
-	int weightsVolume = fc1.weights_.count(CHANNEL_AXIS);
+	int weightsVolume = fc1.weights_.count(DEPTH_AXIS);
 	FillConstant(weightsData, weightsVolume, 1);
 	FillConstant(weightsData + weightsVolume, weightsVolume, 2);
 	FillConstant(weightsData + 2*weightsVolume, weightsVolume, 3);
 
 	std::cout << "Bottom Data" << std::endl;
 	bottomBlob.PrintSlice();
-	std::cout << bottomBlob.channels() << "*" << bottomBlob.height() << "*" << bottomBlob.width() << "\n" << std::endl;
+	std::cout << bottomBlob.depth() << "*" << bottomBlob.height() << "*" << bottomBlob.width() << "\n" << std::endl;
 
 	std::cout << "Weights Slice" << std::endl;
 	fc1.weights_.PrintSlice(0, 0);
-	std::cout << fc1.weights_.num() << "*" << fc1.weights_.channels() << "*" << fc1.weights_.height() << "*" << fc1.weights_.width() << " ones\n" << std::endl;
+	std::cout << fc1.weights_.num() << "*" << fc1.weights_.depth() << "*" << fc1.weights_.height() << "*" << fc1.weights_.width() << " ones\n" << std::endl;
 
 	fc1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
@@ -193,7 +193,7 @@ bool FullyConnectedTest()
 	topBlob.PrintSlice(0,0);
 	topBlob.PrintSlice(0,1);
 	topBlob.PrintSlice(0,2);
-	std::cout << topBlob.channels() << "*" << topBlob.height() << "*" << topBlob.width() << "\n" << std::endl;
+	std::cout << topBlob.depth() << "*" << topBlob.height() << "*" << topBlob.width() << "\n" << std::endl;
 
 	// check results
 	bool testPassed = true;
@@ -250,7 +250,7 @@ bool FullyConnectedCompare()
 	// set weights
 //	FillConstant(&fc1.weights_, 1);
 	float* weightsData = fc1.weights_.getMutableData();
-	int weightsVolume = fc1.weights_.count(CHANNEL_AXIS);
+	int weightsVolume = fc1.weights_.count(DEPTH_AXIS);
 	FillConstant(weightsData, weightsVolume, 1);
 	FillConstant(weightsData + weightsVolume, weightsVolume, 2);
 	FillConstant(weightsData + 2*weightsVolume, weightsVolume, 3);
