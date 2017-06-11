@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "blob.hpp"
 #include "layer.hpp"
@@ -18,7 +17,9 @@ public:
 	Net() : name_("testNet"){};
 	~Net(){}
 
-	void Init();
+	void Init(std::string name);
+
+	void SetLayers();
 
 	inline const std::string name() const
 	{
@@ -32,7 +33,12 @@ protected:
 	std::vector<std::string> layer_names_;
 	std::vector<Blob<float>* > blobs_;
 	std::vector<std::string> blob_names_;
+
+	Blob<float> input_blob_;
+	Blob<float> output_blob_;
 };
+
+void NetTest();
 
 }
 

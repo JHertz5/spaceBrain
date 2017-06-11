@@ -9,6 +9,7 @@
 #include "../layers/relu_layer.hpp"
 #include "../layers/softmax_layer.hpp"
 #include "../logger.hpp"
+#include "../net.hpp"
 #include "filler.hpp"
 #include "maths_functions_test.hpp"
 
@@ -56,6 +57,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	if(inMessage == "help")
 	{
 		printHelpMessage(false);
+	}
+	else if(inMessage == "net")
+	{
+		std::cout << "Network" << std::endl;
+		spaceBrain::NetTest();
+		std::cout << std::endl;
 	}
 	else if(inMessage == "input")
 	{
