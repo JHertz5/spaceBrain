@@ -1,19 +1,19 @@
-#include <blob.hpp>
-#include <layers/relu_layer.hpp>
-#include <logger.hpp>
+#include "relu_layer.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <string>
+
+#include "../logger.hpp"
 
 namespace spaceBrain
 {
 
 ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 {
-	ReluLayer::name_ = name;
-	ReluLayer::bottom_ = bottom;
-	ReluLayer::top_ = top;
+	name_ = name;
+	bottom_ = bottom;
+	top_ = top;
 	Logger::GetLogger()->LogMessage("\tReLU layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
@@ -112,5 +112,3 @@ bool ReluTest()
 }
 
 }
-
-

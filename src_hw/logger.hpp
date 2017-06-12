@@ -4,7 +4,7 @@
 #include "/opt/Xilinx/SDx/2016.4/SDK/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/include/c++/5.2.1/iosfwd"
 #include "/opt/Xilinx/SDx/2016.4/SDK/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/include/c++/5.2.1/string"
 
-#define MAX_LOG_MESSAGE_LENGTH 128
+#define MAX_LOG_MESSAGE_LENGTH 124
 
 namespace spaceBrain
 {
@@ -22,7 +22,7 @@ public:
 	static void CloseLogger();
 
 private:
-	Logger(); // constructor
+	Logger(){}; // constructor
 
 	static Logger* pThis; // pointer to logger class object
 	static const std::string filename; // filename for log file

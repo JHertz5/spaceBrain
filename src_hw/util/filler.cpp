@@ -12,18 +12,34 @@ namespace spaceBrain
 
 void FillConstant(Blob<float>* blob, float value)
 {
+	FillConstant(blob->getMutableData(), blob->count(), value);
+}
+
+void FillConstant(float* data, int dataLength, float value)
+{
 	Logger::GetLogger()->LogMessage("\tFillConstant: Filling blob with constant %.1f", value);
-	int count = blob->count();
-	float* data = blob->getMutableData();
+	if(dataLength < 0)
+	{
+		Logger::GetLogger()->LogError(
+				"FillConstant",
+				"dataLength: dataLength < 0",
+				dataLength
+		);
+	}
 
 	// iterate through array, setting each location to value
-	for(int dataIndex = 0; dataIndex < count; dataIndex++)
+	for(int dataIndex = 0; dataIndex < dataLength; dataIndex++)
 	{
 		data[dataIndex] = value;
 	}
 }
 
 void FillUniform(Blob<float>* blob, int min, int max)
+{
+	FillUniform(blob->getMutableData(), blob->count(), min, max);
+}
+
+void FillUniform(float* data, int dataLength, int min, int max)
 {
 	Logger::GetLogger()->LogMessage("\tFillUniform: Filling blob with uniformly distributed x, %i <= x <= %i", min, max);
 	if(min > max)
@@ -38,13 +54,10 @@ void FillUniform(Blob<float>* blob, int min, int max)
 		min = tmp;
 	}
 
-	int count = blob->count();
-	float* data = blob->getMutableData();
-
 	int rangeLength = max + 1 - min; // find range of uniform distribution
 
 	// iterate through array, setting each location to uniformly distributed value
-	for(int dataIndex = 0; dataIndex < count; dataIndex++)
+	for(int dataIndex = 0; dataIndex < dataLength; dataIndex++)
 	{
 		data[dataIndex] = (rand() % rangeLength) + min;
 	}

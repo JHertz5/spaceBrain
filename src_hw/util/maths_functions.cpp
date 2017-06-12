@@ -1,22 +1,103 @@
-#include <logger.hpp>
-#include <util/maths_functions.hpp>
+#include "maths_functions.hpp"
+
+#include "../logger.hpp"
 
 namespace spaceBrain
 {
 
-void mmult_cpu(const int m, const int n, const int k, float *A,  float *B, float *C)
+void conv_cpu(int stride, int pad,
+		int inputSize, int kernelSize, int outputSize, int inputDepth,
+		int outRowStart, int outRowEnd,
+		int outColStart, int outColEnd,
+		int outChannelStart, int outChannelEnd,
+		int inChannelStart, int inChannelEnd,
+		const float* input, const float* weights, float* output
+)
 {
-	Logger::GetLogger()->LogMessage("\tmmult_cpu: m = %i, n = %i, k = %i", m, n, k);
-	for (int mIndex = 0; mIndex < m; mIndex++)
+	int paddedRow, paddedCol;
+	for(int rowIndex = outRowStart; rowIndex < outRowEnd; rowIndex++)
 	{
-		for (int nIndex = 0; nIndex < n; nIndex++)
+		for(int colIndex = outColStart; colIndex < outColEnd; colIndex++)
 		{
-			float result = 0.0;
-			for (int kIndex = 0; kIndex < k; kIndex++)
+			for(int outChannelIndex = outChannelStart; outChannelIndex < outChannelEnd; outChannelIndex++)
 			{
-				result += A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
+				for(int inChannelIndex = inChannelStart; inChannelIndex < inChannelEnd; inChannelIndex++)
+				{
+					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
+					{
+						paddedRow = stride * rowIndex + kernelRow - pad;
+
+						for(int kernelCol = 0; kernelCol < kernelSize; kernelCol++)
+						{
+							paddedCol = stride * colIndex + kernelCol - pad;
+
+							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
+							{
+								// point is in padded area
+								output[(outChannelIndex * outRowEnd + rowIndex) * outColEnd + colIndex] += 0;
+							}
+							else
+							{
+								output[(outChannelIndex * outputSize + rowIndex) * outputSize + colIndex] +=
+//								output[outChannelIndex][rowIndex][colIndex] +=
+									weights[((outChannelIndex * inputDepth + inChannelIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
+//									weights[outChannelIndex][inChannelIndex][kernelRow][kernelCol] *
+									input[(inChannelIndex * inputSize + paddedRow) * inputSize + paddedCol];
+//									input[inChannelIndex][paddedRow][paddedCol];
+							}
+						}
+					}
+				}
 			}
-			C[mIndex*n+nIndex] = result + C[mIndex*n+nIndex];
+		}
+	}
+}
+
+
+void conv_cpu_transB(int stride, int pad,
+		int inputSize, int kernelSize, int outputSize, int outputDepth,
+		int outRowStart, int outRowEnd,
+		int outColStart, int outColEnd,
+		int outChannelStart, int outChannelEnd,
+		int inChannelStart, int inChannelEnd,
+		const float* input, const float* weights, float* output
+)
+{
+	int paddedRow, paddedCol;
+	for(int rowIndex = outRowStart; rowIndex < outRowEnd; rowIndex++)
+	{
+		for(int colIndex = outColStart; colIndex < outColEnd; colIndex++)
+		{
+			for(int outChannelIndex = outChannelStart; outChannelIndex < outChannelEnd; outChannelIndex++)
+			{
+				for(int inChannelIndex = inChannelStart; inChannelIndex < inChannelEnd; inChannelIndex++)
+				{
+					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
+					{
+						paddedRow = stride * rowIndex + kernelRow - pad;
+
+						for(int kernelCol = 0; kernelCol < kernelSize; kernelCol++)
+						{
+							paddedCol = stride * colIndex + kernelCol - pad;
+
+							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
+							{
+								// point is in padded area
+								output[(outChannelIndex * outRowEnd + rowIndex) * outColEnd + colIndex] += 0;
+							}
+							else
+							{
+								output[(outChannelIndex * outputSize + rowIndex) * outputSize + colIndex] +=
+//								output[outChannelIndex][rowIndex][colIndex] +=
+									weights[((inChannelIndex * kernelSize + kernelRow) * kernelSize + kernelCol) * outputDepth + outChannelIndex] *
+//									weights[inChannelIndex][kernelRow][kernelCol][outChannelIndex] *
+									input[(inChannelIndex * inputSize + paddedRow) * inputSize + paddedCol];
+//									input[inChannelIndex][paddedRow][paddedCol];
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

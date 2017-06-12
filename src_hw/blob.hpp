@@ -1,8 +1,7 @@
 #ifndef SRC_BLOB_HPP_
 #define SRC_BLOB_HPP_
 
-//#include "sds_lib.h"
-
+#include "/opt/Xilinx/SDx/2016.4/SDK/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/include/c++/5.2.1/string"
 #include "logger.hpp"
 
 namespace spaceBrain {
@@ -12,7 +11,7 @@ class DataMemory;
 enum BlobShapeAxes
 {
 	NUM_AXIS = 0,
-	CHANNEL_AXIS = 1,
+	DEPTH_AXIS = 1,
 	HEIGHT_AXIS = 2,
 	WIDTH_AXIS = 3,
 	NUM_BLOB_DIMENSIONS = 4
@@ -27,7 +26,9 @@ class Blob
 public:
 
 	Blob();
-	Blob(const int num, const int channels, const int height, const int width); // constructor
+	Blob(std::string name);
+	Blob(const int num, const int channels, const int height, const int width);
+	Blob(std::string name, const int num, const int channels, const int height, const int width);
 	~Blob(); // destructor
 
 	void Reshape(const int num, const int channels, const int height, const int width);
@@ -40,10 +41,11 @@ public:
 	void CopyFrom(const Blob<Dtype>* source, bool reshape);
 
 	void PrintSlice(const int num = 0, const int channel = 0);
+	void PrintShape();
 
 	inline int offset(const int n, const int c, const int h, const int w) const
 	{
-		return ((n * channels() + c) * height() + h) * width() + w;
+		return ((n * depth() + c) * height() + h) * width() + w;
 	}
 
 	inline Dtype getDataAt(const int n, const int c, const int h, const int w)
@@ -88,9 +90,9 @@ public:
 		return shape_[NUM_AXIS];
 	}
 
-	inline int channels() const
+	inline int depth() const
 	{
-		return shape_[CHANNEL_AXIS];
+		return shape_[DEPTH_AXIS];
 	}
 
 	inline int height() const
@@ -103,10 +105,16 @@ public:
 		return shape_[WIDTH_AXIS];
 	}
 
+	inline const std::string name() const
+	{
+		return name_;
+	}
+
 protected:
-	DataMemory* data_; // pointer to data
+	DataMemory* data_; // pointer to data // XXX may not end up being float
 	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
+	std::string name_;
 
 };
 

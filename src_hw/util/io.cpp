@@ -1,15 +1,16 @@
-#include <data_memory.hpp>
-#include <layers/conv_layer.hpp>
-#include <layers/dropout_layer.hpp>
-#include <layers/fully_connected_layer.hpp>
-#include <layers/pooling_layer.hpp>
-#include <layers/relu_layer.hpp>
-#include <layers/softmax_layer.hpp>
-#include <logger.hpp>
-#include <util/filler.hpp>
-#include <util/maths_functions_test.hpp>
 #include <iostream>
 #include <string>
+
+#include "../data_memory.hpp"
+#include "../layers/conv_layer.hpp"
+#include "../layers/dropout_layer.hpp"
+#include "../layers/fully_connected_layer.hpp"
+#include "../layers/pooling_layer.hpp"
+#include "../layers/relu_layer.hpp"
+#include "../layers/softmax_layer.hpp"
+#include "../logger.hpp"
+#include "../net.hpp"
+#include "filler.hpp"
 
 namespace spaceBrain
 {
@@ -32,17 +33,16 @@ void printHelpMessage(bool commandLineVersion)
 	std::cout << "\t'conv' \t - Convolution Layer" << std::endl;
 	std::cout << "\t'fc'   \t - Fully Connected Layer" << std::endl;
 	std::cout << "\t'drop' \t - Dropout Layer" << std::endl;
-	std::cout << "\t'maths'\t - Maths Functions" << std::endl;
 	std::cout << "\t'data' \t - Data Memory Class" << std::endl;
 	std::cout << "\t'log'  \t - Logging functionality" << std::endl;
 	std::cout << "\t'fill' \t - Blob Filling Functions" << std::endl;
 	std::cout << "\t'quit' \t - End Program" << std::endl;
 
 	std::cout << "\nIn Testing:" << std::endl;
+	std::cout << "\t'net' \t - Full Network Run" << std::endl;
 
 	std::cout << "\nTODO:" << std::endl;
 	std::cout << "\t'input'\t - Input Layer" << std::endl;
-	std::cout << "\t'norm' \t - LRN Layer" << std::endl;
 	std::cout << "\t'prob' \t - SoftMax Layer" << std::endl;
 
 	std::cout << std::endl;
@@ -56,6 +56,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	{
 		printHelpMessage(false);
 	}
+	else if(inMessage == "net")
+	{
+		std::cout << "Network" << std::endl;
+		spaceBrain::NetTest();
+		std::cout << std::endl;
+	}
 	else if(inMessage == "input")
 	{
 		std::cout << "Input Layer" << std::endl;
@@ -68,28 +74,16 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
-	else if(inMessage == "conv_speed")
+	/*else if(inMessage == "conv_comp") // not used as im2col convolution now causes segfault
 	{
-		std::cout << "Convolution Layer" << std::endl;
-		spaceBrain::ConvSpeed(63, 1, 3, 2); // pad = 1, kernelSize = 3, stride = 2
-		std::cout << std::endl;
-	}
-	else if(inMessage == "conv_comp")
-	{
-		std::cout << "Convolution Layer" << std::endl;
+		std::cout << "Convolution Layer Implementation Comparison" << std::endl;
 		spaceBrain::ConvCompare();
 		std::cout << std::endl;
-	}
+	}*/
 	else if(inMessage == "relu")
 	{
 		std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
 		spaceBrain::ReluTest();
-		std::cout << std::endl;
-	}
-	else if(inMessage == "norm")
-	{
-		std::cout << "LRN (Local Response Normalisation) Layer" << std::endl;
-		std::cout << notYetImplementedString << std::endl;
 		std::cout << std::endl;
 	}
 	else if(inMessage == "pool")
@@ -104,6 +98,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::FullyConnectedTest();
 		std::cout << std::endl;
 	}
+	else if(inMessage == "fc_comp")
+	{
+		std::cout << "Fully Connected Layer Implementation Comparison" << std::endl;
+		spaceBrain::FullyConnectedCompare();
+		std::cout << std::endl;
+	}
 	else if(inMessage == "drop")
 	{
 		std::cout << "Dropout Layer" << std::endl;
@@ -114,12 +114,6 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	{
 		std::cout << "SoftMax Layer" << std::endl;
 		spaceBrain::SoftmaxTest();
-		std::cout << std::endl;
-	}
-	else if(inMessage == "maths")
-	{
-		std::cout << "Maths Func" << std::endl;
-		spaceBrain::gemmTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "log")

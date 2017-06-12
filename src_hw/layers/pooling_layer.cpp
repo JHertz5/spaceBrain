@@ -1,9 +1,10 @@
-#include <layers/pooling_layer.hpp>
-#include <logger.hpp>
+#include "pooling_layer.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <string>
+
+#include "../logger.hpp"
 
 namespace spaceBrain
 {
@@ -20,7 +21,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 
 	num_ = 0;
 	output_size_ = 0;
-	channels_ = 0;
+	depth_ = 0;
 	input_size_ = 0;
 
 	Logger::GetLogger()->LogMessage(
@@ -83,7 +84,7 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
 	num_ = bottom->num();
-	channels_ = bottom->channels();
+	depth_ = bottom->depth();
 	input_size_ = bottom->height(); // only supports square inputs, so width is not needed
 
 	float pooledSize = ((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
@@ -109,7 +110,7 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	output_size_ = pooledSize;
 	Logger::GetLogger()->LogMessage("\tPooled size = %i", output_size_);
 
-	top->Reshape(num_, channels_, output_size_, output_size_);
+	top->Reshape(num_, depth_, output_size_, output_size_);
 }
 
 void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
@@ -121,7 +122,7 @@ void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 
 	for (int n = 0; n < num_; ++n) // batch num loop
 	{
-		for (int c = 0; c < channels_; ++c) // channel loop
+		for (int c = 0; c < depth_; ++c) // channel loop
 		{
 			for (int ph = 0; ph < output_size_; ++ph) // pool height loop
 			{

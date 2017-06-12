@@ -1,8 +1,8 @@
-#include <blob.hpp>
-#include <layers/softmax_layer.hpp>
-#include <logger.hpp>
+#include "softmax_layer.hpp"
+
 #include <iostream>
-#include <string>
+
+#include "../logger.hpp"
 
 namespace spaceBrain
 {

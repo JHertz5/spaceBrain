@@ -19,9 +19,9 @@ public:
 
 	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
 
-	virtual inline const char* type() const
+	virtual inline const int type() const
 	{
-		return "ReLU";
+		return RELU;
 	}
 
 };

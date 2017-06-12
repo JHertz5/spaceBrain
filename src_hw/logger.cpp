@@ -1,9 +1,9 @@
-#include <logger.hpp>
+#include "logger.hpp"
+
 #include <stdio.h>
 #include <cstdarg>
 #include <fstream>
 #include <iostream>
-#include <string>
 
 namespace spaceBrain
 {
@@ -12,12 +12,6 @@ namespace spaceBrain
 const std::string Logger::filename = "space_brain.log";
 Logger* Logger::pThis = NULL;
 std::ofstream Logger::logStream;
-
-// constructor doesn't need to do anything
-Logger::Logger()
-{
-
-}
 
 void Logger::LogError(const char* functionName, const char* format, ...)
 {
@@ -32,7 +26,6 @@ void Logger::LogError(const char* functionName, const char* format, ...)
 	va_end(args);
 
 	LogMessage("Error: %s() - %s", functionName, messageChars);
-	std::cout << "Error, check log" << std::endl;
 }
 
 void Logger::LogMessage(const char* format, ...)
@@ -53,7 +46,6 @@ void Logger::LogMessage(const char* format, ...)
 void Logger::LogMessage(const std::string &message)
 {
 	logStream << message << std::endl;
-//	std::cout << message << std::endl;
 }
 
 Logger* Logger::GetLogger()

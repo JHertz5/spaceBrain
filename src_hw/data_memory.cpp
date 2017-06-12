@@ -1,7 +1,10 @@
-#include <data_memory.hpp>
-#include <logger.hpp>
+#include "data_memory.hpp"
+
 #include <stdlib.h>
+#include <cstring>
 #include <iostream>
+
+#include "logger.hpp"
 
 namespace spaceBrain
 {
@@ -30,7 +33,7 @@ void DataMemory::InitData(const size_t size)
 		{
 			ptr_ = malloc(size_);
 		}
-		//std::memset(ptr_, 0, size_); // XXX Check that this doesn't cause problems
+		std::memset(ptr_, 0, size_);
 		isPtrSet_ = true;
 	}
 	else
@@ -82,5 +85,3 @@ void DataMemoryTest()
 }
 
 }
-
-
