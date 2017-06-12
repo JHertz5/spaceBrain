@@ -23,7 +23,9 @@ class Blob
 public:
 
 	Blob();
-	Blob(const int num, const int channels, const int height, const int width); // constructor
+	Blob(std::string name);
+	Blob(const int num, const int channels, const int height, const int width);
+	Blob(std::string name, const int num, const int channels, const int height, const int width);
 	~Blob(); // destructor
 
 	void Reshape(const int num, const int channels, const int height, const int width);
@@ -99,10 +101,16 @@ public:
 		return shape_[WIDTH_AXIS];
 	}
 
+	inline const std::string name() const
+	{
+		return name_;
+	}
+
 protected:
 	DataMemory* data_; // pointer to data // XXX may not end up being float
 	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
+	std::string name_;
 
 };
 
