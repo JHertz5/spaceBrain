@@ -136,6 +136,7 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	col_buffer_.Reshape(1, kernel_volume_, output_size_, output_size_);
 }
 
+//Deprecated
 void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* data_col)
 {
 	const int channelVolume = input_size_ * input_size_;
@@ -198,9 +199,9 @@ void ConvolutionLayer::Forward_gemm(const Blob<float>* bottom, Blob<float>* top)
 	}
 }
 
+// Deprecated
 void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
 {
-	//TODO test with num
 	const float* col_buff = input;
 	// perform im2col or skip
 	if (!is_1x1_)
