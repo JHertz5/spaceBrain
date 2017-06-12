@@ -48,15 +48,6 @@ void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float
 
 void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 {
-	if(input_volume_ != bottom->count(DEPTH_AXIS))
-	{
-		Logger::GetLogger()->LogError(
-				"FullyConnectedLayer::Reshape",
-				"Input size %i incompatible. Expected %i",
-				bottom->count(DEPTH_AXIS), input_volume_
-		);
-	}
-
 	input_num_ = bottom->num();
 
 	top->Reshape(bottom->num(), output_depth_, 1 , 1);

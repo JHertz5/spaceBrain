@@ -236,7 +236,6 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	for(int numIndex = 0; numIndex < bottom->num(); numIndex++)
 	{
 		Convolution(bottomData + numIndex * bottomVolume, weight, topData + numIndex * topVolume);
-		std::cout << numIndex * bottomVolume << " " << numIndex * topVolume << std::endl;
 	}
 }
 
