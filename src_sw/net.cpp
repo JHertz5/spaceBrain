@@ -7,6 +7,8 @@
 #include "layers/fully_connected_layer.hpp"
 #include "layers/pooling_layer.hpp"
 #include "layers/relu_layer.hpp"
+#include "logger.hpp"
+#include "util/filler.hpp"
 
 namespace spaceBrain
 {
@@ -16,11 +18,13 @@ void Net::Init()
 	SetLayers();
 	SetBlobs();
 	Reshape();
-	PrintLayerOutputDimensions();
+	PrintLayerOutputShapes();
 }
+
 
 void Net::SetLayers()
 {
+	Logger::GetLogger()->LogMessage("\nNet::SetLayers(): Setting hard-coded VGGnet");
 	// hard-coded to initialise as VGGnet to save time
 	// add layers to layers_ in starting from the back
 
@@ -179,17 +183,18 @@ void Net::SetLayers()
 
 void Net::SetBlobs()
 {
+	Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Setting up inter-layer blobs");
+
 	blobs_.push_back(input_blob_); // start off blobs_
+	Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", input_blob_->name().c_str());
 
 	Blob<float>* tempBlob;
 	for(size_t layerIndex = 0; layerIndex < layers_.size()-1; layerIndex++)
 	{
 		if(layers_[layerIndex]->top() == layers_[layerIndex+1]->bottom())
 		{
-			// TODO test single object
 			tempBlob = new Blob<float>(layers_[layerIndex]->top());
 			blobs_.push_back(tempBlob);
-//			std::cout << blobs_[layerIndex+1]->name() << std::endl;
 		}
 		else
 		{
@@ -200,35 +205,47 @@ void Net::SetBlobs()
 			);
 			return;
 		}
+		Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", blobs_.back()->name().c_str());
 	}
 
 	output_blob_ = new Blob<float>(layers_.back()->top());
 	blobs_.push_back(output_blob_);
+	Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", blobs_.back()->name().c_str());
 }
 
 void Net::Reshape()
 {
+	Logger::GetLogger()->LogMessage("\nNet::Reshape: Setting blob sizes");
+
+	// propogate blob sizes resulting from input dimensions throught the network
 	for(size_t layerIndex = 0; layerIndex < layers_.size(); layerIndex++)
 	{
 		layers_[layerIndex]->Reshape(blobs_[layerIndex], blobs_[layerIndex+1]);
 	}
 }
 
-void Net::PrintLayerOutputDimensions()
+void Net::PrintLayerOutputShapes()
 {
+	std::cout << "Printing Layer Output Shapes:" << std::endl;
 	std::cout << "[width*height*depth*num]\tlayer name\n" << std::endl;
 
 	for(size_t layerIndex = 0; layerIndex < layers_.size(); layerIndex++)
 	{
-		std::cout << "["
-				<< blobs_[layerIndex+1]->width() << "*"
-				<< blobs_[layerIndex+1]->height() << "*"
-				<< blobs_[layerIndex+1]->depth() << "*"
-				<< blobs_[layerIndex+1]->num()
-				<< "]\t" << layers_[layerIndex]->name() << std::endl;
+		blobs_[layerIndex]->PrintShape();
 	}
 }
 
+void Net::Forward()
+{
+	Logger::GetLogger()->LogMessage("\nNet::Forward: Performing forward network computation");
+
+	for(size_t layerIndex = 0; layerIndex < layers_.size(); layerIndex++)
+	{
+		Logger::GetLogger()->LogMessage("\nNet::Forward: Performing %s layer computation", layers_[layerIndex]->name().c_str());
+		std::cout << "Performing " << layers_[layerIndex]->name() << "\t layer computation" << std::endl;
+		layers_[layerIndex]->Forward(blobs_[layerIndex], blobs_[layerIndex+1]);
+	}
+}
 
 void NetTest()
 {
@@ -237,6 +254,12 @@ void NetTest()
 
 	Net net1("testNet", inputNum, inputDepth, inputHeight, inputWidth);
 	net1.Init();
+
+	FillConstant(net1.input_blob(), 1);
+
+	net1.Forward();
+
+	net1.output_blob()->PrintSlice();
 
 }
 

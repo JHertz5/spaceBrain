@@ -29,12 +29,26 @@ public:
 
 	void Reshape();
 
-	void PrintLayerOutputDimensions();
+	void PrintLayerOutputShapes();
+
+	void Forward();
 
 	inline const std::string name() const
 	{
 		return name_;
 	}
+
+	inline Blob<float>* input_blob()
+	{
+		return input_blob_;
+	}
+
+	inline Blob<float>* output_blob()
+	{
+		return output_blob_;
+	}
+
+protected:
 
 	std::string name_; // network name
 	std::vector<Layer*> layers_;
@@ -42,16 +56,6 @@ public:
 
 	Blob<float>* input_blob_;
 	Blob<float>* output_blob_;
-
-
-protected:
-//
-//	std::string name_; // network name
-//	std::vector<Layer*> layers_;
-//	std::vector<Blob<float>* > blobs_;
-//
-//	Blob<float> input_blob_;
-//	Blob<float> output_blob_;
 };
 
 void NetTest();
