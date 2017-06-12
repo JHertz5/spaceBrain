@@ -181,6 +181,17 @@ void Blob<Dtype>::PrintSlice(const int num, const int depth)
 
 }
 
+template <typename Dtype>
+void Blob<Dtype>::PrintShape()
+{
+	std::cout << "["
+				<< width() << "*"
+				<< height() << "*"
+				<< depth() << "*"
+				<< num()
+				<< "]\t" << name() << std::endl;
+}
+
 //explicit instantiation
 template class Blob<float>;
 template class Blob<int>;
