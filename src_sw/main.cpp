@@ -1,14 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include "data_memory.hpp"
-#include "layers/dropout_layer.hpp"
-#include "layers/pooling_layer.hpp"
-#include "layers/relu_layer.hpp"
 #include "logger.hpp"
-#include "util/filler.hpp"
 #include "util/io.hpp"
-#include "util/maths_functions_test.hpp"
 
 int main(int argc, char* argv[])
 {

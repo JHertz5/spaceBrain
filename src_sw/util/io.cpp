@@ -11,7 +11,6 @@
 #include "../logger.hpp"
 #include "../net.hpp"
 #include "filler.hpp"
-#include "maths_functions_test.hpp"
 
 namespace spaceBrain
 {
@@ -116,12 +115,6 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	{
 		std::cout << "SoftMax Layer" << std::endl;
 		spaceBrain::SoftmaxTest();
-		std::cout << std::endl;
-	}
-	else if(inMessage == "maths")
-	{
-		std::cout << "Maths Func" << std::endl;
-		spaceBrain::gemmTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "log")
