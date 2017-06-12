@@ -7,6 +7,7 @@
 #include "../logger.hpp"
 #include "../util/filler.hpp"
 #include "../util/maths_functions.hpp"
+#include "../util/timer.hpp"
 
 
 namespace spaceBrain
@@ -287,12 +288,12 @@ bool ConvTest()
 	int stride = 2;
 	int pad = 1;
 	int kernelSize = 3;
-	int numOutputChannels = 1;
+	int outputDepth = 1;
 
 	std::cout << "pad = " << pad << ", stride =" << stride << ", kernel size = " << kernelSize << std::endl;
 	std::cout << std::endl;
 
-	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
 	Blob<float> bottomBlob(num, depth, height, width);
 	Blob<float> topBlob;
 
@@ -347,6 +348,42 @@ bool ConvTest()
 	return testPassed;
 }
 
+void ConvSpeed()
+{
+	Logger::GetLogger()->LogMessage("Convolution Speed Test:");
+	spaceBrain::Timer timer;
+
+	int num = 1, depth = 1, inputSize = 3;
+	int stride = 1;
+	int pad = 1;
+	int kernelSize = 3;
+	int outputDepth = 1;
+
+	int numTests = 128;
+
+	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
+	Blob<float> bottomBlob(num, depth, inputSize, inputSize);
+	Blob<float> topBlob;
+
+	conv1.SetUp(&bottomBlob, &topBlob);
+
+	// set input data
+	FillConstant(&bottomBlob, 1);
+
+	// set weights
+	FillConstant(&conv1.weights_, 1);
+
+	for(int testCounter = 0; testCounter < numTests; testCounter++)
+	{
+		timer.start();
+		conv1.Forward(&bottomBlob, &topBlob); // perform forward computation
+		timer.stop();
+	}
+
+	std::cout << "CPU cycles = " << timer.getAverageCpuTime() << std::endl;
+
+}
+
 bool ConvCompare()
 {
 	Logger::GetLogger()->LogMessage("Convolution Implementation Test:");
@@ -355,13 +392,13 @@ bool ConvCompare()
 	int stride = 1;
 	int pad = 1;
 	int kernelSize = 3;
-	int numOutputChannels = 3;
+	int outputDepth = 3;
 
 	std::cout << "pad = " << pad << ", stride =" << stride << ", kernel size = " << kernelSize << std::endl;
 	std::cout << std::endl;
 
-	ConvolutionLayer conv1("conv_test_im2col", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
-	ConvolutionLayer conv2("conv_test_conv", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
+	ConvolutionLayer conv1("conv_test_im2col", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
+	ConvolutionLayer conv2("conv_test_conv", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
 	Blob<float> bottomBlob(num, depth, height, width);
 	Blob<float> im2colBlob, convBlob;
 

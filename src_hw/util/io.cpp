@@ -74,6 +74,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
+	else if(inMessage == "conv_speed")
+	{
+		std::cout << "Convolution Speed Test" << std::endl;
+		spaceBrain::ConvSpeed();
+		std::cout << std::endl;
+	}
 	/*else if(inMessage == "conv_comp") // not used as im2col convolution now causes segfault
 	{
 		std::cout << "Convolution Layer Implementation Comparison" << std::endl;

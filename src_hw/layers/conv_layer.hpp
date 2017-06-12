@@ -54,6 +54,8 @@ private:
 
 bool ConvTest();
 
+void ConvSpeed();
+
 bool ConvCompare();
 
 }
