@@ -23,9 +23,9 @@ public:
 	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
 	void Forward_im2col(const Blob<float>* bottom, Blob<float>* top);
 
-	virtual inline const char* type() const
+	virtual inline const int type() const
 	{
-		return "Convolution";
+		return CONV;
 	}
 
 	void ConvertBlobToInputColumns(const float* data_im, float* data_col);

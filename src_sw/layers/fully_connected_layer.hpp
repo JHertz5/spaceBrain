@@ -24,9 +24,9 @@ public:
 
 	void Convolution(const float* input, const float* weights, float* output);
 
-	virtual inline const char* type() const
+	virtual inline const int type() const
 	{
-		return "Fully Connected";
+		return FC;
 	}
 
 	Blob<float> weights_;

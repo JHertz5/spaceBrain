@@ -5,6 +5,16 @@
 
 #include "blob.hpp"
 
+enum LayerType
+{
+	CONV,
+	FC,
+	RELU,
+	POOL,
+	DROPOUT,
+	SOFTMAX
+};
+
 namespace spaceBrain
 {
 
@@ -25,10 +35,7 @@ public:
 
 	virtual void Forward(const Blob<float>* bottom, Blob<float>* top) = 0;
 
-	virtual inline const char* type() const
-	{
-		return "";
-	}
+	virtual inline const int type() const = 0;
 
 	virtual inline const std::string name() const
 	{
