@@ -14,28 +14,44 @@ class Net
 {
 public:
 
-	Net() : name_("testNet"){};
+	Net(std::string name, int inputNum, int inputDepth, int inputHeight, int inputWidth) : name_(name)
+	{
+		input_blob_ = new Blob<float>("data", inputNum, inputDepth, inputHeight, inputWidth);
+		output_blob_ = new Blob<float>;
+	};
 	~Net(){}
 
-	void Init(std::string name);
+	void Init();
 
 	void SetLayers();
+
+	void SetBlobs();
+
+	void Reshape();
+
+	void PrintLayerOutputDimensions();
 
 	inline const std::string name() const
 	{
 		return name_;
 	}
 
-protected:
-
 	std::string name_; // network name
 	std::vector<Layer*> layers_;
-	std::vector<std::string> layer_names_;
 	std::vector<Blob<float>* > blobs_;
-	std::vector<std::string> blob_names_;
 
-	Blob<float> input_blob_;
-	Blob<float> output_blob_;
+	Blob<float>* input_blob_;
+	Blob<float>* output_blob_;
+
+
+protected:
+//
+//	std::string name_; // network name
+//	std::vector<Layer*> layers_;
+//	std::vector<Blob<float>* > blobs_;
+//
+//	Blob<float> input_blob_;
+//	Blob<float> output_blob_;
 };
 
 void NetTest();
