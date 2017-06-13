@@ -4,9 +4,6 @@
 
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 void conv_cpu(int stride, int pad,
 		int inputSize, int kernelSize, int outputSize, int inputDepth,
 		int outRowStart, int outRowEnd,
@@ -169,6 +166,4 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 			}
 		}
 	}
-}
-
 }

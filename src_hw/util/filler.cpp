@@ -7,9 +7,6 @@
 #include "../blob.hpp"
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 void FillConstant(Blob<float>* blob, float value)
 {
 	FillConstant(blob->getMutableData(), blob->count(), value);
@@ -135,7 +132,5 @@ bool FillerTest()
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
-
-}
 
 }

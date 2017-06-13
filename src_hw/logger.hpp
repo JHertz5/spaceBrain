@@ -6,9 +6,6 @@
 
 #define MAX_LOG_MESSAGE_LENGTH 124
 
-namespace spaceBrain
-{
-
 class Logger
 {
 public:
@@ -31,7 +28,5 @@ private:
 };
 
 void LoggerTest();
-
-}
 
 #endif /* SRC_LOGGER_HPP_ */

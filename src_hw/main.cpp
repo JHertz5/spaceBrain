@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 			switch(argv[argIndex][1])
 			{
 			case 'h':
-				spaceBrain::printHelpMessage(true);
+				printHelpMessage(true);
 				return 0;
 
 			case 't':
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			spaceBrain::performCommand(std::string(argv[argIndex]), &keepRunning);
+			performCommand(std::string(argv[argIndex]), &keepRunning);
 		}
 	}
 
@@ -41,9 +41,9 @@ int main(int argc, char* argv[])
 		std::cin >> inMessage;
 
 		// respond to command
-		spaceBrain::performCommand(inMessage, &keepRunning);
+		performCommand(inMessage, &keepRunning);
 	} // end of while
 
-	spaceBrain::Logger::CloseLogger();
+	Logger::CloseLogger();
 
 }

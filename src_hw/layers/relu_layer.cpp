@@ -6,9 +6,6 @@
 
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 {
 	name_ = name;
@@ -109,6 +106,4 @@ bool ReluTest()
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
-}
-
 }

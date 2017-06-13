@@ -12,9 +12,6 @@
 #include "../net.hpp"
 #include "filler.hpp"
 
-namespace spaceBrain
-{
-
 void printHelpMessage(bool commandLineVersion)
 {
 	if(commandLineVersion)
@@ -59,7 +56,7 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "net")
 	{
 		std::cout << "Network" << std::endl;
-		spaceBrain::NetTest();
+		NetTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "input")
@@ -71,84 +68,84 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	else if(inMessage == "conv")
 	{
 		std::cout << "Convolution Layer" << std::endl;
-		spaceBrain::ConvTest();
+		ConvTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "conv_hw")
 	{
 		std::cout << "Convolution Layer Hardware Test" << std::endl;
-		spaceBrain::ConvHardwareTest();
+		ConvHardwareTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "conv_speed")
 	{
 		std::cout << "Convolution Speed Test" << std::endl;
-		spaceBrain::ConvSpeed();
+		ConvSpeed();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "conv_comp")
 	{
 		std::cout << "Convolution Layer Implementation Comparison" << std::endl;
-		spaceBrain::ConvCompare();
+		ConvCompare();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "relu")
 	{
 		std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;
-		spaceBrain::ReluTest();
+		ReluTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "pool")
 	{
 		std::cout << "MAX Pooling Layer" << std::endl;
-		spaceBrain::PoolTest();
+		PoolTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "fc")
 	{
 		std::cout << "Fully Connected/Inner Product Layer" << std::endl;
-		spaceBrain::FullyConnectedTest();
+		FullyConnectedTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "fc_comp")
 	{
 		std::cout << "Fully Connected Layer Implementation Comparison" << std::endl;
-		spaceBrain::FullyConnectedCompare();
+		FullyConnectedCompare();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "drop")
 	{
 		std::cout << "Dropout Layer" << std::endl;
-		spaceBrain::DropoutTest();
+		DropoutTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "prob")
 	{
 		std::cout << "SoftMax Layer" << std::endl;
-		spaceBrain::SoftmaxTest();
+		SoftmaxTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "log")
 	{
 		std::cout << "Logger" << std::endl;
-		spaceBrain::LoggerTest();
+		LoggerTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "data")
 	{
 		std::cout << "DataMemory" << std::endl;
-		spaceBrain::DataMemoryTest();
+		DataMemoryTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "fill")
 	{
 		std::cout << "Filler" << std::endl;
-		spaceBrain::FillerTest();
+		FillerTest();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "quit")
 	{
-		spaceBrain::Logger::CloseLogger();
+		Logger::CloseLogger();
 		*keepRunning = false;
 	}
 	else
@@ -156,6 +153,4 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		std::cout << "COMMAND NOT RECOGNISED" << std::endl;
 		std::cout << std::endl;
 	}
-}
-
 }

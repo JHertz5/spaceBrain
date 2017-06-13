@@ -5,9 +5,6 @@
 #include "../blob.hpp"
 #include "../layer.hpp"
 
-namespace spaceBrain
-{
-
 class ReluLayer : public Layer
 {
 public:
@@ -27,7 +24,5 @@ public:
 };
 
 bool ReluTest();
-
-}
 
 #endif /* SRC_LAYERS_RELU_LAYER_HPP_ */

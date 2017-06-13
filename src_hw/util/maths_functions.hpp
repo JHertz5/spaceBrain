@@ -1,10 +1,6 @@
 #ifndef SRC_UTIL_MATHS_FUNCTIONS_HPP_
 #define SRC_UTIL_MATHS_FUNCTIONS_HPP_
 
-
-namespace spaceBrain
-{
-
 void conv_cpu(int stride, int pad,
 		int inputSize, int kernelSize, int outputSize, int inputDepth,
 		int outRowStart, int outRowEnd,
@@ -37,7 +33,5 @@ void conv_cpu_transB(int stride, int pad,
 );
 
 void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C);
-
-}
 
 #endif /* SRC_UTIL_MATHS_FUNCTIONS_HPP_ */

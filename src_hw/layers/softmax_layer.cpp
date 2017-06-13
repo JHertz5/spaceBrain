@@ -4,9 +4,6 @@
 
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 SoftmaxLayer::SoftmaxLayer(std::string name, std::string bottom, std::string top)
 {
 	SoftmaxLayer::name_ = name;
@@ -80,6 +77,4 @@ bool SoftmaxTest() // TODO test proper version
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
-}
-
 }

@@ -5,9 +5,6 @@
 #include "../blob.hpp"
 #include "../layer.hpp"
 
-namespace spaceBrain
-{
-
 class SoftmaxLayer : public Layer
 {
 public:
@@ -27,7 +24,5 @@ public:
 };
 
 bool SoftmaxTest();
-
-}
 
 #endif /* SRC_LAYERS_SOFTMAX_LAYER_HPP_ */

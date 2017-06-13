@@ -4,9 +4,6 @@
 
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 DropoutLayer::DropoutLayer(std::string name, std::string bottom, std::string top)
 {
 	name_ = name;
@@ -78,6 +75,4 @@ bool DropoutTest()
 	std::cout << resultString;
 	Logger::GetLogger()->LogMessage(resultString);
 	return testPassed;
-}
-
 }

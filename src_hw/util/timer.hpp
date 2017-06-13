@@ -3,9 +3,6 @@
 
 #include "/opt/Xilinx/SDx/2016.4/aarch32-linux/include/sds_lib.h"
 
-namespace spaceBrain
-{
-
 class Timer
 {
 public:
@@ -36,7 +33,5 @@ public:
 private:
 	int total_cycles_, count_, num_calls_;
 };
-
-}
 
 #endif /* SRC_HW_UTIL_TIMER_HPP_ */

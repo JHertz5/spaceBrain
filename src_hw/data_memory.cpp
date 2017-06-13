@@ -6,9 +6,6 @@
 
 #include "logger.hpp"
 
-namespace spaceBrain
-{
-
 DataMemory::DataMemory()
 {
 	isPtrSet_ = false;
@@ -81,7 +78,5 @@ void DataMemoryTest()
 		std::cout << dataPtr[dataIndex] << " ";
 	}
 	std::cout << "}" << std::endl;
-
-}
 
 }

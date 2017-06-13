@@ -10,9 +10,6 @@
 #include "logger.hpp"
 #include "util/filler.hpp"
 
-namespace spaceBrain
-{
-
 void Net::Init()
 {
 	SetLayers();
@@ -264,6 +261,4 @@ void NetTest()
 	{
 		std::cout << outputData[outputIndex] << std::endl;
 	}
-}
-
 }

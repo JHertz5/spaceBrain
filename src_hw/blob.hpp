@@ -3,10 +3,7 @@
 
 #include "/opt/Xilinx/SDx/2016.4/SDK/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/include/c++/5.2.1/string"
 #include "logger.hpp"
-
-namespace spaceBrain {
-class DataMemory;
-} /* namespace spaceBrain */
+#include "data_memory.hpp"
 
 enum BlobShapeAxes
 {
@@ -16,9 +13,6 @@ enum BlobShapeAxes
 	WIDTH_AXIS = 3,
 	NUM_BLOB_DIMENSIONS = 4
 };
-
-namespace spaceBrain
-{
 
 template <typename Dtype>
 class Blob
@@ -117,7 +111,5 @@ protected:
 	std::string name_;
 
 };
-
-} // end of namespace spaceBrain
 
 #endif /* SRC_BLOB_HPP_ */

@@ -5,9 +5,6 @@
 
 #include "data_memory.hpp"
 
-namespace spaceBrain
-{
-
 template <typename Dtype>
 Blob<Dtype>::Blob()
 {
@@ -196,5 +193,3 @@ void Blob<Dtype>::PrintShape()
 //explicit instantiation
 template class Blob<float>;
 template class Blob<int>;
-
-} // end of namespace spaceBrain

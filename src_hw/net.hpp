@@ -6,9 +6,6 @@
 #include "blob.hpp"
 #include "layer.hpp"
 
-namespace spaceBrain
-{
-
 class Net
 {
 public:
@@ -58,7 +55,5 @@ protected:
 };
 
 void NetTest();
-
-}
 
 #endif /* SRC_NET_HPP_ */

@@ -5,9 +5,6 @@
 #include <fstream>
 #include <iostream>
 
-namespace spaceBrain
-{
-
 // static Logger variables declared
 const std::string Logger::filename = "space_brain.log";
 Logger* Logger::pThis = NULL;
@@ -78,9 +75,7 @@ void LoggerTest()
 	char message[256];
 	std::cin.getline(message, sizeof(message));
 
-	spaceBrain::Logger::GetLogger()->LogMessage(message);
+	Logger::GetLogger()->LogMessage(message);
 
 	std::cout << std::endl;
-}
-
 }

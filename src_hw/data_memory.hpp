@@ -3,9 +3,6 @@
 
 #include "/opt/Xilinx/SDx/2016.4/SDK/gnu/aarch32/lin/gcc-arm-linux-gnueabi/lib/gcc/arm-linux-gnueabihf/5.2.1/include/stddef.h"
 
-namespace spaceBrain
-{
-
 class DataMemory
 {
 public:
@@ -40,7 +37,5 @@ private:
 };
 
 void DataMemoryTest();
-
-}
 
 #endif /* SRC_DATA_MEMORY_HPP_ */

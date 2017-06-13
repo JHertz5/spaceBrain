@@ -6,9 +6,6 @@
 
 #include "../logger.hpp"
 
-namespace spaceBrain
-{
-
 PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top, int pad, int kernelSize, int stride)
 {
 	name_ = name;
@@ -230,6 +227,4 @@ bool PoolTest()
 	Logger::GetLogger()->LogMessage(resultString);
 
 	return testPassed;
-}
-
 }

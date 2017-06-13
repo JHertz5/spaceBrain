@@ -7,9 +7,6 @@
 #include "../util/filler.hpp"
 #include "../util/maths_functions.hpp"
 
-namespace spaceBrain
-{
-
 // http://tech.gilt.com/deep/learning/2016/05/18/fully-connected-to-convolutional-conversion
 // TODO change size_ to a bettter name (spatial length?)
 
@@ -285,7 +282,4 @@ bool FullyConnectedCompare()
 	Logger::GetLogger()->LogMessage(resultString);
 
 	return testPassed;
-}
-
-
 }

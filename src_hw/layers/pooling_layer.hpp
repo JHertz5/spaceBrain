@@ -5,9 +5,6 @@
 #include "../blob.hpp"
 #include "../layer.hpp"
 
-namespace spaceBrain
-{
-
 class PoolingLayer : public Layer
 {
 public:
@@ -39,7 +36,5 @@ protected:
 };
 
 bool PoolTest();
-
-}
 
 #endif /* SRC_LAYERS_POOLING_LAYER_HPP_ */

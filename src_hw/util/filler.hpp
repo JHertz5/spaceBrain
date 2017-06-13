@@ -3,9 +3,6 @@
 
 #include "../blob.hpp"
 
-namespace spaceBrain
-{
-
 /*
  * Fills blob with constant value
  * param: blob - blob to be filled
@@ -28,7 +25,5 @@ void FillUniform(float* data, int dataLength, int min, int max);
  * return: true if all filled values are valid
  */
 bool FillerTest();
-
-}
 
 #endif /* SRC_UTIL_FILLER_HPP_ */

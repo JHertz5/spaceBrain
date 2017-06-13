@@ -14,9 +14,6 @@ enum LayerType
 	SOFTMAX
 };
 
-namespace spaceBrain
-{
-
 // Class from which to derive other layer classes
 class Layer
 {
@@ -59,7 +56,5 @@ protected:
 
 	~Layer(){}
 };
-
-}
 
 #endif /* SRC_LAYERS_LAYER_HPP_ */

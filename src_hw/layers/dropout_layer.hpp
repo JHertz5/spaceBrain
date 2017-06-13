@@ -5,9 +5,6 @@
 #include "../blob.hpp"
 #include "../layer.hpp"
 
-namespace spaceBrain
-{
-
 class DropoutLayer : public Layer
 {
 public:
@@ -27,7 +24,5 @@ public:
 };
 
 bool DropoutTest();
-
-}
 
 #endif /* SRC_LAYERS_DROPOUT_LAYER_HPP_ */

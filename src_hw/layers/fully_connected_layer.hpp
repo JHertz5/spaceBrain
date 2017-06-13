@@ -5,9 +5,6 @@
 #include "../blob.hpp"
 #include "../layer.hpp"
 
-namespace spaceBrain
-{
-
 class FullyConnectedLayer : public Layer
 {
 public:
@@ -46,8 +43,5 @@ private:
 bool FullyConnectedTest();
 
 bool FullyConnectedCompare();
-
-}
-
 
 #endif /* SRC_LAYERS_FULLY_CONNECTED_LAYER_HPP_ */
