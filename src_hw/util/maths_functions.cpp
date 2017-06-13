@@ -1,5 +1,7 @@
 #include "maths_functions.hpp"
 
+#include <iostream>
+
 #include "../logger.hpp"
 
 namespace spaceBrain
@@ -52,58 +54,7 @@ void conv_cpu(int stride, int pad,
 		}
 	}
 }
-/*
-void conv_hw_conv3x3(int inputSize, int outputSize, int inputDepth,
-		int outRowStart, int outRowEnd,
-		int outColStart, int outColEnd,
-		int outDepthStart, int outDepthEnd,
-		int inDepthStart, int inDepthEnd,
-		const float* input, const float* weights, float* output
-)
-{
-	// define stride, define pad, kernelsize
-	int paddedRow, paddedCol;
 
-	for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
-	{
-		for(int kernelCol = 0; kernelCol < kernelSize; kernelCol++)
-		{
-			for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
-			{
-				paddedRow = stride * outRowIndex + kernelRow - pad;
-
-				for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
-				{
-					paddedCol = stride * outColIndex + kernelCol - pad;
-#pragma HLS PIPELINE
-					for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
-					{
-#pragma HLS UNROLL
-						for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
-						{
-#pragma HLS UNROLL
-							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
-							{
-								// point is in padded area
-								output[(outDepthIndex * outRowEnd + outRowIndex) * outColEnd + outColIndex] += 0;
-							}
-							else
-							{
-								output[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] +=
-//								output[outDepthIndex][rowIndex][colIndex] +=
-									weights[((outDepthIndex * inputDepth + inDepthIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
-//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
-									input[(inDepthIndex * inputSize + paddedRow) * inputSize + paddedCol];
-//									input[inDepthIndex][paddedRow][paddedCol];
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-*/
 void conv_cpu_transB(int stride, int pad,
 		int inputSize, int kernelSize, int outputSize, int outputDepth,
 		int outRowStart, int outRowEnd,
