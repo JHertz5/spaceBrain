@@ -10,7 +10,7 @@ void conv_cpu(int stride, int pad,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDethEnd,
 		int inDepthStart, int inDepthEnd,
-		const float* input, const float* weights, float* output
+		const int* input, const int* weights, int* output
 )
 {
 	int paddedRow, paddedCol;
@@ -58,7 +58,7 @@ void conv_cpu_transB(int stride, int pad,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDepthEnd,
 		int inDepthStart, int inDepthEnd,
-		const float* input, const float* weights, float* output
+		const int* input, const int* weights, int* output
 )
 {
 	int paddedRow, paddedCol;
@@ -100,7 +100,7 @@ void conv_cpu_transB(int stride, int pad,
 	}
 }
 
-void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
+void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const int alpha, const int* A, const int* B, const int beta, int* C)
 {
 	Logger::GetLogger()->LogMessage("\tgemm computation, transposeA = %i, transposeB = %i, alpha = %.1f, beta = %.1f", isTransposeA, isTransposeB, alpha, beta);
 
@@ -112,7 +112,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
@@ -127,7 +127,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[mIndex*k+kIndex] * B[nIndex*k+kIndex];
@@ -142,7 +142,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[kIndex*m+mIndex] * B[kIndex*n+nIndex];
@@ -157,7 +157,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[kIndex*m+mIndex] * B[nIndex*k+kIndex];

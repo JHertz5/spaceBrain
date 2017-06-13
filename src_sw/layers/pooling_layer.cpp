@@ -34,7 +34,7 @@ PoolingLayer::PoolingLayer(std::string name, std::string bottom, std::string top
 	);
 }
 
-void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
+void PoolingLayer::LayerSetUp(const Blob<int>* bottom, const Blob<int>* top)
 {
 	bool paramTestsPassed = true;
 	if(kernel_size_ < 2)
@@ -81,18 +81,18 @@ void PoolingLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
 	}
 }
 
-void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void PoolingLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	num_ = bottom->num();
 	depth_ = bottom->depth();
 	input_size_ = bottom->height(); // only supports square inputs, so width is not needed
 
-	float pooledSize = ((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
-	if(pooledSize != ceil(pooledSize))
+	int pooledSize = ((int)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
+	if(pooledSize != ceil((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1)
 	{
 		Logger::GetLogger()->LogError(
-				"PoolingLayer::Reshape",
-				"pooledSize %f is non-integer",
+				"ConvolutionLayer::Reshape",
+				"convedSize %f is non-integer",
 				pooledSize
 		);
 		return;
@@ -113,12 +113,12 @@ void PoolingLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	top->Reshape(num_, depth_, output_size_, output_size_);
 }
 
-void PoolingLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void PoolingLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	for (int n = 0; n < num_; ++n) // batch num loop
 	{
@@ -172,13 +172,13 @@ bool PoolTest()
 	std::cout << std::endl;
 
 	PoolingLayer pool1("pool_test", "test_in", "test_out", pad, kernelSize, stride); // initialise relu layer
-	Blob<float> bottomBlob(num, channels, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, channels, height, width);
+	Blob<int> topBlob;
 
 	pool1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData();
+	int *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex;

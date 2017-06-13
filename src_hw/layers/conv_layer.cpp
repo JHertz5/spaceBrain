@@ -42,7 +42,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	);
 }
 
-void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
+void ConvolutionLayer::LayerSetUp(const Blob<int>* bottom, const Blob<int>* top)
 {
 	// check that each parameter is valid
 	bool paramTestsPassed = true;
@@ -95,7 +95,7 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 	kernel_volume_ = weights_.count(1);
 }
 
-void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	num_input_ = bottom->num();
 	input_depth_ = bottom->depth();
@@ -103,8 +103,8 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 
 	int inputSize = input_size_;
 
-	float convolvedSize = ((float)(inputSize + 2 * pad_ - kernel_size_) / stride_) + 1;
-	if(convolvedSize != ceil(convolvedSize))
+	int convolvedSize = ((int)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
+	if(convolvedSize != ceil((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1)
 	{
 		Logger::GetLogger()->LogError(
 				"ConvolutionLayer::Reshape",
@@ -137,7 +137,7 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 }
 
 //Deprecated
-void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* data_col)
+void ConvolutionLayer::ConvertBlobToInputColumns(const int* data_im, int* data_col)
 {
 	const int channelVolume = input_size_ * input_size_;
 
@@ -182,13 +182,13 @@ void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* da
 }
 
 // Deprecated
-void ConvolutionLayer::Forward_gemm(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward_gemm(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -200,9 +200,9 @@ void ConvolutionLayer::Forward_gemm(const Blob<float>* bottom, Blob<float>* top)
 }
 
 // Deprecated
-void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
+void ConvolutionLayer::conv_gemm_cpu(const int* input, const int* weights, int* output, bool skip_im2col)
 {
-	const float* col_buff = input;
+	const int* col_buff = input;
 	// perform im2col or skip
 	if (!is_1x1_)
 	{
@@ -222,15 +222,15 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 	);
 }
 
-void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	FillConstant(top, 0);
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -241,7 +241,7 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	}
 }
 
-void ConvolutionLayer::Convolution(const float* input, const float* weights, float* output)
+void ConvolutionLayer::Convolution(const int* input, const int* weights, int* output)
 {
 	// Tiling values
 	int rowTileSize = 4;
@@ -277,15 +277,15 @@ void ConvolutionLayer::Convolution(const float* input, const float* weights, flo
 	}
 }
 
-void ConvolutionLayer::Forward_hw(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward_hw(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	FillConstant(top, 0);
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -296,7 +296,7 @@ void ConvolutionLayer::Forward_hw(const Blob<float>* bottom, Blob<float>* top)
 	}
 }
 
-void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, float* output)
+void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int* output)
 {
 	// Tiling values
 	int outRowTileSize = OUT_ROW_TILE_SIZE_3X3;
@@ -325,9 +325,9 @@ void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, 
 					int weightsTileLength = outDepthTileSize * inDepthTileSize * kernel_size_ * kernel_size_;
 					int inputTileLength = inDepthTileSize * inRowTileSize * inColTileSize;
 
-					float* outputTile = (float*)sds_alloc(outputTileLength * sizeof(float));
-					float* weightsTile = (float*)sds_alloc(weightsTileLength * sizeof(float));
-					float* inputTile = (float*)sds_alloc(inputTileLength * sizeof(float));
+					int* outputTile = (int*)sds_alloc(outputTileLength * sizeof(int));
+					int* weightsTile = (int*)sds_alloc(weightsTileLength * sizeof(int));
+					int* inputTile = (int*)sds_alloc(inputTileLength * sizeof(int));
 
 					if (!inputTile || !weightsTile || !outputTile)
 					{
@@ -379,16 +379,15 @@ void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, 
 							for(int outDepthIndex = outDepthTileStart; outDepthIndex < outDepthTileEnd; outDepthIndex++)
 							{
 								output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex] +=
-										outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)];
+										outputTile[((outDepthIndex-outDepthTileStart) * outRowTileSize + (outRowIndex-outRowTileStart)) * outColTileSize + (outColIndex-outColTileStart)];
 //								std::cout << (outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex << " " << outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)] << std::endl;
 							}
 						}
 					}
 
-//					sds_free(outputTile);
-//					sds_free(weightsTile);
-//					sds_free(inputTile);
-
+					sds_free(outputTile);
+					sds_free(weightsTile);
+					sds_free(inputTile);
 				}
 			}
 		}
@@ -411,13 +410,13 @@ bool ConvTest()
 	std::cout << std::endl;
 
 	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> topBlob;
 
 	conv1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData();
+	int *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex/height + 1; // dataIndex/height will nautrally be the floor of this as these are both ints
@@ -440,8 +439,8 @@ bool ConvTest()
 
 	// check results
 	bool testPassed = true;
-	const float* topData = topBlob.getConstData();
-	float trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
+	const int* topData = topBlob.getConstData();
+	int trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
 
 	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
 	{
@@ -480,13 +479,13 @@ bool ConvHardwareTest()
 	std::cout << std::endl;
 
 	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> topBlob;
 
 	conv1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData();
+	int *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex/height + 1; // dataIndex/height will nautrally be the floor of this as these are both ints
@@ -509,22 +508,47 @@ bool ConvHardwareTest()
 
 	// check results
 	bool testPassed = true;
-	const float* topData = topBlob.getConstData();
-	float trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
+	const int* topData = topBlob.getConstData();
+	int trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
 
-	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
+	int outDepth = topBlob.depth();
+	int outHeight = topBlob.height();
+	int outWidth = topBlob.width();
+
+	for(int depthIndex = 0; depthIndex < outDepth; depthIndex++)
 	{
-		bool testPassed_temp = (topData[dataIndex] == trueResults[dataIndex]);
-		if(!testPassed_temp)
+		for(int heightIndex = 0; heightIndex < outHeight; heightIndex++)
 		{
-			Logger::GetLogger()->LogError(
-					"ConvTest",
-					"Output %.1f incorrect at index = %i, expected %i",
-					topData[dataIndex], dataIndex, trueResults[dataIndex]
-			);
+			for(int widthIndex = 0; widthIndex < outWidth; widthIndex++)
+			{
+				int arryIndex = (depthIndex * outHeight + heightIndex) * outWidth + widthIndex;
+				bool testPassed_temp = (topData[arryIndex] == trueResults[arryIndex]);
+				if(!testPassed_temp)
+				{
+					Logger::GetLogger()->LogError(
+							"ConvTest",
+							"Output %.1f incorrect at (%i, %i, %i), expected %i",
+							topData[arryIndex], depthIndex, heightIndex, widthIndex, trueResults[arryIndex]
+					);
+				}
+				testPassed &= testPassed_temp; // AND test into overall test result
+			}
 		}
-		testPassed &= testPassed_temp; // AND test into overall test result
 	}
+//
+//	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
+//	{
+//		bool testPassed_temp = (topData[dataIndex] == trueResults[dataIndex]);
+//		if(!testPassed_temp)
+//		{
+//			Logger::GetLogger()->LogError(
+//					"ConvTest",
+//					"Output %.1f incorrect at index = %i, expected %i",
+//					topData[dataIndex], dataIndex, trueResults[dataIndex]
+//			);
+//		}
+//		testPassed &= testPassed_temp; // AND test into overall test result
+//	}
 
 	std::string resultString = "\tConvolution Layer Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");
@@ -548,8 +572,8 @@ void ConvSpeed()
 	int numTests = 128;
 
 	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, outputDepth); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, inputSize, inputSize);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, depth, inputSize, inputSize);
+	Blob<int> topBlob;
 
 	conv1.SetUp(&bottomBlob, &topBlob);
 
@@ -579,15 +603,15 @@ bool ConvCompare()
 	int stride = 1;
 	int pad = 1;
 	int kernelSize = 3;
-	int numOutputChannels = 3;
+	int numOutputChannels = 1;
 
 	std::cout << "pad = " << pad << ", stride =" << stride << ", kernel size = " << kernelSize << std::endl;
 	std::cout << std::endl;
 
 	ConvolutionLayer conv1("conv_test_sw", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
 	ConvolutionLayer conv2("conv_test_hw", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> swBlob, hwBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> swBlob, hwBlob;
 
 	conv1.SetUp(&bottomBlob, &swBlob);
 	conv2.SetUp(&bottomBlob, &hwBlob);
@@ -621,24 +645,33 @@ bool ConvCompare()
 
 	// check results
 	bool testPassed = true;
-	const float* swData = swBlob.getConstData();
-	const float* hwData = hwBlob.getConstData();
+	const int* swData = swBlob.getConstData();
+	const int* hwData = hwBlob.getConstData();
 
-	for(int dataIndex = 0; dataIndex < swBlob.count(); dataIndex++)
+	int outDepthLim = hwBlob.depth();
+	int outHeightLim = hwBlob.height();
+	int outWidthLim = hwBlob.width();
+
+	for(int depthIndex = 0; depthIndex < outDepthLim; depthIndex++)
 	{
-		bool testPassed_temp = (swData[dataIndex] == hwData[dataIndex]);
-		if(!testPassed_temp)
+		for(int heightIndex = 0; heightIndex < outHeightLim; heightIndex++)
 		{
-			Logger::GetLogger()->LogError(
-					"ConvCompare",
-					"Conv output %.1f incorrect at index = %i, expected %.1f",
-					hwData[dataIndex], dataIndex, swData[dataIndex]
-			);
-//			std::cout << hwData[dataIndex] << " "<< dataIndex << " " << swData[dataIndex] << std::endl;
+			for(int widthIndex = 0; widthIndex < outWidthLim; widthIndex++)
+			{
+				int arryIndex = (depthIndex * outHeightLim + heightIndex) * outWidthLim + widthIndex;
+				bool testPassed_temp = (hwData[arryIndex] == swData[arryIndex]);
+				if(!testPassed_temp)
+				{
+					Logger::GetLogger()->LogError(
+							"ConvTest",
+							"Output %.1f incorrect at (%i, %i, %i), expected %i",
+							hwData[arryIndex], depthIndex, heightIndex, widthIndex, swData[arryIndex]
+					);
+				}
+				testPassed &= testPassed_temp; // AND test into overall test result
+			}
 		}
-		testPassed &= testPassed_temp; // AND test into overall test result
 	}
-
 
 	std::string resultString = "\tConvolution Layer Test ";
 	resultString += (testPassed ? "PASSED\n" : "FAILED\n");

@@ -11,7 +11,7 @@ void conv_cpu(int stride, int pad,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDepthEnd,
 		int inDepthStart, int inDepthEnd,
-		const float* input, const float* weights, float* output
+		const int* input, const int* weights, int* output
 )
 {
 	int paddedRow, paddedCol;
@@ -60,9 +60,10 @@ void conv_cpu_hw(int stride, int pad,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDepthEnd,
 		int inDepthStart, int inDepthEnd,
-		const float* inputTile, const float* weightsTile, float* outputTile
+		const int* inputTile, const int* weightsTile, int* outputTile
 )
 {
+
 	int outRowTileSize = outRowEnd - outRowStart;
 	int outColTileSize = outColEnd - outColStart;
 	int outDepthTileSize = outDepthEnd - outDepthStart;
@@ -111,6 +112,54 @@ void conv_cpu_hw(int stride, int pad,
 			}
 		}
 	}
+/*
+	int paddedRow, paddedCol;
+
+		for(int kernelRow = 0; kernelRow < KERNEL_SIZE_3X3; kernelRow++)
+		{
+			for(int kernelCol = 0; kernelCol < KERNEL_SIZE_3X3; kernelCol++)
+			{
+				for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
+				{
+					paddedRow = STRIDE_3X3 * outRowIndex + kernelRow - PAD_3X3;
+
+					for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
+					{
+						paddedCol = STRIDE_3X3 * outColIndex + kernelCol - PAD_3X3;
+						for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
+						{
+							int result = 0;
+							for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
+							{
+								if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
+								{
+									// point is in padded area
+									outputTile[(outDepthIndex * outRowEnd + outRowIndex) * outColEnd + outColIndex] += 0;
+								}
+								else
+								{
+	//								outputTile[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] +=
+									result +=
+	//								output[outDepthIndex][rowIndex][colIndex] +=
+										weightsTile[((outDepthIndex * inputDepth + inDepthIndex) * KERNEL_SIZE_3X3 + kernelRow) * KERNEL_SIZE_3X3 + kernelCol] *
+	//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
+										inputTile[(inDepthIndex * inputSize + paddedRow) * inputSize + paddedCol];
+	//									input[inDepthIndex][paddedRow][paddedCol];
+
+
+
+	//								if(weightsTile[((outDepthIndex * inputDepth + inDepthIndex) * KERNEL_SIZE_3X3 + kernelRow) * KERNEL_SIZE_3X3 + kernelCol] != 1 ||
+	//										inputTile[(inDepthIndex * inputSize + paddedRow) * inputSize + paddedCol] != 1)
+	//								{
+	//								}
+								}
+							}
+							outputTile[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] += result;
+						}
+					}
+				}
+			}
+		}*/
 }
 
 void conv_cpu_transB(int stride, int pad,
@@ -119,7 +168,7 @@ void conv_cpu_transB(int stride, int pad,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDepthEnd,
 		int inDepthStart, int inDepthEnd,
-		const float* input, const float* weights, float* output
+		const int* input, const int* weights, int* output
 )
 {
 	int paddedRow, paddedCol;
@@ -161,7 +210,7 @@ void conv_cpu_transB(int stride, int pad,
 	}
 }
 
-void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const float alpha, const float* A, const float* B, const float beta, float* C)
+void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const int alpha, const int* A, const int* B, const int beta, int* C)
 {
 	Logger::GetLogger()->LogMessage("\tgemm computation, transposeA = %i, transposeB = %i, alpha = %.1f, beta = %.1f", isTransposeA, isTransposeB, alpha, beta);
 
@@ -173,7 +222,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[mIndex*k+kIndex] * B[kIndex*n+nIndex];
@@ -188,7 +237,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[mIndex*k+kIndex] * B[nIndex*k+kIndex];
@@ -203,7 +252,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[kIndex*m+mIndex] * B[kIndex*n+nIndex];
@@ -218,7 +267,7 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		{
 			for (int nIndex = 0; nIndex < n; nIndex++)
 			{
-				float result = 0.0;
+				int result = 0.0;
 				for (int kIndex = 0; kIndex < k; kIndex++)
 				{
 					result += alpha * A[kIndex*m+mIndex] * B[nIndex*k+kIndex];

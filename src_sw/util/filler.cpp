@@ -10,14 +10,14 @@
 namespace spaceBrain
 {
 
-void FillConstant(Blob<float>* blob, float value)
+void FillConstant(Blob<int>* blob, int value)
 {
 	FillConstant(blob->getMutableData(), blob->count(), value);
 }
 
-void FillConstant(float* data, int dataLength, float value)
+void FillConstant(int* data, int dataLength, int value)
 {
-	Logger::GetLogger()->LogMessage("\tFillConstant: Filling blob with constant %.1f", value);
+	Logger::GetLogger()->LogMessage("\tFillConstant: Filling blob with constant %i", value);
 	if(dataLength < 0)
 	{
 		Logger::GetLogger()->LogError(
@@ -34,12 +34,12 @@ void FillConstant(float* data, int dataLength, float value)
 	}
 }
 
-void FillUniform(Blob<float>* blob, int min, int max)
+void FillUniform(Blob<int>* blob, int min, int max)
 {
 	FillUniform(blob->getMutableData(), blob->count(), min, max);
 }
 
-void FillUniform(float* data, int dataLength, int min, int max)
+void FillUniform(int* data, int dataLength, int min, int max)
 {
 	Logger::GetLogger()->LogMessage("\tFillUniform: Filling blob with uniformly distributed x, %i <= x <= %i", min, max);
 	if(min > max)
@@ -69,12 +69,12 @@ bool FillerTest()
 
 	//  set up blob
 	int num = 1, channels = 1, height = 10, width = 10;
-	Blob<float> testBlob(num, channels, height, width);
+	Blob<int> testBlob(num, channels, height, width);
 
 	bool testPassed = true;
 
 	// perform constant fill on blob
-	float value = 10;
+	int value = 10;
 	FillConstant(&testBlob, value);
 
 	// test results of constant fill
@@ -82,7 +82,7 @@ bool FillerTest()
 	{
 		for(int wIndex = 0; wIndex < testBlob.width(); wIndex++)
 		{
-			float resultData = testBlob.getDataAt(0, 0, hIndex, wIndex);
+			int resultData = testBlob.getDataAt(0, 0, hIndex, wIndex);
 			std::cout << resultData << "\t";
 
 			// check data
@@ -91,7 +91,7 @@ bool FillerTest()
 			{
 				Logger::GetLogger()->LogError(
 						"FillerTest",
-						"Constant value incorrect at hIndex %i, wIndex %i - result = %.1f, expected = %.1f",
+						"Constant value incorrect at hIndex %i, wIndex %i - result = %i, expected = %i",
 						hIndex, wIndex, resultData, value
 				);
 			}
@@ -110,7 +110,7 @@ bool FillerTest()
 	{
 		for(int wIndex = 0; wIndex < testBlob.width(); wIndex++)
 		{
-			float resultData = testBlob.getDataAt(0, 0, hIndex, wIndex);
+			int resultData = testBlob.getDataAt(0, 0, hIndex, wIndex);
 			std::cout << resultData << "\t";
 
 			// check data
@@ -119,7 +119,7 @@ bool FillerTest()
 			{
 				Logger::GetLogger()->LogError(
 						"FillerTest",
-						"Uniform value outside limits at hIndex %i, wIndex %i - result = %.1f, min = %i, max = %i",
+						"Uniform value outside limits at hIndex %i, wIndex %i - result = %i, min = %i, max = %i",
 						hIndex, wIndex, resultData, min, max
 				);
 			}

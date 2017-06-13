@@ -16,31 +16,31 @@ public:
 	ConvolutionLayer(std::string name, std::string bottom, std::string top, int pad, int kernelSize, int stride, int num_output);
 	virtual ~ConvolutionLayer(){}
 
-	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top);
+	virtual void LayerSetUp(const Blob<int>* bottom, const Blob<int>* top);
 
-	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Reshape(const Blob<int>* bottom, Blob<int>* top);
 
-	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
-	void Forward_im2col(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Forward(const Blob<int>* bottom, Blob<int>* top);
+	void Forward_im2col(const Blob<int>* bottom, Blob<int>* top);
 
 	virtual inline const int type() const
 	{
 		return CONV;
 	}
 
-	void ConvertBlobToInputColumns(const float* data_im, float* data_col);
+	void ConvertBlobToInputColumns(const int* data_im, int* data_col);
 
-	void conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col = false);
+	void conv_gemm_cpu(const int* input, const int* weights, int* output, bool skip_im2col = false);
 
-	void Convolution(const float* input, const float* weights, float* output);
-	void Convolution_hw(const float* input, const float* weights, float* output);
+	void Convolution(const int* input, const int* weights, int* output);
+	void Convolution_hw(const int* input, const int* weights, int* output);
 
-	void Forward_hw(const Blob<float>* bottom, Blob<float>* top);
+	void Forward_hw(const Blob<int>* bottom, Blob<int>* top);
 
-	Blob<float> weights_;
+	Blob<int> weights_;
 
 private:
-	Blob<float> col_buffer_;
+	Blob<int> col_buffer_;
 
 	int kernel_size_;
 	int stride_;

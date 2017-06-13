@@ -5,9 +5,9 @@ void conv_hw_conv3x3(int inputSize, int outputSize, int inputDepth,
 		int outColStart, int outColEnd,
 		int outDepthStart, int outDepthEnd,
 		int inDepthStart, int inDepthEnd,
-		float inputTile [ IN_DEPTH_TILE_SIZE_3X3 * IN_ROW_TILE_SIZE_3X3 * IN_COL_TILE_SIZE_3X3 ],
-		float weightsTile [ OUT_DEPTH_TILE_SIZE_3X3 * IN_DEPTH_TILE_SIZE_3X3 * KERNEL_SIZE_3X3 * KERNEL_SIZE_3X3 ],
-		float outputTile [ OUT_DEPTH_TILE_SIZE_3X3 * OUT_ROW_TILE_SIZE_3X3 * OUT_COL_TILE_SIZE_3X3 ]
+		int inputTile [ IN_DEPTH_TILE_SIZE_3X3 * IN_ROW_TILE_SIZE_3X3 * IN_COL_TILE_SIZE_3X3 ],
+		int weightsTile [ OUT_DEPTH_TILE_SIZE_3X3 * IN_DEPTH_TILE_SIZE_3X3 * KERNEL_SIZE_3X3 * KERNEL_SIZE_3X3 ],
+		int outputTile [ OUT_DEPTH_TILE_SIZE_3X3 * OUT_ROW_TILE_SIZE_3X3 * OUT_COL_TILE_SIZE_3X3 ]
 )
 {
 
@@ -27,7 +27,7 @@ void conv_hw_conv3x3(int inputSize, int outputSize, int inputDepth,
 #pragma HLS PIPELINE
 					for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
 					{
-						float result = 0;
+						int result = 0;
 #pragma HLS UNROLL
 						for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
 						{
@@ -55,7 +55,7 @@ void conv_hw_conv3x3(int inputSize, int outputSize, int inputDepth,
 //								}
 							}
 						}
-						outputTile[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] = result;
+						outputTile[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] += result;
 					}
 				}
 			}

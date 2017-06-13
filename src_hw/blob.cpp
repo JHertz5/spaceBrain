@@ -142,8 +142,8 @@ void Blob<Dtype>::CopyFrom(const Blob<Dtype>* source, bool reshape)
 		}
 	}
 
-	const float* sourceDataArray = (float*) source->getConstData();
-	float* thisDataArray = (float*) data_->getMutableData();
+	const int* sourceDataArray = (int*) source->getConstData();
+	int* thisDataArray = (int*) data_->getMutableData();
 
 	for(int index = 0; index < this->count(); index++)
 	{
@@ -191,5 +191,5 @@ void Blob<Dtype>::PrintShape()
 }
 
 //explicit instantiation
-template class Blob<float>;
+//template class Blob<float>;
 template class Blob<int>;

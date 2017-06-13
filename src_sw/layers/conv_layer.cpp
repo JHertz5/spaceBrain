@@ -42,7 +42,7 @@ ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::st
 	);
 }
 
-void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
+void ConvolutionLayer::LayerSetUp(const Blob<int>* bottom, const Blob<int>* top)
 {
 	// check that each parameter is valid
 	bool paramTestsPassed = true;
@@ -95,7 +95,7 @@ void ConvolutionLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* 
 	kernel_volume_ = weights_.count(1);
 }
 
-void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	num_input_ = bottom->num();
 	input_depth_ = bottom->depth();
@@ -103,8 +103,8 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 
 	int inputSize = input_size_;
 
-	float convolvedSize = ((float)(inputSize + 2 * pad_ - kernel_size_) / stride_) + 1;
-	if(convolvedSize != ceil(convolvedSize))
+	int convolvedSize = ((int)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1;
+	if(convolvedSize != ceil((float)(input_size_ + 2 * pad_ - kernel_size_) / stride_) + 1)
 	{
 		Logger::GetLogger()->LogError(
 				"ConvolutionLayer::Reshape",
@@ -136,7 +136,7 @@ void ConvolutionLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	col_buffer_.Reshape(1, kernel_volume_, output_size_, output_size_);
 }
 
-void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* data_col)
+void ConvolutionLayer::ConvertBlobToInputColumns(const int* data_im, int* data_col)
 {
 	const int channelVolume = input_size_ * input_size_;
 
@@ -181,13 +181,13 @@ void ConvolutionLayer::ConvertBlobToInputColumns(const float* data_im, float* da
 }
 
 // Deprecated
-void ConvolutionLayer::Forward_im2col(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward_im2col(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -198,9 +198,9 @@ void ConvolutionLayer::Forward_im2col(const Blob<float>* bottom, Blob<float>* to
 	}
 }
 
-void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, float* output, bool skip_im2col)
+void ConvolutionLayer::conv_gemm_cpu(const int* input, const int* weights, int* output, bool skip_im2col)
 {
-	const float* col_buff = input;
+	const int* col_buff = input;
 	// perform im2col or skip
 	if (!is_1x1_)
 	{
@@ -220,15 +220,15 @@ void ConvolutionLayer::conv_gemm_cpu(const float* input, const float* weights, f
 	);
 }
 
-void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	FillConstant(top, 0);
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -239,7 +239,7 @@ void ConvolutionLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 	}
 }
 
-void ConvolutionLayer::Convolution(const float* input, const float* weights, float* output)
+void ConvolutionLayer::Convolution(const int* input, const int* weights, int* output)
 {
 	// Tiling values
 	int outRowTileSize = 14;
@@ -275,15 +275,15 @@ void ConvolutionLayer::Convolution(const float* input, const float* weights, flo
 	}
 }
 
-void ConvolutionLayer::Forward_hw(const Blob<float>* bottom, Blob<float>* top)
+void ConvolutionLayer::Forward_hw(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
 	FillConstant(top, 0);
 
-	const float* weight = weights_.getConstData();
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* weight = weights_.getConstData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 
 	int bottomVolume = bottom->count(DEPTH_AXIS);
 	int topVolume = top->count(DEPTH_AXIS);
@@ -294,7 +294,7 @@ void ConvolutionLayer::Forward_hw(const Blob<float>* bottom, Blob<float>* top)
 	}
 }
 
-void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, float* output)
+void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int* output)
 {
 	// Tiling values
 	int outRowTileSize = 14;
@@ -323,9 +323,9 @@ void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, 
 					int weightsTileLength = outDepthTileSize * inDepthTileSize * kernel_size_ * kernel_size_;
 					int inputTileLength = inDepthTileSize * inRowTileSize * inColTileSize;
 
-					float* outputTile = (float*)malloc(outputTileLength * sizeof(float));
-					float* weightsTile = (float*)malloc(weightsTileLength * sizeof(float));
-					float* inputTile = (float*)malloc(inputTileLength * sizeof(float));
+					int* outputTile = (int*)malloc(outputTileLength * sizeof(int));
+					int* weightsTile = (int*)malloc(weightsTileLength * sizeof(int));
+					int* inputTile = (int*)malloc(inputTileLength * sizeof(int));
 
 					if (!inputTile || !weightsTile || !outputTile)
 					{
@@ -387,6 +387,105 @@ void ConvolutionLayer::Convolution_hw(const float* input, const float* weights, 
 	}
 }
 
+/*
+void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int* output)
+{
+	// Tiling values
+	int outRowTileSize = OUT_ROW_TILE_SIZE_3X3;
+	int outColTileSize = OUT_COL_TILE_SIZE_3X3;
+	int outDepthTileSize = OUT_DEPTH_TILE_SIZE_3X3;
+	int inDepthTileSize = IN_DEPTH_TILE_SIZE_3X3;
+
+	int inRowTileSize = outRowTileSize + 2; // would need to change 2 for different stride/kernel_size
+	int inColTileSize = outColTileSize + 2; // would need to change 2 for different stride/kernel_size
+
+	for(int outRowTileStart = 0; outRowTileStart < output_size_; outRowTileStart += outRowTileSize)
+	{
+		for(int outColTileStart = 0; outColTileStart < output_size_; outColTileStart += outColTileSize)
+		{
+			for(int outDepthTileStart = 0; outDepthTileStart < output_depth_; outDepthTileStart += outDepthTileSize)
+			{
+				for(int inDepthTileStart = 0; inDepthTileStart < input_depth_; inDepthTileStart += inDepthTileSize)
+				{
+					// load stuff
+					int outRowTileEnd = std::min(outRowTileStart + outRowTileSize, output_size_);
+					int outColTileEnd = std::min(outColTileStart + outColTileSize, output_size_);
+					int outDepthTileEnd = std::min(outDepthTileStart + outDepthTileSize, output_depth_);
+					int inDepthTileEnd = std::min(inDepthTileStart + inDepthTileSize, input_depth_);
+
+					int outputTileLength = outDepthTileSize * outRowTileSize * outColTileSize;
+					int weightsTileLength = outDepthTileSize * inDepthTileSize * kernel_size_ * kernel_size_;
+					int inputTileLength = inDepthTileSize * inRowTileSize * inColTileSize;
+
+					int* outputTile = (int*)sds_alloc(outputTileLength * sizeof(int));
+					int* weightsTile = (int*)sds_alloc(weightsTileLength * sizeof(int));
+					int* inputTile = (int*)sds_alloc(inputTileLength * sizeof(int));
+
+					if (!inputTile || !weightsTile || !outputTile)
+					{
+						if(inputTile)
+						{
+							free(inputTile);
+						}
+						if(weightsTile)
+						{
+							free(weightsTile);
+						}
+						if(outputTile)
+						{
+							free(outputTile);
+						}
+						return;
+					}
+
+//					for(int outRowIndex = outRowTileStart; outRowIndex < outRowTileEnd; outRowIndex++)
+//					{
+//						for(int outColIndex = outColTileStart; outColIndex < outColTileEnd; outColIndex++)
+//						{
+//							for(int outDepthIndex = outDepthTileStart; outDepthIndex < outDepthTileEnd; outDepthIndex++)
+//							{
+//								outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)]
+//										   = output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex];
+//
+//							}
+//						}
+//					}
+
+					std::cout << inputTileLength << std::endl;
+
+					FillConstant(weightsTile, weightsTileLength, 1);
+					FillConstant(inputTile, inputTileLength, 1);
+
+					conv_hw_conv3x3(input_size_, output_size_, input_depth_,
+							outRowTileStart, outRowTileEnd,
+							outColTileStart, outColTileEnd,
+							outDepthTileStart, outDepthTileEnd,
+							inDepthTileStart, inDepthTileEnd,
+							inputTile, weightsTile, outputTile
+					);
+
+					for(int outRowIndex = outRowTileStart; outRowIndex < outRowTileEnd; outRowIndex++)
+					{
+						for(int outColIndex = outColTileStart; outColIndex < outColTileEnd; outColIndex++)
+						{
+							for(int outDepthIndex = outDepthTileStart; outDepthIndex < outDepthTileEnd; outDepthIndex++)
+							{
+								output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex] +=
+										outputTile[((outDepthIndex-outDepthTileStart) * outRowTileSize + (outRowIndex-outRowTileStart)) * outColTileSize + (outColIndex-outColTileStart)];
+//								std::cout << (outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex << " " << outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)] << std::endl;
+							}
+						}
+					}
+
+					sds_free(outputTile);
+					sds_free(weightsTile);
+					sds_free(inputTile);
+				}
+			}
+		}
+	}
+}
+*/
 bool ConvTest()
 {
 	Logger::GetLogger()->LogMessage("Convolution Layer Test:");
@@ -403,13 +502,13 @@ bool ConvTest()
 	std::cout << std::endl;
 
 	ConvolutionLayer conv1("conv_test", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> topBlob;
 
 	conv1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData();
+	int *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex/height + 1; // dataIndex/height will nautrally be the floor of this as these are both ints
@@ -432,8 +531,8 @@ bool ConvTest()
 
 	// check results
 	bool testPassed = true;
-	const float* topData = topBlob.getConstData();
-	float trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
+	const int* topData = topBlob.getConstData();
+	int trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
 
 	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
 	{
@@ -472,8 +571,8 @@ bool ConvCompare()
 
 	ConvolutionLayer conv1("conv_test_sw", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
 	ConvolutionLayer conv2("conv_test_hw", "test_in", "test_out", pad, kernelSize, stride, numOutputChannels); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> swBlob, hwBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> swBlob, hwBlob;
 
 	conv1.SetUp(&bottomBlob, &swBlob);
 	conv2.SetUp(&bottomBlob, &hwBlob);
@@ -507,8 +606,8 @@ bool ConvCompare()
 
 	// check results
 	bool testPassed = true;
-	const float* swData = swBlob.getConstData();
-	const float* hwData = hwBlob.getConstData();
+	const int* swData = swBlob.getConstData();
+	const int* hwData = hwBlob.getConstData();
 
 	for(int dataIndex = 0; dataIndex < swBlob.count(); dataIndex++)
 	{

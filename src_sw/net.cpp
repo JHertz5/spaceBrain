@@ -188,12 +188,12 @@ void Net::SetBlobs()
 	blobs_.push_back(input_blob_); // start off blobs_
 	Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", input_blob_->name().c_str());
 
-	Blob<float>* tempBlob;
+	Blob<int>* tempBlob;
 	for(size_t layerIndex = 0; layerIndex < layers_.size()-1; layerIndex++)
 	{
 		if(layers_[layerIndex]->top() == layers_[layerIndex+1]->bottom())
 		{
-			tempBlob = new Blob<float>(layers_[layerIndex]->top());
+			tempBlob = new Blob<int>(layers_[layerIndex]->top());
 			blobs_.push_back(tempBlob);
 		}
 		else
@@ -208,7 +208,7 @@ void Net::SetBlobs()
 		Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", blobs_.back()->name().c_str());
 	}
 
-	output_blob_ = new Blob<float>(layers_.back()->top());
+	output_blob_ = new Blob<int>(layers_.back()->top());
 	blobs_.push_back(output_blob_);
 	Logger::GetLogger()->LogMessage("\nNet::SetBlobs(): Blob %s set up", blobs_.back()->name().c_str());
 }

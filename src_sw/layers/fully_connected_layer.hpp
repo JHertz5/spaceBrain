@@ -15,21 +15,21 @@ public:
 	FullyConnectedLayer(std::string name, std::string bottom, std::string top, int num_output, bool transpose);
 	virtual ~FullyConnectedLayer(){}
 
-	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top);
+	virtual void LayerSetUp(const Blob<int>* bottom, const Blob<int>* top);
 
-	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Reshape(const Blob<int>* bottom, Blob<int>* top);
 
-	virtual void Forward(const Blob<float>* bottom, Blob<float>* top);
-	void Forward_gemm(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Forward(const Blob<int>* bottom, Blob<int>* top);
+	void Forward_gemm(const Blob<int>* bottom, Blob<int>* top);
 
-	void Convolution(const float* input, const float* weights, float* output);
+	void Convolution(const int* input, const int* weights, int* output);
 
 	virtual inline const int type() const
 	{
 		return FC;
 	}
 
-	Blob<float> weights_;
+	Blob<int> weights_;
 
 private:
 	int input_num_;

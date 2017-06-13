@@ -18,12 +18,12 @@ ReluLayer::ReluLayer(std::string name, std::string bottom, std::string top)
 	Logger::GetLogger()->LogMessage("\tReLU layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
-void ReluLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void ReluLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	top->ReshapeLike(*bottom);
 }
 
-void ReluLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void ReluLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -40,12 +40,12 @@ void ReluLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 		return; // TODO return error?
 	}
 
-	const float* bottomData = bottom->getConstData();
-	float* topData = top->getMutableData();
+	const int* bottomData = bottom->getConstData();
+	int* topData = top->getMutableData();
 	const int count = bottom->count();
 	for (int dataIndex = 0; dataIndex < count; ++dataIndex)
 	{
-		topData[dataIndex] = std::max(bottomData[dataIndex], (float)0);
+		topData[dataIndex] = std::max(bottomData[dataIndex], (int)0);
 	}
 }
 
@@ -57,13 +57,13 @@ bool ReluTest()
 	int count = num * channels * height * width;
 
 	ReluLayer relu1("relu_test", "test_in", "test_out"); // initialise relu layer
-	Blob<float> bottomBlob(num, channels, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, channels, height, width);
+	Blob<int> topBlob;
 
 	relu1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = bottomBlob.getMutableData();
+	int *dataIn = bottomBlob.getMutableData();
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex * pow(-1, dataIndex);
@@ -78,8 +78,8 @@ bool ReluTest()
 	topBlob.PrintSlice();
 
 	// get results
-	const float* bottomData = bottomBlob.getConstData();
-	const float* topData = topBlob.getConstData();
+	const int* bottomData = bottomBlob.getConstData();
+	const int* topData = topBlob.getConstData();
 
 	// check results
 	bool testPassed = true;

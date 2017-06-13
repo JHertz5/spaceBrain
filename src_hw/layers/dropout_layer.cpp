@@ -12,12 +12,12 @@ DropoutLayer::DropoutLayer(std::string name, std::string bottom, std::string top
 	Logger::GetLogger()->LogMessage("\tDropout layer '%s' constructed with bottom = '%s' and top = '%s'", name.c_str(), bottom.c_str(), top.c_str());
 }
 
-void DropoutLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void DropoutLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	top->ReshapeLike(*bottom);
 }
 
-void DropoutLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void DropoutLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
 	Logger::GetLogger()->LogMessage("\t%s layer performing forward computation", name_.c_str());
 
@@ -34,13 +34,13 @@ bool DropoutTest()
 	int count = num * channels * height * width;
 
 	DropoutLayer drop1("dropout_test", "test_in", "test_out"); // initialise dropout layer
-	Blob<float> bottomBlob(num, channels, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, channels, height, width);
+	Blob<int> topBlob;
 
 	drop1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
-	float *dataIn = new float[count];
+	int *dataIn = new int[count];
 	for(int dataIndex = 0; dataIndex < count; dataIndex++)
 	{
 		dataIn[dataIndex] = dataIndex * -1^dataIndex;
@@ -50,8 +50,8 @@ bool DropoutTest()
 	drop1.Forward(&bottomBlob, &topBlob); // perform forward computation
 
 	// get results
-	const float* bottomData = bottomBlob.getConstData();
-	const float* topData = topBlob.getConstData();
+	const int* bottomData = bottomBlob.getConstData();
+	const int* topData = topBlob.getConstData();
 
 	// check results
 	bool testPassed = true;

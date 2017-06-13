@@ -35,7 +35,7 @@ FullyConnectedLayer::FullyConnectedLayer(std::string name, std::string bottom, s
 	);
 }
 
-void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float>* top)
+void FullyConnectedLayer::LayerSetUp(const Blob<int>* bottom, const Blob<int>* top)
 {
 	input_volume_ = bottom->count(DEPTH_AXIS);
 	input_depth_ = bottom->depth();
@@ -44,7 +44,7 @@ void FullyConnectedLayer::LayerSetUp(const Blob<float>* bottom, const Blob<float
 	weights_.Reshape(output_depth_, input_depth_, input_size_, input_size_);
 }
 
-void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
+void FullyConnectedLayer::Reshape(const Blob<int>* bottom, Blob<int>* top)
 {
 	input_num_ = bottom->num();
 
@@ -53,11 +53,11 @@ void FullyConnectedLayer::Reshape(const Blob<float>* bottom, Blob<float>* top)
 	output_size_ = top->height();
 }
 
-void FullyConnectedLayer::Forward_gemm(const Blob<float>* bottom, Blob<float>* top)
+void FullyConnectedLayer::Forward_gemm(const Blob<int>* bottom, Blob<int>* top)
 {
-	const float* bottom_data = bottom->getConstData();
-	float* top_data = top->getMutableData();
-	const float* weight = this->weights_.getConstData();
+	const int* bottom_data = bottom->getConstData();
+	int* top_data = top->getMutableData();
+	const int* weight = this->weights_.getConstData();
 
 	// treat input and weights as if they were flattened in the depth, height, width dimensions
 	gemm_cpu(
@@ -68,11 +68,11 @@ void FullyConnectedLayer::Forward_gemm(const Blob<float>* bottom, Blob<float>* t
 	);
 }
 
-void FullyConnectedLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
+void FullyConnectedLayer::Forward(const Blob<int>* bottom, Blob<int>* top)
 {
-	const float* bottom_data = bottom->getConstData();
-	float* top_data = top->getMutableData();
-	const float* weight = this->weights_.getConstData();
+	const int* bottom_data = bottom->getConstData();
+	int* top_data = top->getMutableData();
+	const int* weight = this->weights_.getConstData();
 
 	// note - if using Caffe weights, the weights vector will need to be transposed to acheive the same result with this implementation
 	// gemm version treats spatial dimensions as the second dimension to iterate through
@@ -81,7 +81,7 @@ void FullyConnectedLayer::Forward(const Blob<float>* bottom, Blob<float>* top)
 }
 
 
-void FullyConnectedLayer::Convolution(const float* input, const float* weights, float* output)
+void FullyConnectedLayer::Convolution(const int* input, const int* weights, int* output)
 {
 	// Tiling values
 	int rowTileSize = 4;
@@ -146,14 +146,14 @@ bool FullyConnectedTest()
 	bool transpose = false;
 
 	FullyConnectedLayer fc1("fc_test", "test_in", "test_out", num_output, transpose);
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> topBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> topBlob;
 
 	fc1.SetUp(&bottomBlob, &topBlob);
 
 	// set input data
 //	FillConstant(&bottomBlob, 1);
-	float* inputData = bottomBlob.getMutableData();
+	int* inputData = bottomBlob.getMutableData();
 	int inputVolume = bottomBlob.count(HEIGHT_AXIS);
 	FillConstant(inputData, inputVolume, 1);
 	FillConstant(inputData + inputVolume, inputVolume, 2);
@@ -161,7 +161,7 @@ bool FullyConnectedTest()
 
 	// set weights
 //	FillConstant(&fc1.weights_, 1);
-	float* weightsData = fc1.weights_.getMutableData();
+	int* weightsData = fc1.weights_.getMutableData();
 	int weightsVolume = fc1.weights_.count(DEPTH_AXIS);
 	FillConstant(weightsData, weightsVolume, 1);
 	FillConstant(weightsData + weightsVolume, weightsVolume, 2);
@@ -186,8 +186,8 @@ bool FullyConnectedTest()
 
 	// check results
 	bool testPassed = true;
-	const float* topData = topBlob.getConstData();
-	float trueResult = 686;
+	const int* topData = topBlob.getConstData();
+	int trueResult = 686;
 
 	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
 	{
@@ -222,15 +222,15 @@ bool FullyConnectedCompare()
 
 	FullyConnectedLayer fc1("fc_test_gemm", "test_in", "test_out", num_output, transpose); // initialise relu layer
 	FullyConnectedLayer fc2("fc_test_conv", "test_in", "test_out", num_output, transpose); // initialise relu layer
-	Blob<float> bottomBlob(num, depth, height, width);
-	Blob<float> gemmBlob, convBlob;
+	Blob<int> bottomBlob(num, depth, height, width);
+	Blob<int> gemmBlob, convBlob;
 
 	fc1.SetUp(&bottomBlob, &gemmBlob);
 	fc2.SetUp(&bottomBlob, &convBlob);
 
 	// set input data
 //	FillConstant(&bottomBlob, 1);
-	float* inputData = bottomBlob.getMutableData();
+	int* inputData = bottomBlob.getMutableData();
 	int input2dVolume = bottomBlob.count(HEIGHT_AXIS);
 	FillConstant(inputData, input2dVolume, 1);
 	FillConstant(inputData + input2dVolume, input2dVolume, 2);
@@ -238,7 +238,7 @@ bool FullyConnectedCompare()
 
 	// set weights
 //	FillConstant(&fc1.weights_, 1);
-	float* weightsData = fc1.weights_.getMutableData();
+	int* weightsData = fc1.weights_.getMutableData();
 	int weightsVolume = fc1.weights_.count(DEPTH_AXIS);
 	FillConstant(weightsData, weightsVolume, 1);
 	FillConstant(weightsData + weightsVolume, weightsVolume, 2);
@@ -259,8 +259,8 @@ bool FullyConnectedCompare()
 
 	// check results
 	bool testPassed = true;
-	const float* gemmData = gemmBlob.getConstData();
-	const float* convData = convBlob.getConstData();
+	const int* gemmData = gemmBlob.getConstData();
+	const int* convData = convBlob.getConstData();
 
 	for(int dataIndex = 0; dataIndex < gemmBlob.count(); dataIndex++)
 	{

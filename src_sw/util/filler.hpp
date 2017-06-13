@@ -11,8 +11,8 @@ namespace spaceBrain
  * param: blob - blob to be filled
  * param: value - constant value to set blob data to
  */
-void FillConstant(Blob<float>* blob, float value);
-void FillConstant(float* data, int dataLength, float value);
+void FillConstant(Blob<int>* blob, int value);
+void FillConstant(int* data, int dataLength, int value);
 
 /*
  * Fills blob with uniformly distributed values
@@ -20,8 +20,8 @@ void FillConstant(float* data, int dataLength, float value);
  * param: min - minimum value for uniform distribution
  * param: max - maximum value for uniform distribution
  */
-void FillUniform(Blob<float>* blob, int min, int max);
-void FillUniform(float* data, int dataLength, int min, int max);
+void FillUniform(Blob<int>* blob, int min, int max);
+void FillUniform(int* data, int dataLength, int min, int max);
 
 /*
  * Test Filler functions

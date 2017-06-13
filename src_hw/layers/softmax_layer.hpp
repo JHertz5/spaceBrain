@@ -12,9 +12,9 @@ public:
 	SoftmaxLayer(std::string name, std::string bottom, std::string top);
 	virtual ~SoftmaxLayer(){}
 
-	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top);
+	virtual void Reshape(const Blob<int>* bottom, Blob<int>* top);
 
-	virtual void Forward(const Blob<float>* bottom, Blob<float> *top);
+	virtual void Forward(const Blob<int>* bottom, Blob<int> *top);
 
 	virtual inline const int type() const
 	{

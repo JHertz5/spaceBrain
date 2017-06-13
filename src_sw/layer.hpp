@@ -23,17 +23,17 @@ class Layer
 {
 public:
 
-	void SetUp(const Blob<float>* bottom, Blob<float>* top)
+	void SetUp(const Blob<int>* bottom, Blob<int>* top)
 	{
 	    LayerSetUp(bottom, top);
 	    Reshape(bottom, top);
 	}
 
-	virtual void LayerSetUp(const Blob<float>* bottom, const Blob<float>* top){}
+	virtual void LayerSetUp(const Blob<int>* bottom, const Blob<int>* top){}
 
-	virtual void Reshape(const Blob<float>* bottom, Blob<float>* top) = 0;
+	virtual void Reshape(const Blob<int>* bottom, Blob<int>* top) = 0;
 
-	virtual void Forward(const Blob<float>* bottom, Blob<float>* top) = 0;
+	virtual void Forward(const Blob<int>* bottom, Blob<int>* top) = 0;
 
 	virtual inline const int type() const = 0;
 

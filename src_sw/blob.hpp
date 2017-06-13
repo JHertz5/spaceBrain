@@ -108,7 +108,7 @@ public:
 	}
 
 protected:
-	DataMemory* data_; // pointer to data // XXX may not end up being float
+	DataMemory* data_; // pointer to data // XXX may not end up being int
 	int shape_[NUM_BLOB_DIMENSIONS]; // stores dimensions of blob shape
 	int count_; // stores max index of data
 	std::string name_;
