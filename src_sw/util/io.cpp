@@ -75,12 +75,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 		spaceBrain::ConvTest();
 		std::cout << std::endl;
 	}
-	/*else if(inMessage == "conv_comp") // not used as im2col convolution now causes segfault
+	else if(inMessage == "conv_comp")
 	{
 		std::cout << "Convolution Layer Implementation Comparison" << std::endl;
 		spaceBrain::ConvCompare();
 		std::cout << std::endl;
-	}*/
+	}
 	else if(inMessage == "relu")
 	{
 		std::cout << "ReLU (Rectified Linear Unit) Layer" << std::endl;

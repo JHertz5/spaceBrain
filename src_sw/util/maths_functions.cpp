@@ -9,41 +9,101 @@ void conv_cpu(int stride, int pad,
 		int inputSize, int kernelSize, int outputSize, int inputDepth,
 		int outRowStart, int outRowEnd,
 		int outColStart, int outColEnd,
-		int outChannelStart, int outChannelEnd,
-		int inChannelStart, int inChannelEnd,
+		int outDepthStart, int outDepthEnd,
+		int inDepthStart, int inDepthEnd,
 		const float* input, const float* weights, float* output
 )
 {
 	int paddedRow, paddedCol;
-	for(int rowIndex = outRowStart; rowIndex < outRowEnd; rowIndex++)
+	for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
 	{
-		for(int colIndex = outColStart; colIndex < outColEnd; colIndex++)
+		for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
 		{
-			for(int outChannelIndex = outChannelStart; outChannelIndex < outChannelEnd; outChannelIndex++)
+			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
 			{
-				for(int inChannelIndex = inChannelStart; inChannelIndex < inChannelEnd; inChannelIndex++)
+				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
 				{
 					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
 					{
-						paddedRow = stride * rowIndex + kernelRow - pad;
+						paddedRow = stride * outRowIndex + kernelRow - pad;
 
 						for(int kernelCol = 0; kernelCol < kernelSize; kernelCol++)
 						{
-							paddedCol = stride * colIndex + kernelCol - pad;
+							paddedCol = stride * outColIndex + kernelCol - pad;
 
 							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
 							{
 								// point is in padded area
-								output[(outChannelIndex * outRowEnd + rowIndex) * outColEnd + colIndex] += 0;
+								output[(outDepthIndex * outRowEnd + outRowIndex) * outColEnd + outColIndex] += 0;
 							}
 							else
 							{
-								output[(outChannelIndex * outputSize + rowIndex) * outputSize + colIndex] +=
-//								output[outChannelIndex][rowIndex][colIndex] +=
-									weights[((outChannelIndex * inputDepth + inChannelIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
-//									weights[outChannelIndex][inChannelIndex][kernelRow][kernelCol] *
-									input[(inChannelIndex * inputSize + paddedRow) * inputSize + paddedCol];
-//									input[inChannelIndex][paddedRow][paddedCol];
+								output[(outDepthIndex * outputSize + outRowIndex) * outputSize + outColIndex] +=
+//								output[outDepthIndex][rowIndex][colIndex] +=
+									weights[((outDepthIndex * inputDepth + inDepthIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
+//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
+									input[(inDepthIndex * inputSize + paddedRow) * inputSize + paddedCol];
+//									input[inDepthIndex][inputRow][inputCol];
+							}
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void conv_cpu_hw(int stride, int pad,
+		int inputSize, int kernelSize, int outputSize, int inputDepth,
+		int outRowStart, int outRowEnd,
+		int outColStart, int outColEnd,
+		int outDepthStart, int outDepthEnd,
+		int inDepthStart, int inDepthEnd,
+		const float* inputTile, const float* weightsTile, float* outputTile
+)
+{
+	int outRowTileSize = outRowEnd - outRowStart;
+	int outColTileSize = outColEnd - outColStart;
+	int outDepthTileSize = outDepthEnd - outDepthStart;
+	int inDepthTileSize = inDepthEnd - inDepthStart;
+
+	int inRowTileSize = outRowTileSize + 2;
+	int inColTileSize = outColTileSize + 2;
+
+	int paddedRow, paddedCol;
+	for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
+	{
+		for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
+		{
+			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
+			{
+				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
+				{
+					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
+					{
+						paddedRow = stride * outRowIndex + kernelRow - pad;
+
+						for(int kernelCol = 0; kernelCol < kernelSize; kernelCol++)
+						{
+							paddedCol = stride * outColIndex + kernelCol - pad;
+
+							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
+							{
+								// point is in padded area
+								outputTile[(outDepthIndex * outRowEnd + outRowIndex) * outColEnd + outColIndex] += 0;
+							}
+							else
+							{
+								outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+//								output[outDepthIndex][rowIndex][colIndex] +=
+									weightsTile[((outDepthIndex * inDepthTileSize + inDepthIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
+//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
+									inputTile[(inDepthIndex * inRowTileSize + paddedRow) * inColTileSize + paddedCol];
+//									input[inDepthIndex][inputRow][inputCol];
+
+								//std::cout << (outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex << " " << outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] << std::endl;
+								std::cout << (outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex << " " << weightsTile[((outDepthIndex * inDepthTileSize + inDepthIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] << std::endl;
 							}
 						}
 					}
@@ -53,13 +113,12 @@ void conv_cpu(int stride, int pad,
 	}
 }
 
-
 void conv_cpu_transB(int stride, int pad,
 		int inputSize, int kernelSize, int outputSize, int outputDepth,
 		int outRowStart, int outRowEnd,
 		int outColStart, int outColEnd,
-		int outChannelStart, int outChannelEnd,
-		int inChannelStart, int inChannelEnd,
+		int outDepthStart, int outDepthEnd,
+		int inDepthStart, int inDepthEnd,
 		const float* input, const float* weights, float* output
 )
 {
@@ -68,9 +127,9 @@ void conv_cpu_transB(int stride, int pad,
 	{
 		for(int colIndex = outColStart; colIndex < outColEnd; colIndex++)
 		{
-			for(int outChannelIndex = outChannelStart; outChannelIndex < outChannelEnd; outChannelIndex++)
+			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
 			{
-				for(int inChannelIndex = inChannelStart; inChannelIndex < inChannelEnd; inChannelIndex++)
+				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
 				{
 					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
 					{
@@ -83,15 +142,15 @@ void conv_cpu_transB(int stride, int pad,
 							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
 							{
 								// point is in padded area
-								output[(outChannelIndex * outRowEnd + rowIndex) * outColEnd + colIndex] += 0;
+								output[(outDepthIndex * outRowEnd + rowIndex) * outColEnd + colIndex] += 0;
 							}
 							else
 							{
-								output[(outChannelIndex * outputSize + rowIndex) * outputSize + colIndex] +=
-//								output[outChannelIndex][rowIndex][colIndex] +=
-									weights[((inChannelIndex * kernelSize + kernelRow) * kernelSize + kernelCol) * outputDepth + outChannelIndex] *
-//									weights[inChannelIndex][kernelRow][kernelCol][outChannelIndex] *
-									input[(inChannelIndex * inputSize + paddedRow) * inputSize + paddedCol];
+								output[(outDepthIndex * outputSize + rowIndex) * outputSize + colIndex] +=
+//								output[outDepthIndex][rowIndex][colIndex] +=
+									weights[((inDepthIndex * kernelSize + kernelRow) * kernelSize + kernelCol) * outputDepth + outDepthIndex] *
+//									weights[inDepthIndex][kernelRow][kernelCol][outDepthIndex] *
+									input[(inDepthIndex * inputSize + paddedRow) * inputSize + paddedCol];
 //									input[inChannelIndex][paddedRow][paddedCol];
 							}
 						}
