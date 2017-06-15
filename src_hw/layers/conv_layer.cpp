@@ -10,7 +10,7 @@
 #include "../util/filler.hpp"
 #include "../util/maths_functions.hpp"
 #include "../util/timer.hpp"
-#include "../hw_functions.hpp"
+#include "../hw_functions.h"
 
 ConvolutionLayer::ConvolutionLayer(std::string name, std::string bottom, std::string top, int pad, int kernelSize, int stride, int num_output)
 {
@@ -599,7 +599,7 @@ bool ConvCompare()
 {
 	Logger::GetLogger()->LogMessage("Convolution Implementation Test:");
 
-	int num = 1, depth = 1, height = 14, width = 14;
+	int num = 1, depth = 3, height = 14, width = 14;
 	int stride = 1;
 	int pad = 1;
 	int kernelSize = 3;
