@@ -217,6 +217,7 @@ void Net::Reshape()
 	// propogate blob sizes resulting from input dimensions throught the network
 	for(size_t layerIndex = 0; layerIndex < layers_.size(); layerIndex++)
 	{
+		layers_[layerIndex]->LayerSetUp(blobs_[layerIndex], blobs_[layerIndex+1]);
 		layers_[layerIndex]->Reshape(blobs_[layerIndex], blobs_[layerIndex+1]);
 	}
 }

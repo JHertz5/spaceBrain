@@ -79,6 +79,7 @@ void conv_cpu_hw(int stride, int pad,
 		{
 			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
 			{
+				int result = 0;
 				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
 				{
 					for(int kernelRow = 0; kernelRow < kernelSize; kernelRow++)
@@ -96,7 +97,9 @@ void conv_cpu_hw(int stride, int pad,
 							}
 							else
 							{
-								outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+								//outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+
+								result +=
 //								output[outDepthIndex][rowIndex][colIndex] +=
 									weightsTile[((outDepthIndex * inDepthTileSize + inDepthIndex) * kernelSize + kernelRow) * kernelSize + kernelCol] *
 //									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
@@ -108,6 +111,7 @@ void conv_cpu_hw(int stride, int pad,
 						}
 					}
 				}
+				outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] += result;
 			}
 		}
 	}

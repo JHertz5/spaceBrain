@@ -351,7 +351,8 @@ void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int*
 							for(int outDepthIndex = outDepthTileStart; outDepthIndex < outDepthTileEnd; outDepthIndex++)
 							{
 								outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)]
-										   = output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex];
+//										   = output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex];
+										   = 0;
 
 							}
 						}
@@ -375,7 +376,7 @@ void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int*
 						{
 							for(int outDepthIndex = outDepthTileStart; outDepthIndex < outDepthTileEnd; outDepthIndex++)
 							{
-								output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex] =
+								output[(outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex] += //=
 										outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)];
 //								std::cout << (outDepthIndex * output_size_ + outRowIndex) * output_size_ + outColIndex << " " << outputTile[((outDepthIndex-outDepthTileStart) * outRowTileEnd + (outRowIndex-outRowTileStart)) * outColTileEnd + (outColIndex-outColTileStart)] << std::endl;
 							}
