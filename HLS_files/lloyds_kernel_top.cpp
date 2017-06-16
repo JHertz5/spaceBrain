@@ -82,7 +82,7 @@ void load_points_buffer(uint offset,uint address, volatile bus_type *bus, uint *
 //	}
 //}
 
-
+//store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
 void store_output_buffer(uint offset, uint *buffer, uint address, volatile bus_type *bus)
 {
 	bus_type int_buffer[B];
@@ -94,25 +94,6 @@ void store_output_buffer(uint offset, uint *buffer, uint address, volatile bus_t
 	}
 
 	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, B*sizeof(bus_type));
-}
-
-
-void store_output_points_buffer(uint offset, data_type *buffer, uint address, volatile bus_type *bus)
-{
-	bus_type int_buffer[B*D];
-
-	for (uint i=0; i<B; i++) {
-
-		#pragma HLS loop_flatten
-		#pragma HLS pipeline II=1
-		for (uint d=0; d<D; d++) {
-			//#pragma HLS unroll
-			int_buffer[i*D+d] = (bus_type)buffer[i].value[d];
-		}
-	}
-
-	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, B*D*sizeof(bus_type));
-
 }
 
 
@@ -168,19 +149,17 @@ void lloyds_kernel_top(  uint block_address,
 //	data_type data_points_buffer[B];
 //	data_type centres_buffer[K];
 //	output_type output_buffer[B];
-//	data_type output_points_buffer[B];
 
 	uint data_points_buffer[B];
 	uint centres_buffer[K];
 	uint output_buffer[B];
-	uint output_points_buffer[B];
 
 
 	//void load_points_buffer(uint offset,uint address, volatile bus_type *bus, data_type *buffer)
 	//void load_centres_buffer(uint offset, uint address, volatile bus_type *bus, centre_index_type k, data_type *buffer)
 
-//	uint data_points_block_address = D*block_address;
-	uint kernel_info_block_address = 2*block_address;
+//	uint data_points_block_address = block_address;
+	uint kernel_info_block_address = block_address;
 
 //	load_points_buffer(data_points_addr, data_points_block_address, master_portA, data_points_buffer);
 //	load_centres_buffer(centres_in_addr, 0, master_portA, k, centres_buffer);
@@ -193,13 +172,14 @@ void lloyds_kernel_top(  uint block_address,
 	}
 	*/
 
-	for(int i = 0; i<10; i++)
+	for(int i = 1; i<B-1; i++)
 	{
-		output_points_buffer[i] = i;
+		output_buffer[i] = i;
 	}
-	output_points_buffer[0] = n;
-	output_points_buffer[10] = n;
+	output_buffer[0] = n;
+	output_buffer[B-1] = n;
 
+	master_portA[output_addr/sizeof(bus_type) + 5] = 100;
 
     // iterate over all data points
     //process_data_points_loop: for (uint i=0; i<10; i++) {
@@ -256,7 +236,6 @@ void lloyds_kernel_top(  uint block_address,
         //output_buffer[i].min_idx = final_centre_index;
         //output_buffer[i].sum_sq = sum_sq_out;
 
-//        output_points_buffer[i] = closest_centre;
 
         //printf("%d %d %d\n", closest_centre.value[0], closest_centre.value[1], closest_centre.value[2]);
 
@@ -264,13 +243,9 @@ void lloyds_kernel_top(  uint block_address,
 
     //printf("\n\n");
 
-	//void store_output_buffer(uint offset, output_type *buffer, uint address, volatile bus_type *bus)
-//    if (update_points == 0) {
 	store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
-//    } else {
-//	store_output_points_buffer(output_addr, output_points_buffer, data_points_block_address, master_portA);
-//    }
 
 }
+
 
 
