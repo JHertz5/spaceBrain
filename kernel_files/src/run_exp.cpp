@@ -22,15 +22,24 @@
 #include "xcombiner_top.h"
 #include "xlloyds_kernel_top.h"
 
+#define WEIGHTS_LENGTH 1296
+#define INPUT_LENGTH 1024
+#define OUPUT_LENGTH 784
+
 #define WEIGHTS_ADDR 0x1FC00000
 #define INPUT_FRAME_ADDR 0x1FC40000
-#define OUTPUT_FRAME_ADDR 0x1FCC0C00
+//#define OUTPUT_FRAME_ADDR 0x1FCC0C00
+#define OUTPUT_FRAME_ADDR 0x1FC50000
 
 #define LLOYDS_KERNEL_ADDR_1 0x43C10000
 //#define LLOYDS_KERNEL_ADDR_2 0x43C20000
 
 //#define COMBINER_ADDR_1 0x43C00000
 //#define COMBINER_ADDR_2 0x43C30000
+
+//#define WEIGHTS_LENGTH 1296
+//#define INPUT_LENGTH 1024
+//#define OUPUT_LENGTH 784
 
 #define IMG_SIZE 128 
 #define K 8 
@@ -70,6 +79,7 @@ int main(int argc, char* argv[] )
 //	cv::Mat inFrame; //Temporary input container
 //	inFrame = cv::imread("test_image.jpg"); //Read the input
 
+	int *output_frame_pointer = (int *) setup_reserved_mem(OUTPUT_FRAME_ADDR);
 
 	//Attempting some resizing
 //	cv::Size size(IMG_SIZE,IMG_SIZE);
@@ -104,12 +114,12 @@ int main(int argc, char* argv[] )
 	//Setup the kernel core parameters
 	XLloyds_kernel_top kernel_dev_1 = setup_XLloyds_kernel_top(LLOYDS_KERNEL_ADDR_1);
 	XLloyds_kernel_top_SetBlock_address(&kernel_dev_1, 0);
-	XLloyds_kernel_top_SetInput_addr(&kernel_dev_1, INPUT_FRAME_ADDR);
-	XLloyds_kernel_top_SetWeights_addr(&kernel_dev_1, WEIGHTS_ADDR);
+	XLloyds_kernel_top_SetData_points_addr(&kernel_dev_1, INPUT_FRAME_ADDR);
+	XLloyds_kernel_top_SetCentres_in_addr(&kernel_dev_1, WEIGHTS_ADDR);
 	XLloyds_kernel_top_SetOutput_addr(&kernel_dev_1, OUTPUT_FRAME_ADDR);
-	XLloyds_kernel_top_SetInputSize(&kernel_dev_1, 14);
-	XLloyds_kernel_top_SetOutputSize(&kernel_dev_1, 14);
-	XLloyds_kernel_top_SetInputDepth(&kernel_dev_1, 3);
+	XLloyds_kernel_top_SetN(&kernel_dev_1, 14);
+	XLloyds_kernel_top_SetK(&kernel_dev_1, 14);
+/*	XLloyds_kernel_top_SetInputDepth(&kernel_dev_1, 3);
 	XLloyds_kernel_top_SetOutRowStart(&kernel_dev_1, 0);
 	XLloyds_kernel_top_SetOutRowEnd(&kernel_dev_1, 14);
 	XLloyds_kernel_top_SetOutColStart(&kernel_dev_1, 0);
@@ -118,33 +128,36 @@ int main(int argc, char* argv[] )
 	XLloyds_kernel_top_SetOutDepthEnd(&kernel_dev_1, 4);
 	XLloyds_kernel_top_SetInDepthStart(&kernel_dev_1, 0);
 	XLloyds_kernel_top_SetInDepthEnd(&kernel_dev_1, 4);
-
+*/
 
 	printf("%i\n", XLloyds_kernel_top_GetBlock_address(&kernel_dev_1));
-	printf("%i\n", XLloyds_kernel_top_GetInput_addr(&kernel_dev_1));
-	printf("%i\n", XLloyds_kernel_top_GetWeights_addr(&kernel_dev_1));
+	printf("%i\n", XLloyds_kernel_top_GetData_points_addr(&kernel_dev_1));
+	printf("%i\n", XLloyds_kernel_top_GetCentres_in_addr(&kernel_dev_1));
 	printf("%i\n", XLloyds_kernel_top_GetOutput_addr(&kernel_dev_1));
-	printf("%i\n", XLloyds_kernel_top_GetInputSize(&kernel_dev_1));
-	printf("%i\n", XLloyds_kernel_top_GetOutputSize(&kernel_dev_1));
-	printf("%i\n", XLloyds_kernel_top_GetInputDepth(&kernel_dev_1));
+	printf("%i\n", XLloyds_kernel_top_GetN(&kernel_dev_1));
+	printf("%i\n", XLloyds_kernel_top_GetK(&kernel_dev_1));
+/*	printf("%i\n", XLloyds_kernel_top_GetInputDepth(&kernel_dev_1));
 	printf("%i\n",         XLloyds_kernel_top_GetOutRowStart(&kernel_dev_1));
 	printf("%i\n",         XLloyds_kernel_top_GetOutRowEnd(&kernel_dev_1));
 	printf("%i\n",         XLloyds_kernel_top_GetOutColStart(&kernel_dev_1));
 	printf("%i\n",         XLloyds_kernel_top_GetOutColEnd(&kernel_dev_1));
 	printf("%i\n",         XLloyds_kernel_top_GetOutDepthStart(&kernel_dev_1));
-	printf("%i\n",         XLloyds_kernel_top_GetOutDepthEnd(&kernel_dev_1));
+	printf("%i\n", XLloyds_kernel_top_GetOutDepthEnd(&kernel_dev_1));
 	printf("%i\n", XLloyds_kernel_top_GetInDepthStart(&kernel_dev_1));
         printf("%i\n", XLloyds_kernel_top_GetInDepthEnd(&kernel_dev_1));
+*/
 
-	//Setting the parameters of the combiner 	
-	
-//	XCombiner_top combiner_dev_1 = setup_XCombiner_top(COMBINER_ADDR_1);
-//	XCombiner_top_SetData_points_in_addr(&combiner_dev_1, INPUT_FRAME_ADDR);
-//	XCombiner_top_SetKernel_info_in_addr(&combiner_dev_1, KERNEL_INTERMEDIATE_ADDR);
-//	XCombiner_top_SetCentres_out_addr(&combiner_dev_1,CLUSTER_CENTER_ADDR);
-//	XCombiner_top_SetN(&combiner_dev_1, (IMG_SIZE*IMG_SIZE)-1);
-//	XCombiner_top_SetK(&combiner_dev_1, K-1);	
-	
+	// set weights and input values
+	for(int index = 0; index < WEIGHTS_LENGTH; index ++)
+        {
+	        weights_pointer[index] = 1;	
+        }
+
+	for(int index = 0; index < INPUT_LENGTH; index ++)
+        {
+                input_frame_pointer[index] = 1;	
+        }
+
 	//------------------------------------------------------------------------------------
 	uint distortion = UINT_MAX;
 	
@@ -164,8 +177,13 @@ int main(int argc, char* argv[] )
 	u32 data = 1;
 	fprintf(fp,"%i\n", data);
         fclose(fp);
+   
 
-	printf("%i\n", XLloyds_kernel_top_GetInput_addr(&kernel_dev_1));
+	for(int index = 0; index < 11; index ++)
+	{
+		printf("%i ", output_frame_pointer[index]);
+	}
+	printf("\n");
 
 //	for (uint clustering_iteration=0; clustering_iteration<L; clustering_iteration++) {
 
