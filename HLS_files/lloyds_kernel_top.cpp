@@ -159,7 +159,7 @@ void lloyds_kernel_top(  uint block_address,
 	//void load_centres_buffer(uint offset, uint address, volatile bus_type *bus, centre_index_type k, data_type *buffer)
 
 //	uint data_points_block_address = block_address;
-	uint kernel_info_block_address = block_address;
+//	uint kernel_info_block_address = block_address;
 
 //	load_points_buffer(data_points_addr, data_points_block_address, master_portA, data_points_buffer);
 //	load_centres_buffer(centres_in_addr, 0, master_portA, k, centres_buffer);
@@ -177,9 +177,15 @@ void lloyds_kernel_top(  uint block_address,
 		output_buffer[i] = i;
 	}
 	output_buffer[0] = n;
-	output_buffer[B-1] = n;
+	output_buffer[B-1] = k;
 
-	master_portA[output_addr/sizeof(bus_type) + 5] = 100;
+	block_address = 100;
+	data_points_addr = 5;
+	centres_in_addr = 6;
+	k = 10000;
+	output_buffer[0] = n;
+
+
 
     // iterate over all data points
     //process_data_points_loop: for (uint i=0; i<10; i++) {
@@ -243,6 +249,7 @@ void lloyds_kernel_top(  uint block_address,
 
     //printf("\n\n");
 
+	int kernel_info_block_address = 0;
 	store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
 
 }
