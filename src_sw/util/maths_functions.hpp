@@ -31,6 +31,8 @@ void conv_cpu_transB(int stride, int pad,
 		const int* input, const int* weights, int* output
 );
 
+void test();
+
 void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, const int n, const int k, const int alpha, const int* A, const int* B, const int beta, int* C);
 
 }

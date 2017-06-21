@@ -1,392 +1,179 @@
-/**********************************************************************
-* Felix Winterstein, Imperial College London
-*
-* File: lloyds_kernel_top.cpp
-*
-* Revision 1.01
-* Additional Comments: distributed under a BSD license, see LICENSE.txt
-*
-**********************************************************************/
+#define KERNEL_SIZE_3X3 3
+#define PAD_3X3 1
+#define STRIDE_3X3 1
 
-#include "lloyds_kernel_top.h"
-#include "lloyds_util.h"
+#define WEIGHTS_DATA_LENGTH 9
+#define INPUT_DATA_LENGTH 256
+#define OUTPUT_DATA_LENGTH 196
 
-
-void load_points_buffer(uint offset,uint address, volatile bus_type *bus, uint *buffer)
+void load_inputs_buffer(uint offset,uint address, volatile bus_type *bus, uint *buffer)
 {
+	bus_type int_buffer[INPUT_DATA_LENGTH];
 
-	bus_type int_buffer[B];
+	memcpy(int_buffer, (const bus_type *)(bus + (offset + address)/sizeof(bus_type)), INPUT_DATA_LENGTH*sizeof(bus_type));
 
-	memcpy(int_buffer, (const bus_type *)(bus + (offset + address)/sizeof(bus_type)), B*sizeof(bus_type));
-
-	for (uint i=0; i<B; i++) {
-		#pragma HLS loop_flatten
-		#pragma HLS pipeline II=1
-			//#pragma HLS unroll
-			buffer[i] = int_buffer[i];
+	for (uint i=0; i<INPUT_DATA_LENGTH; i++) {
+#pragma HLS loop_flatten
+#pragma HLS pipeline II=1
+		//#pragma HLS unroll
+		buffer[i] = int_buffer[i];
 	}
 }
 
+void load_weights_buffer(uint offset,uint address, volatile bus_type *bus, uint *buffer)
+{
+	bus_type int_buffer[WEIGHTS_DATA_LENGTH];
+
+	memcpy(int_buffer, (const bus_type *)(bus + (offset + address)/sizeof(bus_type)), WEIGHTS_DATA_LENGTH*sizeof(bus_type));
+
+	for (uint i=0; i<WEIGHTS_DATA_LENGTH; i++) {
+#pragma HLS loop_flatten
+#pragma HLS pipeline II=1
+		//#pragma HLS unroll
+		buffer[i] = int_buffer[i];
+	}
+}
 
 //store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
 void store_output_buffer(uint offset, uint *buffer, uint address, volatile bus_type *bus)
 {
-	bus_type int_buffer[B];
+	bus_type int_buffer[OUTPUT_DATA_LENGTH];
 
 
-	for (uint i=0; i<B; i++) {
-		#pragma HLS pipeline II=1
+	for (uint i=0; i<OUTPUT_DATA_LENGTH; i++) {
+#pragma HLS pipeline II=1
 		int_buffer[i] = (bus_type)buffer[i];
 	}
 
-	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, B*sizeof(bus_type));
+	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, OUTPUT_DATA_LENGTH*sizeof(bus_type));
 }
 
 
+
 // top-level function of the design
-void lloyds_kernel_top(  uint block_address,
-						 volatile bus_type *master_portA,
-						 //volatile bus_type *master_portB,
-						 uint data_points_addr,
-                         uint centres_in_addr,
-                         uint output_addr,
-                         uint update_points,
-                         uint n,
-                         uint k, //changed so that the AXI slave interface can be used.
-			 uint *debug
-                         )
+void lloyds_kernel_top(
+		uint block_address,
+		volatile bus_type *master_portA,
+		//volatile bus_type *master_portB,
+		uint input_addr,
+		uint weights_addr,
+		uint output_addr,
+		uint inputSize, uint outputSize, uint inputDepth,
+		uint outRowStart, uint outRowEnd, 		// outRow limits
+		uint outColStart, uint outColEnd, 		// outCol limits
+		uint outDepthStart, uint outDepthEnd, 	// outDepth limits
+		uint inDepthStart, uint inDepthEnd	 	// inDepth limits
+)
 {
 #pragma HLS TOP
 
-	// set up the axi bus interfaces
-	#pragma HLS INTERFACE ap_bus port=master_portA depth=2147483648
-	#pragma HLS resource variable=master_portA core=AXI4M
+#pragma HLS INTERFACE ap_bus port=master_portA depth=2147483648
+#pragma HLS resource variable=master_portA core=AXI4M
 
 	//#pragma HLS INTERFACE ap_bus port=master_portB depth=0x002000
 	//#pragma HLS resource core=AXI4M variable=master_portB
 
-	#pragma HLS INTERFACE ap_none register port=data_points_addr
-	#pragma HLS RESOURCE core=AXI4LiteS variable=data_points_addr metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=input_addr
+#pragma HLS RESOURCE core=AXI4LiteS variable=input_addr metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=centres_in_addr
-	#pragma HLS RESOURCE core=AXI4LiteS variable=centres_in_addr metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=weights_addr
+#pragma HLS RESOURCE core=AXI4LiteS variable=weights_addr metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=output_addr
-	#pragma HLS RESOURCE core=AXI4LiteS variable=output_addr metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=output_addr
+#pragma HLS RESOURCE core=AXI4LiteS variable=output_addr metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=n
-	#pragma HLS RESOURCE core=AXI4LiteS variable=n metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=inputSize
+#pragma HLS RESOURCE core=AXI4LiteS variable=inputSize metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=k
-	#pragma HLS RESOURCE core=AXI4LiteS variable=k metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=outputSize
+#pragma HLS RESOURCE core=AXI4LiteS variable=outputSize metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=update_points
-	#pragma HLS RESOURCE core=AXI4LiteS variable=update_points metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=inputDepth
+#pragma HLS RESOURCE core=AXI4LiteS variable=inputDepth metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=block_address
-	#pragma HLS RESOURCE core=AXI4LiteS variable=block_address metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=outRowStart
+#pragma HLS RESOURCE core=AXI4LiteS variable=outRowStart metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS INTERFACE ap_none register port=debug
-	#pragma HLS RESOURCE core=AXI4LiteS variable=debug metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=outRowEnd
+#pragma HLS RESOURCE core=AXI4LiteS variable=outRowEnd metadata="-bus_bundle CONFIG_BUS"
 
-	#pragma HLS RESOURCE variable=return core=AXI4LiteS	metadata="-bus_bundle CONFIG_BUS"
+#pragma HLS INTERFACE ap_none register port=outColStart
+#pragma HLS RESOURCE core=AXI4LiteS variable=outColStart metadata="-bus_bundle CONFIG_BUS"
 
+#pragma HLS INTERFACE ap_none register port=outColEnd
+#pragma HLS RESOURCE core=AXI4LiteS variable=outColEnd metadata="-bus_bundle CONFIG_BUS"
 
-	uint data_points_buffer[B];
-	uint centres_buffer[K];
-	uint output_buffer[B];
+#pragma HLS INTERFACE ap_none register port=outDepthStart
+#pragma HLS RESOURCE core=AXI4LiteS variable=outDepthStart metadata="-bus_bundle CONFIG_BUS"
 
-	data_points_buffer[0] = 51;
+#pragma HLS INTERFACE ap_none register port=outDepthEnd
+#pragma HLS RESOURCE core=AXI4LiteS variable=outDepthEnd metadata="-bus_bundle CONFIG_BUS"
 
-	for(int i = 1; i<B-1; i++)
+#pragma HLS INTERFACE ap_none register port=inDepthStart
+#pragma HLS RESOURCE core=AXI4LiteS variable=inDepthStart metadata="-bus_bundle CONFIG_BUS"
+
+#pragma HLS INTERFACE ap_none register port=inDepthEnd
+#pragma HLS RESOURCE core=AXI4LiteS variable=inDepthEnd metadata="-bus_bundle CONFIG_BUS"
+
+#pragma HLS INTERFACE ap_none register port=block_address
+#pragma HLS RESOURCE core=AXI4LiteS variable=block_address metadata="-bus_bundle CONFIG_BUS"
+
+	//	#pragma HLS INTERFACE ap_none register port=debug
+	//	#pragma HLS RESOURCE core=AXI4LiteS variable=debug metadata="-bus_bundle CONFIG_BUS"
+
+#pragma HLS RESOURCE variable=return core=AXI4LiteS	metadata="-bus_bundle CONFIG_BUS"
+
+	uint input_buffer[INPUT_DATA_LENGTH];
+	uint weights_buffer[WEIGHTS_DATA_LENGTH];
+	uint output_buffer[OUTPUT_DATA_LENGTH];
+
+	load_inputs_buffer(input_addr, block_address, master_portA, input_buffer);
+	load_weights_buffer(weights_addr, block_address, master_portA, weights_buffer);
+
+	int outRowTileSize = outRowEnd - outRowStart;
+	int outColTileSize = outColEnd - outColStart;
+	int outDepthTileSize = outDepthEnd - outDepthStart;
+	int inDepthTileSize = inDepthEnd - inDepthStart;
+
+	int inRowTileSize = outRowTileSize + 2;
+	int inColTileSize = outColTileSize + 2;
+
+	int paddedRow, paddedCol;
+	for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
 	{
-		output_buffer[i] = i + n;
+		for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
+		{
+			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
+			{
+//				int result = 0;
+				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
+				{
+					for(int kernelRow = 0; kernelRow < KERNEL_SIZE_3X3; kernelRow++)
+					{
+						paddedRow = STRIDE_3X3 * outRowIndex + kernelRow - PAD_3X3;
+
+						for(int kernelCol = 0; kernelCol < KERNEL_SIZE_3X3; kernelCol++)
+						{
+							paddedCol = STRIDE_3X3 * outColIndex + kernelCol - PAD_3X3;
+
+							if(!(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize))
+							{
+								//outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+
+								output_buffer[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+										//								output[outDepthIndex][rowIndex][colIndex] +=
+										weights_buffer[((outDepthIndex * inDepthTileSize + inDepthIndex) * KERNEL_SIZE_3X3 + kernelRow) * KERNEL_SIZE_3X3 + kernelCol] *
+										//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
+										input_buffer[(inDepthIndex * inRowTileSize + paddedRow) * inColTileSize + paddedCol];
+								//									input[inDepthIndex][inputRow][inputCol];
+
+							}
+						}
+					}
+				}
+			}
+		}
 	}
-	output_buffer[0] = n;
-	output_buffer[B-1] = k;
-/*
-	block_address = 100;
-	data_points_addr = 5;
-	centres_in_addr = 6;
-	k = 10000;
-	output_buffer[0] = n;
-*/
-	int kernel_info_block_address = 0;
-	store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
+
+	store_output_buffer(output_addr, output_buffer, block_address, master_portA);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///**********************************************************************
-//* Felix Winterstein, Imperial College London
-//*
-//* File: lloyds_kernel_top.cpp
-//*
-//* Revision 1.01
-//* Additional Comments: distributed under a BSD license, see LICENSE.txt
-//*
-//**********************************************************************/
-//
-//#include "lloyds_kernel_top.h"
-//#include "lloyds_util.h"
-//
-//
-//
-//void load_points_buffer(uint offset,uint address, volatile bus_type *bus, data_type *buffer)
-//{
-//
-//	bus_type int_buffer[B*D];
-//
-//	memcpy(int_buffer, (const bus_type *)(bus + (offset + address)/sizeof(bus_type)), B*D*sizeof(bus_type));
-//
-//	for (uint i=0; i<B; i++) {
-//		#pragma HLS loop_flatten
-//		#pragma HLS pipeline II=1
-//		for (uint d=0; d<D; d++) {
-//			//#pragma HLS unroll
-//			buffer[i].value[d] = int_buffer[i*D+d];
-//		}
-//	}
-//}
-//
-//void load_centres_buffer(uint offset, uint address, volatile bus_type *bus, centre_index_type k, data_type *buffer)
-//{
-//	bus_type int_buffer[K*D];
-//
-//	memcpy(int_buffer, (const bus_type *)(bus + (offset + address)/sizeof(bus_type)), (k+1)*D*sizeof(bus_type));
-//
-//	for (centre_index_type i=0; i<=k; i++) {
-//		#pragma HLS loop_flatten
-//		#pragma HLS pipeline II=1
-//		for (uint d=0; d<D; d++) {
-//			//#pragma HLS unroll
-//			buffer[i].value[d] = int_buffer[i*D+d];
-//		}
-//		if (i==k)
-//			break;
-//	}
-//}
-//
-//
-//void store_output_buffer(uint offset, output_type *buffer, uint address, volatile bus_type *bus)
-//{
-//	bus_type int_buffer[B*2];
-//
-//
-//	for (uint i=0; i<B; i++) {
-//
-//		#pragma HLS pipeline II=1
-//		int_buffer[i*2+0] = (bus_type)buffer[i].min_idx;
-//		int_buffer[i*2+1] = (bus_type)buffer[i].sum_sq;
-//
-//	}
-//
-//	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, B*2*sizeof(bus_type));
-//}
-//
-//
-//void store_output_points_buffer(uint offset, data_type *buffer, uint address, volatile bus_type *bus)
-//{
-//	bus_type int_buffer[B*D];
-//
-//	for (uint i=0; i<B; i++) {
-//
-//		#pragma HLS loop_flatten
-//		#pragma HLS pipeline II=1
-//		for (uint d=0; d<D; d++) {
-//			//#pragma HLS unroll
-//			int_buffer[i*D+d] = (bus_type)buffer[i].value[d];
-//		}
-//	}
-//
-//	memcpy((bus_type *)(bus + (offset + address)/sizeof(bus_type) ), int_buffer, B*D*sizeof(bus_type));
-//
-//}
-//
-//
-//// top-level function of the design
-//void lloyds_kernel_top(  uint block_address,
-//						 volatile bus_type *master_portA,
-//						 //volatile bus_type *master_portB,
-//						 uint data_points_addr,
-//                         uint centres_in_addr,
-//                         uint output_addr,
-//                         uint update_points,
-//                         uint n,
-//                         uint k, //changed so that the AXI slave interface can be used.
-//			 uint *debug
-//                         )
-//{
-//
-//	// set up the axi bus interfaces
-//	#pragma HLS INTERFACE ap_bus port=master_portA depth=2147483648
-//	#pragma HLS resource variable=master_portA core=AXI4M
-//
-//	//#pragma HLS INTERFACE ap_bus port=master_portB depth=0x002000
-//	//#pragma HLS resource core=AXI4M variable=master_portB
-//
-//	#pragma HLS INTERFACE ap_none register port=data_points_addr
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=data_points_addr metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=centres_in_addr
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=centres_in_addr metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=output_addr
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=output_addr metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=n
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=n metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=k
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=k metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=update_points
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=update_points metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=block_address
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=block_address metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS INTERFACE ap_none register port=debug
-//	#pragma HLS RESOURCE core=AXI4LiteS variable=debug metadata="-bus_bundle CONFIG_BUS"
-//
-//	#pragma HLS RESOURCE variable=return core=AXI4LiteS	metadata="-bus_bundle CONFIG_BUS"
-//
-//	data_type data_points_buffer[B];
-//	data_type centres_buffer[K];
-//	output_type output_buffer[B];
-//	data_type output_points_buffer[B];
-//
-//
-//	//void load_points_buffer(uint offset,uint address, volatile bus_type *bus, data_type *buffer)
-//	//void load_centres_buffer(uint offset, uint address, volatile bus_type *bus, centre_index_type k, data_type *buffer)
-//
-//	uint data_points_block_address = D*block_address;
-//	uint kernel_info_block_address = 2*block_address;
-//
-//	load_points_buffer(data_points_addr, data_points_block_address, master_portA, data_points_buffer);
-//	load_centres_buffer(centres_in_addr, 0, master_portA, k, centres_buffer);
-//	*debug = data_points_buffer[0].value[0];
-//
-//	/*
-//	for (uint i=0; i<B; i++) {
-//		data_type u = data_points_buffer[i];
-//		printf("%d %d %d\n", u.value[0], u.value[1], u.value[2]);
-//	}
-//	*/
-//
-//
-//
-//    // iterate over all data points
-//    process_data_points_loop: for (uint i=0; i<B; i++) {
-//
-//    	data_type u = data_points_buffer[i];
-//
-//    	/*
-//		#ifndef __SYNTHESIS
-//			for (uint d=0; d<D; d++) {
-//				printf("%d ", u.value[d]);
-//			}
-//			printf("\n");
-//		#endif
-//		*/
-//
-//        centre_index_type final_centre_index = 0;
-//        coord_type sum_sq_out = MAX_FIXED_POINT_VAL_EXT;
-//        coord_type min_dist = MAX_FIXED_POINT_VAL_EXT;
-//
-//        data_type closest_centre;
-//
-//        // iterate over all centres
-//        minsearch_loop: for (centre_index_type ii=0; ii<=k; ii++) {
-//           #pragma HLS pipeline II=1
-//
-//			coord_type tmp_dist;
-//			data_type cntr = centres_buffer[ii];
-//
-//			//printf("%d %d %d\n", u.value[0], u.value[1], u.value[2]);
-//			//printf("%d %d %d\n", cntr.value[0], cntr.value[1], cntr.value[2]);
-//
-//			compute_distance(cntr, u, &tmp_dist);
-//
-//			//printf("%d\n\n", tmp_dist);
-//
-//			// select the centre with the smallest distance to the data point
-//			if (tmp_dist<min_dist) {
-//				closest_centre = cntr;
-//				min_dist = tmp_dist;
-//				final_centre_index = ii;
-//				sum_sq_out = tmp_dist;
-//			}
-//
-//			if (ii == k) {
-//				break;
-//			}
-//		}
-//        /*
-//		#ifndef __SYNTHESIS__
-//        	printf("%d %d\n",final_centre_index.VAL, sum_sq_out);
-//		#endif
-//		*/
-//
-//        output_buffer[i].min_idx = final_centre_index;
-//        output_buffer[i].sum_sq = sum_sq_out;
-//
-//        output_points_buffer[i] = closest_centre;
-//
-//        //printf("%d %d %d\n", closest_centre.value[0], closest_centre.value[1], closest_centre.value[2]);
-//
-//	}
-//
-//    //printf("\n\n");
-//
-//	//void store_output_buffer(uint offset, output_type *buffer, uint address, volatile bus_type *bus)
-//    if (update_points == 0) {
-//    	store_output_buffer(output_addr, output_buffer, kernel_info_block_address, master_portA);
-//    } else {
-//    	store_output_points_buffer(output_addr, output_points_buffer, data_points_block_address, master_portA);
-//    }
-//
-//
-//
-//
-//}
-//
-//

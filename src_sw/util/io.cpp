@@ -8,6 +8,7 @@
 #include "../layers/pooling_layer.hpp"
 #include "../layers/relu_layer.hpp"
 #include "../layers/softmax_layer.hpp"
+#include "maths_functions.hpp"
 #include "../logger.hpp"
 #include "../net.hpp"
 #include "filler.hpp"
@@ -61,6 +62,12 @@ void performCommand(std::string inMessage, bool* keepRunning)
 	{
 		std::cout << "Network" << std::endl;
 		spaceBrain::NetTest();
+		std::cout << std::endl;
+	}
+	else if(inMessage == "test")
+	{
+		std::cout << "test" << std::endl;
+		spaceBrain::test();
 		std::cout << std::endl;
 	}
 	else if(inMessage == "input")

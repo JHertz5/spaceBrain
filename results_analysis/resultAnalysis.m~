@@ -1,0 +1,23 @@
+% results analysis
+
+maxErrorNum = 196;
+
+resultsFile = 'example.csv';
+if(resultsFile == 'example.csv')
+    disp('using example file')
+end
+results = csvread(resultsFile);
+
+errorCountDistribution = zeros(1,maxErrorNum + 1);
+
+for index = 1:length(results)
+    errorCountTemp = results(index, 2) + 1;
+    errorCountDistribution(errorCountTemp) = errorCountDistribution(errorCountTemp) + 1;
+end
+
+fprintf('average error = %3.2f\n', mean(results(:,2)))
+
+figure
+bar(errorCountDistribution);
+title('Histogr
+saveas(gcf, 'results1.png')

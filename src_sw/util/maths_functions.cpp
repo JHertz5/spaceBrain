@@ -1,6 +1,7 @@
 #include "maths_functions.hpp"
 
 #include "../logger.hpp"
+#include <stdio.h>
 
 namespace spaceBrain
 {
@@ -90,12 +91,7 @@ void conv_cpu_hw(int stride, int pad,
 						{
 							paddedCol = stride * outColIndex + kernelCol - pad;
 
-							if(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize)
-							{
-								// point is in padded area
-								outputTile[(outDepthIndex * outRowEnd + outRowIndex) * outColEnd + outColIndex] += 0;
-							}
-							else
+							if(!(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize))
 							{
 								//outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
 
@@ -111,7 +107,7 @@ void conv_cpu_hw(int stride, int pad,
 						}
 					}
 				}
-				outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] += result;
+				outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] = result;
 			}
 		}
 	}
@@ -232,5 +228,117 @@ void gemm_cpu(const bool isTransposeA, const bool isTransposeB, const int m, con
 		}
 	}
 }
+
+#define OUT_ROW_TILE_SIZE_3X3 14
+#define OUT_COL_TILE_SIZE_3X3 14
+#define OUT_DEPTH_TILE_SIZE_3X3 4
+#define IN_ROW_TILE_SIZE_3X3 OUT_ROW_TILE_SIZE_3X3+2
+#define IN_COL_TILE_SIZE_3X3 OUT_COL_TILE_SIZE_3X3+2
+#define IN_DEPTH_TILE_SIZE_3X3 4
+
+#define KERNEL_SIZE_3X3 3
+#define PAD_3X3 1
+#define STRIDE_3X3 1
+
+#define WEIGHTS_DATA_LENGTH 9
+#define INPUT_DATA_LENGTH 256
+#define OUTPUT_DATA_LENGTH 196
+
+void test()
+{
+	int input_buffer[INPUT_DATA_LENGTH];
+	int weights_buffer[WEIGHTS_DATA_LENGTH];
+	int output_buffer[OUTPUT_DATA_LENGTH];
+
+	for(int i = 0; i < WEIGHTS_DATA_LENGTH; i++)
+	{
+		weights_buffer[i] = 1;
+	}
+
+	for(int i = 0; i < INPUT_DATA_LENGTH; i++)
+	{
+		input_buffer[i] = 1;
+	}
+
+	for(int i = 0; i < OUTPUT_DATA_LENGTH; i++)
+	{
+		output_buffer[i] = 0;
+	}
+
+	int inputSize = 14;
+	int outputSize  = 14;
+	int inputDepth = 1;
+	int outRowStart = 0;
+	int outRowEnd = 14; 		// outRow limits
+	int outColStart = 0;
+	int outColEnd = 14; 		// outCol limits
+	int outDepthStart = 0;
+	int outDepthEnd = 1; 	// outDepth limits
+	int inDepthStart = 0;
+	int inDepthEnd	= 1; 	// inDepth limits
+
+
+	int outRowTileSize = outRowEnd - outRowStart;
+	int outColTileSize = outColEnd - outColStart;
+	int outDepthTileSize = outDepthEnd - outDepthStart;
+	int inDepthTileSize = inDepthEnd - inDepthStart;
+
+	int inRowTileSize = outRowTileSize + 2;
+	int inColTileSize = outColTileSize + 2;
+
+	int paddedRow, paddedCol;
+	for(int outRowIndex = outRowStart; outRowIndex < outRowEnd; outRowIndex++)
+	{
+		for(int outColIndex = outColStart; outColIndex < outColEnd; outColIndex++)
+		{
+			for(int outDepthIndex = outDepthStart; outDepthIndex < outDepthEnd; outDepthIndex++)
+			{
+				int result = 0;
+				for(int inDepthIndex = inDepthStart; inDepthIndex < inDepthEnd; inDepthIndex++)
+				{
+					for(int kernelRow = 0; kernelRow < KERNEL_SIZE_3X3; kernelRow++)
+					{
+						paddedRow = STRIDE_3X3 * outRowIndex + kernelRow - PAD_3X3;
+
+						for(int kernelCol = 0; kernelCol < KERNEL_SIZE_3X3; kernelCol++)
+						{
+							paddedCol = STRIDE_3X3 * outColIndex + kernelCol - PAD_3X3;
+
+							if(!(paddedCol < 0 || paddedCol >= inputSize || paddedRow < 0 || paddedRow >= inputSize))
+							{
+								//outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] +=
+
+								result +=
+										//								output[outDepthIndex][rowIndex][colIndex] +=
+										weights_buffer[((outDepthIndex * inDepthTileSize + inDepthIndex) * KERNEL_SIZE_3X3 + kernelRow) * KERNEL_SIZE_3X3 + kernelCol] *
+										//									weights[outDepthIndex][inDepthIndex][kernelRow][kernelCol] *
+										input_buffer[(inDepthIndex * inRowTileSize + paddedRow) * inColTileSize + paddedCol];
+								//									input[inDepthIndex][inputRow][inputCol];
+
+								//std::cout << (outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex << " " << outputTile[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] << std::endl;
+							}
+						}
+					}
+				}
+				output_buffer[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] = result;
+//				std::cout << output_buffer[(outDepthIndex * outRowTileSize + outRowIndex) * outColTileSize + outColIndex] << std::endl;
+			}
+		}
+	}
+
+	std::cout << "output: \n\t";
+	for(int hIndex = 0; hIndex < 14; hIndex ++)
+	{
+			for(int wIndex = 0; wIndex < 14; wIndex ++)
+			{
+				std::cout << output_buffer[hIndex * 14 + wIndex];
+			}
+			std::cout << ("\n\t");
+	}
+	std::cout << ("\n");
+}
+
+
+
 
 }

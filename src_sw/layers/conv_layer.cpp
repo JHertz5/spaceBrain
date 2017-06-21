@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../logger.hpp"
 #include "../util/filler.hpp"
@@ -299,8 +300,8 @@ void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int*
 	// Tiling values
 	int outRowTileSize = 14;
 	int outColTileSize = 14;
-	int outDepthTileSize = 4;
-	int inDepthTileSize = 4;
+	int outDepthTileSize = 1;
+	int inDepthTileSize = 1;
 
 	int inRowTileSize = outRowTileSize + 2; // would need to change 2 for different stride/kernel_size
 	int inColTileSize = outColTileSize + 2; // would need to change 2 for different stride/kernel_size
@@ -370,6 +371,9 @@ void ConvolutionLayer::Convolution_hw(const int* input, const int* weights, int*
 							inputTile, weightsTile, outputTile
 					);
 
+
+
+
 					for(int outRowIndex = outRowTileStart; outRowIndex < outRowTileEnd; outRowIndex++)
 					{
 						for(int outColIndex = outColTileStart; outColIndex < outColTileEnd; outColIndex++)
@@ -394,6 +398,7 @@ bool ConvTest()
 
 	//	int num = 1, depth = 1, height = 7, width = 7;
 	int num = 1, depth = 1, height = 14, width = 14;
+//	int num = 1, depth = 1, height = 28, width = 28;
 	int count = num * depth * height * width;
 	int stride = 1;
 	int pad = 1;
@@ -435,6 +440,14 @@ bool ConvTest()
 	bool testPassed = true;
 	const int* topData = topBlob.getConstData();
 	int trueResults[] = {6, 9, 9, 6, 18, 27, 27, 18, 30, 45, 45, 30, 26, 39, 39, 26};
+
+	FILE *fp=fopen("golden_conv.mat", "w");
+	size_t outputLength = topBlob.count();
+	for(uint y=0;y<outputLength;y++)
+	{
+		fprintf(fp, "%i\n", topData[y]);
+	}
+	fclose(fp);
 
 	for(int dataIndex = 0; dataIndex < topBlob.count(); dataIndex++)
 	{
